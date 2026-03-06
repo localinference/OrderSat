@@ -31,7 +31,14 @@
     "README.md"
   ],
   "scripts": {
-    "download:receipts": "node scripts/download-receipts.mjs",
+    "download:receipt-images": "node models/scripts/download-receipt-images.mjs",
+    "download:receipt-pdfs": "node models/scripts/download-receipt-pdfs.mjs",
+    "download:receipt-texts": "node models/scripts/download-receipt-texts.mjs",
+    "download:receipts": "npm run download:receipt-images && npm run download:receipt-pdfs && npm run download:receipt-texts",
+    "extract:receipt-images": "node models/scripts/extract-inputs-from-receipt-images.mjs",
+    "extract:receipt-pdfs": "node models/scripts/extract-inputs-from-receipt-pdfs.mjs",
+    "extract:receipt-texts": "node models/scripts/extract-inputs-from-receipt-texts.mjs",
+    "extract:inputs": "node models/scripts/extract-inputs.mjs",
     "format": "prettier . --write",
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && node test/run-coverage.mjs && node test/e2e/run.mjs",
@@ -73,6 +80,7 @@
     "@z-base/cryptosuite": "^1.0.1",
     "@z-base/zero-knowledge-credentials": "^1.0.2",
     "franc": "^6.2.0",
+    "pdfjs-dist": "^5.5.207",
     "sharp": "^0.34.5",
     "tesseract.js": "^7.0.0"
   }

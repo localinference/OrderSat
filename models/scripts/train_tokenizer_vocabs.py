@@ -12,7 +12,7 @@ except ImportError as error:
 
 
 DEFAULT_TOKENIZERS_ROOT = pathlib.Path("models/tokenizers")
-DEFAULT_CORPUS_NAME = "corpus.txt"
+DEFAULT_CORPUS_NAME = "corpus.jsonl"
 DEFAULT_MODEL_PREFIX = "tokenizer"
 DEFAULT_MAX_SENTENCE_LENGTH = 16384
 
@@ -21,7 +21,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Train a SentencePiece tokenizer for one language corpus under "
-            "models/tokenizers/{lang}/corpus.txt."
+            "models/tokenizers/{lang}/corpus.jsonl."
         )
     )
     parser.add_argument(
@@ -42,7 +42,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--corpus-name",
         default=DEFAULT_CORPUS_NAME,
-        help="Corpus filename inside the language directory (default: corpus.txt)",
+        help="Corpus filename inside the language directory (default: corpus.jsonl)",
     )
     parser.add_argument(
         "--model-prefix",
