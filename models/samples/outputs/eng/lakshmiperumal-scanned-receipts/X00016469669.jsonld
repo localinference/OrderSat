@@ -1,0 +1,106 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Store",
+      "name": "ABC HO TRADING",
+      "telephone": "07-3552616",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "No. 2 & 4, Jalan Harmoni 3/2, Taman Desa Harmoni",
+        "postalCode": "81100",
+        "addressLocality": "Johor Bahru",
+        "addressRegion": "Johor",
+        "addressCountry": "MY"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": {
+        "@id": "#merchant"
+      },
+      "orderNumber": "01-143008",
+      "orderDate": "2019-01-09T20:01:11",
+      "paymentMethod": "https://schema.org/Cash",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "priceCurrency": "MYR",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "CASH BILL"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier",
+          "value": "01"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Total Amount",
+          "value": "31.00",
+          "unitText": "MYR"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cash Received",
+          "value": "101.00",
+          "unitText": "MYR"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Change",
+          "value": "70.00",
+          "unitText": "MYR"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Return Notice",
+          "value": "Goods sold are non-refundable."
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Closing Message",
+          "value": "Thank you. Please come again."
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "15.50",
+      "priceCurrency": "MYR",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 2,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "seller": {
+        "@id": "#merchant"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Printed Line Amount",
+          "value": "31.00",
+          "unitText": "MYR"
+        }
+      ]
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "Plastic"
+    }
+  ]
+}
