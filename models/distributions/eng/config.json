@@ -1,0 +1,56 @@
+{
+  "language": "eng",
+  "format": "onnx-seq2seq-distribution",
+  "modelFile": "model.onnx",
+  "tokenizerModelFile": "tokenizer.model",
+  "tokenizerVocabFile": "tokenizer.vocab",
+  "metricsFile": "metrics.json",
+  "inputNames": [
+    "input_ids",
+    "attention_mask",
+    "decoder_input_ids"
+  ],
+  "outputNames": [
+    "logits"
+  ],
+  "tokenIds": {
+    "bos": 1,
+    "eos": 2,
+    "pad": 665
+  },
+  "limits": {
+    "maxInputLength": 329,
+    "maxDecoderLength": 1329
+  },
+  "model": {
+    "vocabSize": 665,
+    "dModel": 128,
+    "numHeads": 4,
+    "numEncoderLayers": 2,
+    "numDecoderLayers": 2,
+    "ffnDim": 256,
+    "opsetVersion": 18
+  },
+  "validation": {
+    "dummy_input_shape": {
+      "input_ids": [
+        1,
+        16
+      ],
+      "attention_mask": [
+        1,
+        16
+      ],
+      "decoder_input_ids": [
+        1,
+        8
+      ]
+    },
+    "output_shape": [
+      1,
+      8,
+      665
+    ],
+    "max_abs_diff": 9.5367431640625e-07
+  }
+}
