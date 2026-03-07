@@ -1,0 +1,68 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Araxi Burger",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "17861 Biscayne Blvd",
+        "addressLocality": "Aventura",
+        "addressRegion": "FL",
+        "postalCode": "33160"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderNumber": "33",
+      "orderDate": "2019-03-17T17:39:00",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "priceCurrency": "USD",
+      "acceptedOffer": [
+        { "@id": "#offer-1" },
+        { "@id": "#offer-2" },
+        { "@id": "#offer-3" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Table", "value": "12" },
+        { "@type": "PropertyValue", "name": "Server", "value": "Veronique" },
+        { "@type": "PropertyValue", "name": "Subtotal", "unitText": "USD", "value": "30.60" },
+        { "@type": "PropertyValue", "name": "Discount (10%)", "unitText": "USD", "value": "-3.40" },
+        { "@type": "PropertyValue", "name": "Service Charge", "unitText": "USD", "value": "6.12" }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "12.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 2, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-1", "@type": "MenuItem", "name": "Vanilla Bean" },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "8.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-2" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-2", "@type": "MenuItem", "name": "Classic Burger 4oz" },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "14.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-3" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-3", "@type": "MenuItem", "name": "Route 66 Burger" }
+  ]
+}

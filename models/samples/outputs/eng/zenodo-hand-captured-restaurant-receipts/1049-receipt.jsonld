@@ -1,0 +1,101 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Daily Grill",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "2501 Colorado Ave",
+        "addressLocality": "Santa Monica",
+        "addressRegion": "CA",
+        "postalCode": "90404"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderNumber": "20027",
+      "orderDate": "2018-11-01T19:30:00",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "priceCurrency": "USD",
+      "acceptedOffer": [
+        { "@id": "#offer-1" },
+        { "@id": "#offer-2" },
+        { "@id": "#offer-3" },
+        { "@id": "#offer-4" },
+        { "@id": "#offer-5" },
+        { "@id": "#offer-6" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Server", "value": "Dana" },
+        { "@type": "PropertyValue", "name": "Guests", "value": 2 },
+        { "@type": "PropertyValue", "name": "Table", "value": "54" },
+        { "@type": "PropertyValue", "name": "Tax", "unitText": "USD", "value": "8.50" },
+        { "@type": "PropertyValue", "name": "Total", "unitText": "USD", "value": "91.45" }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "3.85",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-1", "@type": "MenuItem", "name": "Coke" },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "21.95",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-2" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-2", "@type": "MenuItem", "name": "Short Rib" },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "3.65",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-3" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-3", "@type": "MenuItem", "name": "Diet Coke" },
+    {
+      "@id": "#offer-4",
+      "@type": "Offer",
+      "price": "11.95",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-4" },
+      "seller": { "#id": "#merchant" }
+    },
+    { "@id": "#item-4", "@type": "MenuItem", "name": "Crispy Naked Wings" },
+    {
+      "@id": "#offer-5",
+      "@type": "Offer",
+      "price": "35.75",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-5" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-5", "@type": "MenuItem", "name": "Rib Eye Steak" },
+    {
+      "@id": "#offer-6",
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-6" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-6", "@type": "MenuItem", "name": "Broccoli" }
+  ]
+}
