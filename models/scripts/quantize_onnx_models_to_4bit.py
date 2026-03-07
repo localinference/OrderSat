@@ -9,6 +9,7 @@ import shutil
 from dataclasses import dataclass
 from typing import Any
 
+import numpy as np
 import onnx
 import onnxruntime as ort
 
@@ -295,17 +296,99 @@ def quantize_with_bnb4(args: argparse.Namespace, paths: QuantizationPaths) -> di
     }
 
 
-def validate_quantized_model(model_path: pathlib.Path) -> dict[str, Any]:
+def build_validation_cases(source_config: dict[str, Any]) -> list[dict[str, int | str]]:
+    limits = source_config.get("limits", {})
+    max_source_length = int(limits.get("maxInputLength", 16))
+    max_target_length = int(limits.get("maxDecoderLength", 8))
+    candidates = [
+        {
+            "name": "example",
+            "source_length": min(max_source_length, 16),
+            "target_length": min(max_target_length, 8),
+        },
+        {
+            "name": "max_source_single_decoder",
+            "source_length": max_source_length,
+            "target_length": 1,
+        },
+        {
+            "name": "max_lengths",
+            "source_length": max_source_length,
+            "target_length": max_target_length,
+        },
+    ]
+
+    seen: set[tuple[int, int]] = set()
+    cases: list[dict[str, int | str]] = []
+
+    for candidate in candidates:
+        key = (candidate["source_length"], candidate["target_length"])
+        if key in seen:
+            continue
+        seen.add(key)
+        cases.append(candidate)
+
+    return cases
+
+
+def validate_quantized_model(model_path: pathlib.Path, source_config: dict[str, Any]) -> dict[str, Any]:
     model = onnx.load(str(model_path))
     onnx.checker.check_model(model)
     session = ort.InferenceSession(
         str(model_path),
         providers=["CPUExecutionProvider"],
     )
+    input_names = source_config.get(
+        "inputNames",
+        ["input_ids", "attention_mask", "decoder_input_ids"],
+    )
+    output_names = source_config.get("outputNames", ["logits"])
+    token_ids = source_config.get("tokenIds", {})
+    bos_id = int(token_ids.get("bos", 1))
+    vocab_size = int(source_config.get("model", {}).get("vocabSize", 0))
+    validation_cases: list[dict[str, Any]] = []
+
+    for case in build_validation_cases(source_config):
+        source_length = int(case["source_length"])
+        target_length = int(case["target_length"])
+        ort_inputs = {
+            input_names[0]: np.ones((1, source_length), dtype=np.int64),
+            input_names[1]: np.ones((1, source_length), dtype=np.int64),
+            input_names[2]: np.full((1, target_length), bos_id, dtype=np.int64),
+        }
+        outputs = session.run(output_names, ort_inputs)
+        logits = outputs[0]
+
+        expected_shape = (1, target_length)
+        actual_prefix_shape = tuple(logits.shape[:2])
+        if actual_prefix_shape != expected_shape:
+            raise SystemExit(
+                f"Quantized model output shape mismatch for case '{case['name']}': "
+                f"expected prefix {expected_shape}, got {actual_prefix_shape}"
+            )
+        if vocab_size and logits.shape[-1] != vocab_size:
+            raise SystemExit(
+                f"Quantized model vocab axis mismatch for case '{case['name']}': "
+                f"expected {vocab_size}, got {logits.shape[-1]}"
+            )
+
+        validation_cases.append(
+            {
+                "name": case["name"],
+                "inputShape": {
+                    input_names[0]: list(ort_inputs[input_names[0]].shape),
+                    input_names[1]: list(ort_inputs[input_names[1]].shape),
+                    input_names[2]: list(ort_inputs[input_names[2]].shape),
+                },
+                "outputShape": list(logits.shape),
+            }
+        )
+
     return {
         "inputs": [item.name for item in session.get_inputs()],
         "outputs": [item.name for item in session.get_outputs()],
         "providers": session.get_providers(),
+        "cases": validation_cases,
     }
 
 
@@ -344,9 +427,11 @@ def main() -> None:
     paths = resolve_paths(args)
 
     require_file(paths.source_model_path, "Source ONNX model")
+    require_file(paths.source_config_path, "Source config")
     require_file(paths.source_tokenizer_model_path, "Tokenizer model")
     require_file(paths.source_tokenizer_vocab_path, "Tokenizer vocab")
     prepare_output_paths(paths, args.force)
+    source_config = json.loads(paths.source_config_path.read_text(encoding="utf8"))
 
     backend = resolve_backend(args)
     if backend == "int4":
@@ -354,7 +439,7 @@ def main() -> None:
     else:
         quantization = quantize_with_bnb4(args, paths)
 
-    validation = validate_quantized_model(paths.quantized_model_path)
+    validation = validate_quantized_model(paths.quantized_model_path, source_config)
     copy_support_artifacts(paths)
     write_quantized_config(
         paths=paths,
@@ -369,6 +454,8 @@ def main() -> None:
     print(f"Backend: {quantization['backend']}")
     print(f"Inputs: {', '.join(validation['inputs'])}")
     print(f"Outputs: {', '.join(validation['outputs'])}")
+    for case in validation["cases"]:
+        print(f"Validation case {case['name']}: output_shape={case['outputShape']}")
 
 
 if __name__ == "__main__":

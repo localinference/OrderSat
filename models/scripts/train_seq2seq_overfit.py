@@ -321,6 +321,7 @@ class TinySeq2SeqTransformer(nn.Module if nn is not None else object):
             tgt=target_embeddings,
             memory=memory,
             tgt_mask=target_mask,
+            tgt_is_causal=True,
             tgt_key_padding_mask=target_padding_mask,
             memory_key_padding_mask=source_padding_mask,
         )
@@ -356,6 +357,7 @@ class TinySeq2SeqTransformer(nn.Module if nn is not None else object):
             tgt=target_embeddings,
             memory=memory,
             tgt_mask=target_mask,
+            tgt_is_causal=True,
             tgt_key_padding_mask=decoder_input_ids.eq(self.pad_id),
             memory_key_padding_mask=source_padding_mask,
         )

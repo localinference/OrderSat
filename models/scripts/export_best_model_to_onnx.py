@@ -299,13 +299,91 @@ def build_model(module: Any, model_config: dict[str, Any], state_dict: dict[str,
     return model
 
 
-def build_dummy_inputs(model_config: dict[str, Any]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-    source_length = min(model_config["max_source_positions"], 16)
-    target_length = min(model_config["max_target_positions"], 8)
+def build_dummy_inputs(
+    model_config: dict[str, Any],
+    *,
+    source_length: int | None = None,
+    target_length: int | None = None,
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    max_source_positions = model_config["max_source_positions"]
+    max_target_positions = model_config["max_target_positions"]
+
+    source_length = source_length or min(max_source_positions, 16)
+    target_length = target_length or min(max_target_positions, 8)
+
+    if source_length < 1 or source_length > max_source_positions:
+        raise SystemExit(
+            f"Invalid source length {source_length}; expected 1 <= length <= {max_source_positions}"
+        )
+    if target_length < 1 or target_length > max_target_positions:
+        raise SystemExit(
+            f"Invalid target length {target_length}; expected 1 <= length <= {max_target_positions}"
+        )
+
     input_ids = torch.full((1, source_length), 1, dtype=torch.long)
     attention_mask = torch.ones((1, source_length), dtype=torch.long)
     decoder_input_ids = torch.full((1, target_length), model_config["bos_id"], dtype=torch.long)
     return input_ids, attention_mask, decoder_input_ids
+
+
+def build_dynamic_shapes(model_config: dict[str, Any]) -> tuple[dict[int, Any], dict[int, Any], dict[int, Any]]:
+    if not hasattr(torch, "export") or not hasattr(torch.export, "Dim"):
+        raise SystemExit(
+            "Dynamic ONNX export requires torch.export.Dim. Upgrade PyTorch to a version "
+            "that supports the dynamo-based ONNX exporter."
+        )
+
+    batch_size = torch.export.Dim("batch_size", min=1)
+    source_length = torch.export.Dim(
+        "source_length",
+        min=1,
+        max=model_config["max_source_positions"],
+    )
+    target_length = torch.export.Dim(
+        "target_length",
+        min=1,
+        max=model_config["max_target_positions"],
+    )
+
+    return (
+        {0: batch_size, 1: source_length},
+        {0: batch_size, 1: source_length},
+        {0: batch_size, 1: target_length},
+    )
+
+
+def build_validation_cases(model_config: dict[str, Any]) -> list[dict[str, int | str]]:
+    max_source_length = model_config["max_source_positions"]
+    max_target_length = model_config["max_target_positions"]
+    candidates = [
+        {
+            "name": "example",
+            "source_length": min(max_source_length, 16),
+            "target_length": min(max_target_length, 8),
+        },
+        {
+            "name": "max_source_single_decoder",
+            "source_length": max_source_length,
+            "target_length": 1,
+        },
+        {
+            "name": "max_lengths",
+            "source_length": max_source_length,
+            "target_length": max_target_length,
+        },
+    ]
+
+    seen: set[tuple[int, int]] = set()
+    cases: list[dict[str, int | str]] = []
+
+    for candidate in candidates:
+        key = (candidate["source_length"], candidate["target_length"])
+        if key in seen:
+            continue
+        seen.add(key)
+        cases.append(candidate)
+
+    return cases
 
 
 def export_onnx_model(
@@ -316,7 +394,9 @@ def export_onnx_model(
     opset_version: int,
 ) -> None:
     wrapper = OnnxExportWrapper(model)
+    wrapper.eval()
     dummy_inputs = build_dummy_inputs(model_config)
+    dynamic_shapes = build_dynamic_shapes(model_config)
 
     onnx_model_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -333,15 +413,12 @@ def export_onnx_model(
             export_params=True,
             opset_version=opset_version,
             do_constant_folding=True,
-            dynamo=False,
+            dynamo=True,
+            fallback=False,
+            external_data=True,
             input_names=["input_ids", "attention_mask", "decoder_input_ids"],
             output_names=["logits"],
-            dynamic_axes={
-                "input_ids": {0: "batch_size", 1: "source_length"},
-                "attention_mask": {0: "batch_size", 1: "source_length"},
-                "decoder_input_ids": {0: "batch_size", 1: "target_length"},
-                "logits": {0: "batch_size", 1: "target_length"},
-            },
+            dynamic_shapes=dynamic_shapes,
         )
 
 
@@ -354,42 +431,58 @@ def validate_export(
     onnx_model = onnx.load(str(onnx_model_path))
     onnx.checker.check_model(onnx_model)
 
-    input_ids, attention_mask, decoder_input_ids = build_dummy_inputs(model_config)
-
-    with torch.no_grad():
-        torch_logits = model(
-            input_ids=input_ids,
-            attention_mask=attention_mask,
-            decoder_input_ids=decoder_input_ids,
-        ).cpu()
-
     session = ort.InferenceSession(
         str(onnx_model_path),
         providers=["CPUExecutionProvider"],
     )
-    ort_inputs = {
-        "input_ids": input_ids.numpy(),
-        "attention_mask": attention_mask.numpy(),
-        "decoder_input_ids": decoder_input_ids.numpy(),
-    }
-    ort_logits = session.run(["logits"], ort_inputs)[0]
-    ort_tensor = torch.from_numpy(ort_logits)
+    validation_cases: list[dict[str, Any]] = []
 
-    if ort_tensor.shape != torch_logits.shape:
-        raise SystemExit(
-            f"ONNX Runtime output shape mismatch: "
-            f"expected {tuple(torch_logits.shape)}, got {tuple(ort_tensor.shape)}"
+    for case in build_validation_cases(model_config):
+        input_ids, attention_mask, decoder_input_ids = build_dummy_inputs(
+            model_config,
+            source_length=int(case["source_length"]),
+            target_length=int(case["target_length"]),
         )
 
-    max_abs_diff = float(torch.max(torch.abs(torch_logits - ort_tensor)).item())
+        with torch.no_grad():
+            torch_logits = model(
+                input_ids=input_ids,
+                attention_mask=attention_mask,
+                decoder_input_ids=decoder_input_ids,
+            ).cpu()
+
+        ort_inputs = {
+            "input_ids": input_ids.numpy(),
+            "attention_mask": attention_mask.numpy(),
+            "decoder_input_ids": decoder_input_ids.numpy(),
+        }
+        ort_logits = session.run(["logits"], ort_inputs)[0]
+        ort_tensor = torch.from_numpy(ort_logits)
+
+        if ort_tensor.shape != torch_logits.shape:
+            raise SystemExit(
+                f"ONNX Runtime output shape mismatch for case '{case['name']}': "
+                f"expected {tuple(torch_logits.shape)}, got {tuple(ort_tensor.shape)}"
+            )
+
+        validation_cases.append(
+            {
+                "name": case["name"],
+                "inputShape": {
+                    "input_ids": list(input_ids.shape),
+                    "attention_mask": list(attention_mask.shape),
+                    "decoder_input_ids": list(decoder_input_ids.shape),
+                },
+                "outputShape": list(torch_logits.shape),
+                "maxAbsDiff": float(torch.max(torch.abs(torch_logits - ort_tensor)).item()),
+            }
+        )
+
     return {
-        "dummy_input_shape": {
-            "input_ids": list(input_ids.shape),
-            "attention_mask": list(attention_mask.shape),
-            "decoder_input_ids": list(decoder_input_ids.shape),
-        },
-        "output_shape": list(torch_logits.shape),
-        "max_abs_diff": max_abs_diff,
+        "inputs": [item.name for item in session.get_inputs()],
+        "outputs": [item.name for item in session.get_outputs()],
+        "providers": session.get_providers(),
+        "cases": validation_cases,
     }
 
 
@@ -487,7 +580,12 @@ def main() -> None:
     print(f"Tokenizer vocab: {paths.exported_tokenizer_vocab_path}")
     if paths.metrics_path.exists():
         print(f"Metrics: {paths.exported_metrics_path}")
-    print(f"Validation max abs diff: {validation['max_abs_diff']:.8f}")
+    for case in validation["cases"]:
+        print(
+            f"Validation case {case['name']}: "
+            f"output_shape={case['outputShape']} "
+            f"max_abs_diff={case['maxAbsDiff']:.8f}"
+        )
 
 
 if __name__ == "__main__":

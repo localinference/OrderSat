@@ -42,6 +42,74 @@
     ],
     "providers": [
       "CPUExecutionProvider"
+    ],
+    "cases": [
+      {
+        "name": "example",
+        "inputShape": {
+          "input_ids": [
+            1,
+            16
+          ],
+          "attention_mask": [
+            1,
+            16
+          ],
+          "decoder_input_ids": [
+            1,
+            8
+          ]
+        },
+        "outputShape": [
+          1,
+          8,
+          4329
+        ]
+      },
+      {
+        "name": "max_source_single_decoder",
+        "inputShape": {
+          "input_ids": [
+            1,
+            256
+          ],
+          "attention_mask": [
+            1,
+            256
+          ],
+          "decoder_input_ids": [
+            1,
+            1
+          ]
+        },
+        "outputShape": [
+          1,
+          1,
+          4329
+        ]
+      },
+      {
+        "name": "max_lengths",
+        "inputShape": {
+          "input_ids": [
+            1,
+            256
+          ],
+          "attention_mask": [
+            1,
+            256
+          ],
+          "decoder_input_ids": [
+            1,
+            513
+          ]
+        },
+        "outputShape": [
+          1,
+          513,
+          4329
+        ]
+      }
     ]
   },
   "quantization": {
