@@ -1,1 +1,1 @@
-export { createInferenceSession, createTokenProcessor } from './Model/class.js'
+export { createInferenceSession, createTokenProcessor } from './models/index.js'

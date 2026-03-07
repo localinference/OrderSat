@@ -20,10 +20,17 @@ declare module '@agnai/sentencepiece-js' {
 
   export interface SentencePieceProcessorBinding {
     Load(model: SentencePieceStringViewHandle): SentencePieceStatus
-    EncodeAsIds(text: SentencePieceStringViewHandle): SentencePieceVector<number>
-    EncodeAsPieces(text: SentencePieceStringViewHandle): SentencePieceVector<string>
+    EncodeAsIds(
+      text: SentencePieceStringViewHandle
+    ): SentencePieceVector<number>
+    EncodeAsPieces(
+      text: SentencePieceStringViewHandle
+    ): SentencePieceVector<string>
     DecodeIds(ids: SentencePieceVector<number>): string
-    LoadVocabulary(vocab: SentencePieceStringViewHandle, threshold: number): SentencePieceStatus
+    LoadVocabulary(
+      vocab: SentencePieceStringViewHandle,
+      threshold: number
+    ): SentencePieceStatus
   }
 
   export interface SentencePieceModule {
