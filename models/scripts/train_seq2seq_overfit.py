@@ -27,7 +27,7 @@ DEFAULT_TRAIN_FILE = "train.jsonl"
 DEFAULT_VALIDATION_FILE = "validation.jsonl"
 DEFAULT_VOCAB_FILE = "tokenizer.vocab"
 DEFAULT_BATCH_SIZE = 1
-DEFAULT_EPOCHS = 200
+DEFAULT_EPOCHS = 40
 DEFAULT_LEARNING_RATE = 3e-4
 DEFAULT_WEIGHT_DECAY = 1e-4
 DEFAULT_D_MODEL = 128
@@ -43,6 +43,10 @@ DEFAULT_LOG_EVERY = 10
 DEFAULT_EXACT_MATCH_EVERY = 0
 DEFAULT_SEED = 7
 DEFAULT_GRAD_CLIP = 1.0
+DEFAULT_MAX_INPUT_LENGTH = 256
+DEFAULT_MAX_LABEL_LENGTH = 512
+DEFAULT_EARLY_STOPPING_PATIENCE = 8
+DEFAULT_EARLY_STOPPING_MIN_DELTA = 1e-4
 
 
 @dataclass(frozen=True)
@@ -50,6 +54,14 @@ class SplitPaths:
     train_path: pathlib.Path
     validation_path: pathlib.Path
     vocab_path: pathlib.Path
+
+
+@dataclass(frozen=True)
+class EffectiveSequenceLengths:
+    max_input_length: int
+    max_label_length: int
+    max_source_positions: int
+    max_target_positions: int
 
 
 class TokenizedJsonlDataset(Dataset):
@@ -498,14 +510,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--max-input-length",
         type=int,
-        default=None,
-        help="Optional input truncation length.",
+        default=DEFAULT_MAX_INPUT_LENGTH,
+        help=f"Input truncation length (default: {DEFAULT_MAX_INPUT_LENGTH})",
     )
     parser.add_argument(
         "--max-label-length",
         type=int,
-        default=None,
-        help="Optional label truncation length before appending EOS.",
+        default=DEFAULT_MAX_LABEL_LENGTH,
+        help=(
+            "Label truncation length before appending EOS "
+            f"(default: {DEFAULT_MAX_LABEL_LENGTH})"
+        ),
     )
     parser.add_argument(
         "--max-generation-length",
@@ -544,6 +559,24 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=DEFAULT_SEED,
         help=f"Random seed (default: {DEFAULT_SEED})",
+    )
+    parser.add_argument(
+        "--early-stopping-patience",
+        type=int,
+        default=DEFAULT_EARLY_STOPPING_PATIENCE,
+        help=(
+            "Stop when validation loss does not improve for this many epochs "
+            f"(default: {DEFAULT_EARLY_STOPPING_PATIENCE})"
+        ),
+    )
+    parser.add_argument(
+        "--early-stopping-min-delta",
+        type=float,
+        default=DEFAULT_EARLY_STOPPING_MIN_DELTA,
+        help=(
+            "Minimum validation loss improvement to reset patience "
+            f"(default: {DEFAULT_EARLY_STOPPING_MIN_DELTA})"
+        ),
     )
     parser.add_argument(
         "--save-dir",
@@ -604,6 +637,10 @@ def validate_args(args: argparse.Namespace) -> None:
         raise SystemExit("--exact-match-every must be zero or greater")
     if args.grad_clip <= 0:
         raise SystemExit("--grad-clip must be greater than zero")
+    if args.early_stopping_patience < 1:
+        raise SystemExit("--early-stopping-patience must be a positive integer")
+    if args.early_stopping_min_delta < 0:
+        raise SystemExit("--early-stopping-min-delta must be zero or greater")
 
 
 def resolve_paths(args: argparse.Namespace) -> SplitPaths:
@@ -660,6 +697,37 @@ def set_seed(seed: int) -> None:
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+
+
+def resolve_effective_sequence_lengths(
+    *,
+    train_dataset: TokenizedJsonlDataset,
+    validation_dataset: TokenizedJsonlDataset,
+    max_input_length: int,
+    max_label_length: int,
+) -> EffectiveSequenceLengths:
+    observed_max_input_length = max(
+        max(len(record["input_ids"]) for record in train_dataset.records),
+        max(len(record["input_ids"]) for record in validation_dataset.records),
+    )
+    observed_max_label_length = max(
+        max(len(record["labels"]) for record in train_dataset.records),
+        max(len(record["labels"]) for record in validation_dataset.records),
+    )
+
+    effective_input_length = min(observed_max_input_length, max_input_length)
+    effective_label_length = min(observed_max_label_length, max_label_length)
+
+    return EffectiveSequenceLengths(
+        max_input_length=effective_input_length,
+        max_label_length=effective_label_length,
+        max_source_positions=effective_input_length,
+        max_target_positions=effective_label_length + 1,
+    )
+
+
+def count_parameters(model: TinySeq2SeqTransformer) -> int:
+    return sum(parameter.numel() for parameter in model.parameters())
 
 
 def greedy_generate(
@@ -865,22 +933,20 @@ def main() -> None:
         vocab_size=vocab_size,
     )
 
-    max_source_positions = max(
-        max(len(record["input_ids"]) for record in train_dataset.records),
-        max(len(record["input_ids"]) for record in validation_dataset.records),
+    sequence_lengths = resolve_effective_sequence_lengths(
+        train_dataset=train_dataset,
+        validation_dataset=validation_dataset,
+        max_input_length=args.max_input_length,
+        max_label_length=args.max_label_length,
     )
-    max_target_positions = max(
-        max(len(record["labels"]) for record in train_dataset.records),
-        max(len(record["labels"]) for record in validation_dataset.records),
-    ) + 1
 
     collator = Seq2SeqCollator(
         pad_id=pad_id,
         bos_id=args.bos_id,
         eos_id=args.eos_id,
         label_pad_id=args.label_pad_id,
-        max_input_length=args.max_input_length,
-        max_label_length=args.max_label_length,
+        max_input_length=sequence_lengths.max_input_length,
+        max_label_length=sequence_lengths.max_label_length,
     )
 
     train_loader = DataLoader(
@@ -914,8 +980,8 @@ def main() -> None:
         num_decoder_layers=args.num_decoder_layers,
         ffn_dim=args.ffn_dim,
         dropout=args.dropout,
-        max_source_positions=max_source_positions,
-        max_target_positions=max_target_positions,
+        max_source_positions=sequence_lengths.max_source_positions,
+        max_target_positions=sequence_lengths.max_target_positions,
     ).to(device)
 
     optimizer = torch.optim.AdamW(
@@ -925,11 +991,13 @@ def main() -> None:
     )
 
     if args.max_generation_length is None:
-        max_generation_length = max_target_positions
+        max_generation_length = sequence_lengths.max_target_positions
     else:
         max_generation_length = args.max_generation_length
 
     best_metrics: dict | None = None
+    best_validation_loss: float | None = None
+    epochs_without_improvement = 0
 
     print(f"Language: {args.language}")
     print(f"Train split: {split_paths.train_path}")
@@ -939,8 +1007,13 @@ def main() -> None:
     print(f"Pad id: {pad_id}")
     print(f"Train samples: {len(train_dataset)}")
     print(f"Validation samples: {len(validation_dataset)}")
-    print(f"Max source positions: {max_source_positions}")
-    print(f"Max target positions: {max_target_positions}")
+    print(f"Observed max input length: {max(len(record['input_ids']) for record in train_dataset.records + validation_dataset.records)}")
+    print(f"Observed max label length: {max(len(record['labels']) for record in train_dataset.records + validation_dataset.records)}")
+    print(f"Effective max input length: {sequence_lengths.max_input_length}")
+    print(f"Effective max label length: {sequence_lengths.max_label_length}")
+    print(f"Max source positions: {sequence_lengths.max_source_positions}")
+    print(f"Max target positions: {sequence_lengths.max_target_positions}")
+    print(f"Parameter count: {count_parameters(model)}")
     print(f"Device: {device}")
     print(f"Save dir: {save_dir}")
 
@@ -994,6 +1067,17 @@ def main() -> None:
             "validation_exact_match": validation_exact_match,
         }
 
+        improved_validation = (
+            best_validation_loss is None
+            or validation_loss < best_validation_loss - args.early_stopping_min_delta
+        )
+
+        if improved_validation:
+            best_validation_loss = validation_loss
+            epochs_without_improvement = 0
+        else:
+            epochs_without_improvement += 1
+
         if best_metrics is None:
             best_metrics = metrics
             save_artifacts(
@@ -1002,23 +1086,7 @@ def main() -> None:
                 model=model,
                 optimizer=optimizer,
             )
-        elif train_exact_match is None:
-            if train_loss < best_metrics["train_loss"]:
-                best_metrics = metrics
-                save_artifacts(
-                    save_dir=save_dir,
-                    metrics=metrics,
-                    model=model,
-                    optimizer=optimizer,
-                )
-        elif (
-            best_metrics["train_exact_match"] is None
-            or train_exact_match > best_metrics["train_exact_match"]
-            or (
-                train_exact_match == best_metrics["train_exact_match"]
-                and train_loss < best_metrics["train_loss"]
-            )
-        ):
+        elif improved_validation:
             best_metrics = metrics
             save_artifacts(
                 save_dir=save_dir,
@@ -1044,6 +1112,14 @@ def main() -> None:
 
         if train_exact_match is not None and train_exact_match >= 1.0:
             print(f"Stopping early at epoch {epoch}: train_exact_match reached 1.000")
+            break
+
+        if epochs_without_improvement >= args.early_stopping_patience:
+            print(
+                "Stopping early at epoch "
+                f"{epoch}: validation loss did not improve for "
+                f"{args.early_stopping_patience} epochs"
+            )
             break
 
     if best_metrics is not None:

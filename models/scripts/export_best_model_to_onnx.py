@@ -6,6 +6,7 @@ import importlib.util
 import json
 import pathlib
 import shutil
+import sys
 import warnings
 from dataclasses import dataclass
 from typing import Any
@@ -201,10 +202,12 @@ def require_file(file_path: pathlib.Path, label: str) -> None:
 
 def load_training_module() -> Any:
     script_path = pathlib.Path(__file__).resolve().with_name("train_seq2seq_overfit.py")
-    spec = importlib.util.spec_from_file_location("train_seq2seq_overfit", script_path)
+    module_name = "train_seq2seq_overfit"
+    spec = importlib.util.spec_from_file_location(module_name, script_path)
     if spec is None or spec.loader is None:
         raise SystemExit(f"Failed to load training module from {script_path}")
     module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
     spec.loader.exec_module(module)
     return module
 
