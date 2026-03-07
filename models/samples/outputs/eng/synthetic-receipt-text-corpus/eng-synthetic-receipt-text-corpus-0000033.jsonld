@@ -1,0 +1,82 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Organization",
+      "name": "Summit Cleaners",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "6302 Market St",
+        "addressLocality": "Boston",
+        "addressRegion": "CO",
+        "postalCode": "34616"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderNumber": "R-0000033",
+      "orderDate": "2023-06-12T21:53:41",
+      "priceCurrency": "GBP",
+      "acceptedOffer": [
+        { "@id": "#offer-1" },
+        { "@id": "#offer-2" },
+        { "@id": "#offer-3" },
+        { "@id": "#offer-4" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Cashier", "value": "Alex" },
+        { "@type": "PropertyValue", "name": "Payment Method", "value": "Debit" },
+        { "@type": "PropertyValue", "name": "Subtotal", "unitText": "GBP", "value": "83.87" },
+        { "@type": "PropertyValue", "name": "Discount", "unitText": "GBP", "value": "0.00" },
+        { "@type": "PropertyValue", "name": "Tax", "unitText": "GBP", "value": "7.63" },
+        { "@type": "PropertyValue", "name": "Tip", "unitText": "GBP", "value": "0.00" },
+        { "@type": "PropertyValue", "name": "Total", "unitText": "GBP", "value": "91.50" }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "16.78",
+      "priceCurrency": "GBP",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-1", "@type": "Product", "name": "Notebook Set", "sku": "SKU-1664" },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "37.48",
+      "priceCurrency": "GBP",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 4, "unitText": "item" },
+      "priceSpecification": { "@type": "UnitPriceSpecification", "price": "9.37", "priceCurrency": "GBP", "referenceQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" } },
+      "itemOffered": { "@id": "#item-2" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-2", "@type": "Product", "name": "Cleaning Spray", "sku": "SKU-3275" },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "12.53",
+      "priceCurrency": "GBP",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-3" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-3", "@type": "Product", "name": "Desk Lamp", "sku": "SKU-2161" },
+    {
+      "@id": "#offer-4",
+      "@type": "Offer",
+      "price": "17.08",
+      "priceCurrency": "GBP",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 4, "unitText": "item" },
+      "priceSpecification": { "@type": "UnitPriceSpecification", "price": "4.27", "priceCurrency": "GBP", "referenceQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" } },
+      "itemOffered": { "@id": "#item-4" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-4", "@type": "Product", "name": "AA Batteries", "sku": "SKU-8078" }
+  ]
+}

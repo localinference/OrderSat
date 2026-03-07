@@ -1,0 +1,35 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Organization",
+      "name": "Harbor Supply"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderNumber": "R-0000034",
+      "orderDate": "2024-12-27T12:58:39",
+      "priceCurrency": "GBP",
+      "paymentMethod": "https://schema.org/Mastercard",
+      "acceptedOffer": [
+        { "@id": "#offer-1" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Total", "unitText": "GBP", "value": "21.72" }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "20.16",
+      "priceCurrency": "GBP",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-1", "@type": "Product", "name": "Sparkling Water", "sku": "SKU-1791" }
+  ]
+}
