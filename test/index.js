@@ -1,5 +1,5 @@
 import * as ort from 'onnxruntime-web'
-import { cleanText } from '@agnai/sentencepiece-js'
+import { cleanText } from '@sctg/sentencepiece-js'
 import { createInferenceSession, createTokenProcessor } from '../dist/index.js'
 
 const MAX_INPUT_LENGTH = 256

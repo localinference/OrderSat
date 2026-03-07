@@ -16,22 +16,30 @@ const [model, modelData, tokenizerModel] = await Promise.all([
   readFile(tokenizerModelPath),
 ])
 
+const modelBase64Url = JSON.stringify(
+  toBase64UrlString(await toCompressed(model))
+)
+const modelDataBase64Url = JSON.stringify(
+  toBase64UrlString(await toCompressed(modelData))
+)
+const tokenizerModelBase64 = JSON.stringify(tokenizerModel.toString('base64'))
+
 const ts = js`
 import * as ort from 'onnxruntime-web'
-import { SentencePieceProcessor } from '@agnai/sentencepiece-js'
+import { SentencePieceProcessor } from '@sctg/sentencepiece-js'
 import { fromCompressed, fromBase64UrlString } from '@z-base/bytecodec'
 
 export async function createInferenceSession(): Promise<ort.InferenceSession> {
   return ort.InferenceSession.create(
     await fromCompressed(
-      fromBase64UrlString(${JSON.stringify(toBase64UrlString(await toCompressed(model)))})
+      fromBase64UrlString(${modelBase64Url})
     ),
     {
       externalData: [
         {
           path: 'model.int4.onnx.data',
           data: await fromCompressed(
-            fromBase64UrlString(${JSON.stringify(toBase64UrlString(await toCompressed(modelData)))})
+            fromBase64UrlString(${modelDataBase64Url})
           ),
         },
       ],
@@ -41,18 +49,7 @@ export async function createInferenceSession(): Promise<ort.InferenceSession> {
 
 export async function createTokenProcessor(): Promise<SentencePieceProcessor> {
   const tokenProcessor = new SentencePieceProcessor()
-
-  const tokenizerModelBytes = await fromCompressed(
-    fromBase64UrlString(${JSON.stringify(toBase64UrlString(await toCompressed(tokenizerModel)))})
-  )
-
-  const tokenizerModelBlobBytes = Uint8Array.from(tokenizerModelBytes)
-
-  const tokenizerModelUrl = URL.createObjectURL(
-    new Blob([tokenizerModelBlobBytes], { type: 'application/octet-stream' })
-  )
-
-  await tokenProcessor.load(tokenizerModelUrl)
+  await tokenProcessor.loadFromB64StringModel(${tokenizerModelBase64})
   return tokenProcessor
 }
 `.trimStart()
