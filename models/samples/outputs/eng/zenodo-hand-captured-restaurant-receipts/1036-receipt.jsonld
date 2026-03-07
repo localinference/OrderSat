@@ -1,0 +1,74 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Pappadeaux Seafood Kitchen",
+      "url": "https://www.pappadeaux.com",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Copeland Rd",
+        "addressLocality": "Arlington",
+        "addressRegion": "TX",
+        "postalCode": "76011"
+      },
+      "telephone": "(817) 543-0544"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderDate": "2017-11-18T12:11:00",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "priceCurrency": "USD",
+      "acceptedOffer": [
+        { "@id": "#offer-1" },
+        { "@id": "#offer-2" },
+        { "@id": "#offer-3" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Table", "value": "72" },
+        { "@type": "PropertyValue", "name": "Server", "value": "2" },
+        { "@type": "PropertyValue", "name": "Service Type", "value": "DINE IN" },
+        { "@type": "PropertyValue", "name": "Sub-total", "unitText": "USD", "value": "48.85" },
+        { "@type": "PropertyValue", "name": "Sub-total with tax", "unitText": "USD", "value": "52.76" },
+        { "@type": "PropertyValue", "name": "Tip suggestion 15%", "unitText": "USD", "value": "9.50" },
+        { "@type": "PropertyValue", "name": "Tip suggestion 18%", "unitText": "USD", "value": "10.55" },
+        { "@type": "PropertyValue", "name": "Tip suggestion 20%", "value": "option shown" },
+        { "@type": "PropertyValue", "name": "Tip included", "value": false },
+        { "@type": "PropertyValue", "name": "Card payment", "value": "e-Gift card presented for validation" }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "15.95",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-1", "@type": "MenuItem", "name": "Lump Crab & Spinach Dip" },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "18.95",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-2" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-2", "@type": "MenuItem", "name": "Cajun Combo" },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "13.95",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-3" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-3", "@type": "MenuItem", "name": "Lunch Shrimp & Andouille" }
+  ]
+}

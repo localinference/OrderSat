@@ -1,0 +1,58 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Cafe Parisien Larchmont LLC",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "242 N LARCHMONT BLVD",
+        "addressLocality": "LOS ANGELES",
+        "addressRegion": "CA",
+        "postalCode": "90004",
+        "telephone": "(310) 815-8222"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderDate": "2019-01-24T10:29:00",
+      "priceCurrency": "USD",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "orderNumber": "YWGS",
+      "acceptedOffer": [
+        { "@id": "#offer-1" },
+        { "@id": "#offer-2" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Server", "value": "Kimberly L." },
+        { "@type": "PropertyValue", "name": "Service", "value": "Dine In" },
+        { "@type": "PropertyValue", "name": "Table", "value": "36" },
+        { "@type": "PropertyValue", "name": "Subtotal", "unitText": "USD", "value": "8.75" },
+        { "@type": "PropertyValue", "name": "Sales Tax", "unitText": "USD", "value": "0.83" },
+        { "@type": "PropertyValue", "name": "Total", "unitText": "USD", "value": "9.58" }
+      ],
+      "customerCopy": true
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "4.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" }
+    },
+    { "@id": "#item-1", "@type": "MenuItem", "name": "Croissant aux Raisins" },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "4.75",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-2" }
+    },
+    { "@id": "#item-2", "@type": "MenuItem", "name": "Cappuccino" }
+  ]
+}

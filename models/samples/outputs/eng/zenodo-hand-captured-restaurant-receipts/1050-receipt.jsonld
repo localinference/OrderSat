@@ -1,0 +1,98 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "HOLLYWOOD CAFE",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Hollywood"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderDate": "2017-09-08",
+      "priceCurrency": "USD",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "acceptedOffer": [
+        { "@id": "#offer-1" },
+        { "@id": "#offer-2" },
+        { "@id": "#offer-3" },
+        { "@id": "#offer-4" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Check", "value": "332114" },
+        { "@type": "PropertyValue", "name": "Table", "value": "42" },
+        { "@type": "PropertyValue", "name": "Guests", "value": "2" },
+        { "@type": "PropertyValue", "name": "Person", "value": "10" },
+        { "@type": "PropertyValue", "name": "Server", "value": "346" },
+        { "@type": "PropertyValue", "name": "Service Mode", "value": "Counter-Eat In" },
+        { "@type": "PropertyValue", "name": "Subtotal", "unitText": "USD", "value": "5.20" },
+        { "@type": "PropertyValue", "name": "Food Tax", "unitText": "USD", "value": "1.74" },
+        { "@type": "PropertyValue", "name": "Liquor Tax", "unitText": "USD", "value": "0.00" },
+        { "@type": "PropertyValue", "name": "Other Taxes", "unitText": "USD", "value": "0.00" },
+        { "@type": "PropertyValue", "name": "Order Total", "unitText": "USD", "value": "26.96" },
+        { "@type": "PropertyValue", "name": "OrderTime", "value": "17:04" }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "10.49",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" },
+      "seller": { "@id": "#merchant" }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "MenuItem",
+      "name": "SODA"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "1.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-2" },
+      "seller": { "@id": "#merchant" }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "MenuItem",
+      "name": "CHEESE STEAK"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "0.75",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-3" },
+      "seller": { "@id": "#merchant" }
+    },
+    {
+      "@id": "#item-3",
+      "@type": "MenuItem",
+      "name": "AMERCAN CHS"
+    },
+    {
+      "@id": "#offer-4",
+      "@type": "Offer",
+      "price": "16.90",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-4" },
+      "seller": { "@id": "#merchant" }
+    },
+    {
+      "@id": "#item-4",
+      "@type": "MenuItem",
+      "name": "FRIED ONION"
+    }
+  ]
+}

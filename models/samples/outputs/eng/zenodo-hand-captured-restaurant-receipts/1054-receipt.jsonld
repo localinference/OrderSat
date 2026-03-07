@@ -1,0 +1,93 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "BIG JO'S",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "1955 BROADWAY",
+        "addressLocality": "SANTA MONICA",
+        "addressRegion": "CA",
+        "postalCode": "90404",
+        "telephone": "(310) 828-3191"
+      },
+      "url": "https://www.bigjosburgers.com"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderDate": "2018-01-25T11:47:00",
+      "orderNumber": "195",
+      "priceCurrency": "USD",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "acceptedOffer": [
+        { "@id": "#offer-1" },
+        { "@id": "#offer-2" },
+        { "@id": "#offer-3" },
+        { "@id": "#offer-4" },
+        { "@id": "#offer-5" }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "priceCurrency": "USD",
+        "price": "56.50"
+      },
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Cash Tendered", "unitText": "USD", "value": "60.00" },
+        { "@type": "PropertyValue", "name": "Change", "unitText": "USD", "value": "3.50" },
+        { "@type": "PropertyValue", "name": "Subtotal", "unitText": "USD", "value": "51.25" },
+        { "@type": "PropertyValue", "name": "Sales Tax", "unitText": "USD", "value": "5.25" },
+        { "@type": "PropertyValue", "name": "Order Note", "value": "Chicken, French Fries x2, Turkey Burger, Combo, French Fries" }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "5.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 2, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" },
+      "name": "French Fries"
+    },
+    { "@id": "#item-1", "@type": "MenuItem", "name": "French Fries" },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "8.85",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-2" }
+    },
+    { "@id": "#item-2", "@type": "MenuItem", "name": "Turkey Burger" },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "15.70",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 2, "unitText": "combo" },
+      "itemOffered": { "@id": "#item-3" }
+    },
+    { "@id": "#item-3", "@type": "MenuItem", "name": "Combo (with grilled onion)" },
+    {
+      "@id": "#offer-4",
+      "@type": "Offer",
+      "price": "4.35",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-4" }
+    },
+    { "@id": "#item-4", "@type": "MenuItem", "name": "Chili Fries" },
+    {
+      "@id": "#offer-5",
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-5" }
+    },
+    { "@id": "#item-5", "@type": "MenuItem", "name": "Regular Price, Grilled Onion Surcharge 0.75" }
+  ]
+}

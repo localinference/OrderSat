@@ -1,0 +1,57 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "UM'S RESTAURANT",
+      "paymentAccepted": "Cash"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderMode": "WalkIn",
+      "priceCurrency": "USD",
+      "paymentMethod": "https://schema.org/Cash",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "acceptedOffer": [
+        { "@id": "#offer-1" },
+        { "@id": "#offer-2" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Food Tax", "unitText": "USD", "value": "1.25" },
+        { "@type": "PropertyValue", "name": "Tendered", "unitText": "USD", "value": "22.03" },
+        { "@type": "PropertyValue", "name": "Received", "value": "2203" }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "20.78",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" },
+      "seller": { "@id": "#merchant" }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Fond Subsal"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-2" },
+      "seller": { "@id": "#merchant" }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Bow Sugtolal"
+    }
+  ]
+}

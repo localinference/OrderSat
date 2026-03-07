@@ -1,0 +1,82 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Anjappar",
+      "url": "https://www.anjappar-la.com",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "18128 Pioneer Blvd",
+        "addressLocality": "Artesia",
+        "addressRegion": "CA",
+        "postalCode": "90701"
+      },
+      "telephone": "(562) 991-1801"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderNumber": "004-864",
+      "orderDate": "2016-??",
+      "priceCurrency": "USD",
+      "acceptedOffer": [
+        { "@id": "#offer-1" },
+        { "@id": "#offer-2" },
+        { "@id": "#offer-3" },
+        { "@id": "#offer-4" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Ticket", "value": "35" },
+        { "@type": "PropertyValue", "name": "Device", "value": "1" },
+        { "@type": "PropertyValue", "name": "Server", "value": "Deepthi" },
+        { "@type": "PropertyValue", "name": "Table", "value": "16" },
+        { "@type": "PropertyValue", "name": "Seat", "value": "1" },
+        { "@type": "PropertyValue", "name": "Service Type", "value": "Dine In" },
+        { "@type": "PropertyValue", "name": "Dine In", "value": true }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "3.50",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-1", "@type": "MenuItem", "name": "Ghee Dosa" },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "14.95",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-2" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-2", "@type": "MenuItem", "name": "Anjappar Mutton Meals" },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "6.95",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-3" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-3", "@type": "MenuItem", "name": "Kaldosa" },
+    {
+      "@id": "#offer-4",
+      "@type": "Offer",
+      "price": "6.95",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-4" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-4", "@type": "MenuItem", "name": "Plain Dosa" }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Tay Ho Oakland",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Oakland, CA"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderNumber": "142750",
+      "orderDate": "2019-02-19T13:20:00",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "priceCurrency": "USD",
+      "acceptedOffer": [
+        { "@id": "#offer-1" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Table", "value": "7" },
+        { "@type": "PropertyValue", "name": "Subtotal", "unitText": "USD", "value": "12.95" },
+        { "@type": "PropertyValue", "name": "Total", "unitText": "USD", "value": "14.18" },
+        { "@type": "PropertyValue", "name": "Tax", "unitText": "USD", "value": "1.23" },
+        { "@type": "PropertyValue", "name": "Order balance due", "unitText": "USD", "value": "14.18" },
+        { "@type": "PropertyValue", "name": "Tip suggestion 8%", "unitText": "USD", "value": "2.33" },
+        { "@type": "PropertyValue", "name": "Tip suggestion 10%", "unitText": "USD", "value": "2.59" }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "12.95",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-1", "@type": "MenuItem", "name": "Special Combo Pho" }
+  ]
+}

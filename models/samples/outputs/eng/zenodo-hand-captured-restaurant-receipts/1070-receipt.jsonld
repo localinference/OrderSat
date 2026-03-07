@@ -1,0 +1,48 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "W's Hot Wings & Things",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "886 N. Garfield Ave",
+        "addressLocality": "Montebello",
+        "addressRegion": "CA",
+        "postalCode": "90640"
+      },
+      "telephone": "(323) 477-1345"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderDate": "2019-06-28T14:16:34",
+      "priceCurrency": "USD",
+      "acceptedOffer": [
+        { "@id": "#offer-1" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Server", "value": "Jose Seguin" },
+        { "@type": "PropertyValue", "name": "Service Type", "value": "Dine In" },
+        { "@type": "PropertyValue", "name": "Table", "value": "1" },
+        { "@type": "PropertyValue", "name": "Guests", "value": 1 },
+        { "@type": "PropertyValue", "name": "Tax", "unitText": "USD", "value": "0.50" },
+        { "@type": "PropertyValue", "name": "Tip suggestion 10%", "unitText": "USD", "value": "1.00" },
+        { "@type": "PropertyValue", "name": "Tip suggestion 15%", "unitText": "USD", "value": "1.50" },
+        { "@type": "PropertyValue", "name": "Tip suggestion 20%", "unitText": "USD", "value": "2.00" }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "10.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-1", "@type": "MenuItem", "name": "Ribeye Steak Lunch" }
+  ]
+}

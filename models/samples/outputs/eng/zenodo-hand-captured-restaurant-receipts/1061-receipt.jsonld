@@ -1,0 +1,67 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Chili's Grill & Bar Puente Hills #25",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "17588 Castleton",
+        "addressLocality": "City of Industry",
+        "addressRegion": "CA",
+        "postalCode": "91745",
+        "country": "US"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderDate": "2018-09-15T00:00:00",
+      "orderNumber": "12",
+      "priceCurrency": "USD",
+      "acceptedOffer": [
+        { "@id": "#offer-1" },
+        { "@id": "#offer-2" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Server", "value": "Jose S" },
+        { "@type": "PropertyValue", "name": "Guests", "value": 2 },
+        { "@type": "PropertyValue", "name": "Table", "value": "25" },
+        { "@type": "PropertyValue", "name": "Order Type", "value": "Dine In" },
+        { "@type": "PropertyValue", "name": "Subtotal", "unitText": "USD", "value": "24.08" },
+        { "@type": "PropertyValue", "name": "Tax", "unitText": "USD", "value": "2.29" },
+        { "@type": "PropertyValue", "name": "Total", "unitText": "USD", "value": "26.37" },
+        { "@type": "PropertyValue", "name": "Gratuity 15%", "unitText": "USD", "value": "3.95" },
+        { "@type": "PropertyValue", "name": "Gratuity 18%", "unitText": "USD", "value": "4.75" },
+        { "@type": "PropertyValue", "name": "Gratuity 20%", "unitText": "USD", "value": "5.27" },
+        { "@type": "PropertyValue", "name": "Gratuity 22%", "unitText": "USD", "value": "5.80" },
+        { "@type": "PropertyValue", "name": "Cash Tendered", "unitText": "USD", "value": "40.00" }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "priceCurrency": "USD",
+        "price": "26.37"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "12.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" }
+    },
+    { "@id": "#item-1", "@type": "MenuItem", "name": "Triple Dipper" },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "11.89",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-2" }
+    },
+    { "@id": "#item-2", "@type": "MenuItem", "name": "Chicken Waffles" }
+  ]
+}

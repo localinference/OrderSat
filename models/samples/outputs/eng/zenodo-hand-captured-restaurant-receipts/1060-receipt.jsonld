@@ -1,0 +1,71 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Hali Grill & Bar",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "City of Industry",
+        "addressRegion": "CA",
+        "postalCode": "91745"
+      },
+      "addressCountry": "US"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderDate": "2017-12-17T00:00:00",
+      "priceCurrency": "USD",
+      "acceptedOffer": [
+        { "@id": "#offer-1" },
+        { "@id": "#offer-2" },
+        { "@id": "#offer-3" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Server", "value": "Jake" },
+        { "@type": "PropertyValue", "name": "Table", "value": "24/1" },
+        { "@type": "PropertyValue", "name": "Guests", "value": 2 },
+        { "@type": "PropertyValue", "name": "Subtotal", "unitText": "USD", "value": "74.70" },
+        { "@type": "PropertyValue", "name": "Tax", "unitText": "USD", "value": "6.00" },
+        { "@type": "PropertyValue", "name": "Surcharge", "unitText": "USD", "value": "2.80" },
+        { "@type": "PropertyValue", "name": "Surcharge Name", "value": "3.75% Service Charge" },
+        { "@type": "PropertyValue", "name": "Balance Due", "unitText": "USD", "value": "83.50" }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "priceCurrency": "USD",
+        "price": "83.50"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "21.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" }
+    },
+    { "@id": "#item-1", "@type": "MenuItem", "name": "Karma Cab Sauv ied" },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "21.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-2" }
+    },
+    { "@id": "#item-2", "@type": "MenuItem", "name": "Douglass Green Curry Scallops" },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "23.18",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-3" }
+    },
+    { "@id": "#item-3", "@type": "MenuItem", "name": "Piri Piri Chicken" }
+  ]
+}

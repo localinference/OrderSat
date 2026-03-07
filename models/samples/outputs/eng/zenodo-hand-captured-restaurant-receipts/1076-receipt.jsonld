@@ -1,0 +1,30 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Paradise Restaurant",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "8g W. 190th Street",
+        "addressLocality": "Los Angeles",
+        "addressRegion": "CA",
+        "postalCode": "90248",
+        "addressCountry": "US"
+      },
+      "telephone": "310-324-4800"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "priceCurrency": "USD",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Ratuity", "unitText": "USD", "value": "3.60" },
+        { "@type": "PropertyValue", "name": "Total", "unitText": "USD", "value": "25.78" }
+      ]
+    }
+  ]
+}

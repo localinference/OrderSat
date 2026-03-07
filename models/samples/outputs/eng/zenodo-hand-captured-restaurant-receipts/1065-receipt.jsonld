@@ -1,0 +1,70 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Taco Maria",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "3313 Hyland Ave. Ste C21",
+        "addressLocality": "Costa Mesa",
+        "addressRegion": "CA",
+        "postalCode": "92626",
+        "telephone": "(714) 538-8444"
+      },
+      "url": "https://www.tacomaria.com"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderNumber": "118888",
+      "orderDate": "2018-01-23T12:16:00",
+      "priceCurrency": "USD",
+      "acceptedOffer": [
+        { "@id": "#offer-1" },
+        { "@id": "#offer-2" },
+        { "@id": "#offer-3" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Server", "value": "Jesa R" },
+        { "@type": "PropertyValue", "name": "Table", "value": "Bar 7" },
+        { "@type": "PropertyValue", "name": "Service Type", "value": "Counter / Dine In" },
+        { "@type": "PropertyValue", "name": "Subtotal", "unitText": "USD", "value": "42.50" },
+        { "@type": "PropertyValue", "name": "Total Tax", "unitText": "USD", "value": "3.29" },
+        { "@type": "PropertyValue", "name": "Total", "unitText": "USD", "value": "45.79" },
+        { "@type": "PropertyValue", "name": "Suggested Gratuity 18%", "unitText": "USD", "value": "7.65" },
+        { "@type": "PropertyValue", "name": "Suggested Gratuity 20%", "unitText": "USD", "value": "8.50" },
+        { "@type": "PropertyValue", "name": "Suggested Gratuity 22%", "unitText": "USD", "value": "9.35" }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "15.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" }
+    },
+    { "@id": "#item-1", "@type": "MenuItem", "name": "Chicken" },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "18.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-2" }
+    },
+    { "@id": "#item-2", "@type": "MenuItem", "name": "Pescado" },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "9.50",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-3" }
+    },
+    { "@id": "#item-3", "@type": "MenuItem", "name": "Arrachera Solo" }
+  ]
+}

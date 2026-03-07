@@ -1,0 +1,59 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "SmokeBoxBBQ",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "2361 Whitney Ave",
+        "addressLocality": "Hamden",
+        "addressRegion": "CT",
+        "postalCode": "06518"
+      },
+      "telephone": "203 909 6545"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderNumber": "39",
+      "orderDate": "2014-05-22T14:00:48",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "priceCurrency": "USD",
+      "acceptedOffer": [
+        { "@id": "#offer-1" },
+        { "@id": "#offer-2" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Cashier", "value": "1" },
+        { "@type": "PropertyValue", "name": "Guests", "value": 1 },
+        { "@type": "PropertyValue", "name": "Subtotal", "unitText": "USD", "value": "13.50" },
+        { "@type": "PropertyValue", "name": "Total", "unitText": "USD", "value": "14.36" },
+        { "@type": "PropertyValue", "name": "Closed", "value": "2014-05-22T14:02:00" },
+        { "@type": "PropertyValue", "name": "Payment Status", "value": "cash" }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "5.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-1", "@type": "MenuItem", "name": "FXN Diet BIRCH" },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "12.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-2" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-2", "@type": "MenuItem", "name": "Full Box" }
+  ]
+}

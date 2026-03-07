@@ -1,0 +1,49 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "GENERAL POOR’S TAVERN",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "45 MAIN STREET",
+        "addressLocality": "HACKENSACK",
+        "addressRegion": "NJ",
+        "postalCode": "07601",
+        "telephone": "(201)487-5882"
+      }
+  },
+  {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderNumber": "555149",
+      "orderDate": "2016-04-10T12:30:00",
+      "priceCurrency": "USD",
+      "acceptedOffer": [
+        { "@id": "#offer-1" }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "priceCurrency": "USD",
+        "price": "10.70"
+      },
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Guests", "value": 0 },
+        { "@type": "PropertyValue", "name": "Subtotal", "unitText": "USD", "value": "10.00" },
+        { "@type": "PropertyValue", "name": "Tax", "unitText": "USD", "value": "0.70" },
+        { "@type": "PropertyValue", "name": "Amount Due", "unitText": "USD", "value": "10.70" }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "10.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" }
+    },
+    { "@id": "#item-1", "@type": "MenuItem", "name": "Boneless Wings Special" }
+  ]
+}
