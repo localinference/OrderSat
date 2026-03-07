@@ -1,0 +1,105 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "HAMMOCKS TRADING COMPANY",
+      "telephone": "770-395-9592",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "7285 Roswell Road",
+        "addressLocality": "Sandy Springs",
+        "addressRegion": "Georgia",
+        "postalCode": "30328"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": { "@id": "#merchant" },
+      "orderNumber": "202524",
+      "orderDate": "2017-03-10T18:23:00",
+      "priceCurrency": "USD",
+      "acceptedOffer": [
+        { "@id": "#offer-1" },
+        { "@id": "#offer-2" },
+        { "@id": "#offer-3" },
+        { "@id": "#offer-4" },
+        { "@id": "#offer-5" }
+      ],
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Table", "value": "40" },
+        { "@type": "PropertyValue", "name": "Server", "value": "Shannon" },
+        { "@type": "PropertyValue", "name": "Reference", "value": "155091" },
+        { "@type": "PropertyValue", "name": "Subtotal", "unitText": "USD", "value": "47.00" },
+        { "@type": "PropertyValue", "name": "State Tax", "unitText": "USD", "value": "3.29" },
+        { "@type": "PropertyValue", "name": "Total", "unitText": "USD", "value": "50.29" },
+        { "@type": "PropertyValue", "name": "Total Due", "unitText": "USD", "value": "50.29" },
+        { "@type": "PropertyValue", "name": "Promotion", "value": "1/2 Priced Oysters on the Half Shell 4-6 pm daily" }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "2.50",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-1" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-1", "@type": "MenuItem", "name": "Coke" },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "21.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-2" },
+      "seller": { "@id": "#merchant" }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "MenuItem",
+      "name": "Shrimp Entree",
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Included Side", "value": "Mac n Cheese" },
+        { "@type": "PropertyValue", "name": "Included Side", "value": "French Fries" }
+      ]
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-3" },
+      "seller": { "@id": "#merchant" },
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Printed Price", "unitText": "USD", "value": "6.00" },
+        { "@type": "PropertyValue", "name": "Discount", "unitText": "USD", "value": "-6.00" }
+      ]
+    },
+    { "@id": "#item-3", "@type": "MenuItem", "name": "BBQ & Blue Chz chips" },
+    {
+      "@id": "#offer-4",
+      "@type": "Offer",
+      "price": "2.50",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-4" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-4", "@type": "MenuItem", "name": "Sprite" },
+    {
+      "@id": "#offer-5",
+      "@type": "Offer",
+      "price": "21.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": { "@type": "QuantitativeValue", "value": 1, "unitText": "item" },
+      "itemOffered": { "@id": "#item-5" },
+      "seller": { "@id": "#merchant" }
+    },
+    { "@id": "#item-5", "@type": "MenuItem", "name": "Lobster Roll" }
+  ]
+}
