@@ -41,6 +41,10 @@ const DEFAULT_OPTIONS = {
   failOnError: false,
   workers: Math.max(1, Math.min(os.availableParallelism(), 4)),
 }
+const TESSERACT_ARTIFACTS_PATH = path.resolve(
+  process.cwd(),
+  'tesseract-artifacts'
+)
 
 function parseArgs(argv) {
   const parsed = { ...DEFAULT_OPTIONS }
@@ -133,6 +137,7 @@ Options:
 Notes:
   Relative paths are preserved, so downloaded_pdfs/{lang}/... becomes samples/inputs/{lang}/...
   This script uses pdfjs-dist for PDF parsing. OCR fallback for scanned PDFs also needs @napi-rs/canvas or canvas.
+  Tesseract traineddata cache is written under tesseract-artifacts/ at repo root.
 `)
 }
 
@@ -344,7 +349,10 @@ async function getWorkerForLanguage(datasetLanguage, workerCache) {
   }
 
   console.log(`Loading OCR worker for ${datasetLanguage} (${ocrLanguage})`)
-  const worker = await createWorker(ocrLanguage)
+  await fs.mkdir(TESSERACT_ARTIFACTS_PATH, { recursive: true })
+  const worker = await createWorker(ocrLanguage, 1, {
+    cachePath: TESSERACT_ARTIFACTS_PATH,
+  })
   workerCache.set(ocrLanguage, worker)
   return worker
 }

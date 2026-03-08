@@ -22,7 +22,6 @@ const IMAGE_EXTS = new Set([
   '.tiff',
   '.gif',
 ])
-const PDF_EXTS = new Set(['.pdf'])
 const ZIP_EXTS = new Set(['.zip'])
 const SKIP_DIRECTORIES = new Set(['licenses', 'node_modules'])
 const OCR_LANGUAGE_BY_DATASET_LANGUAGE = {
@@ -44,13 +43,16 @@ const OCR_LANGUAGE_BY_DATASET_LANGUAGE = {
 const DEFAULT_OPTIONS = {
   input: 'models/data/downloaded_images',
   output: 'models/samples/inputs',
-  includePdfs: false,
   includeZips: true,
   defaultLanguage: null,
   languageFilters: null,
   failOnError: false,
   workers: Math.max(1, Math.min(os.availableParallelism(), 2)),
 }
+const TESSERACT_ARTIFACTS_PATH = path.resolve(
+  process.cwd(),
+  'tesseract-artifacts'
+)
 
 function parseArgs(argv) {
   const parsed = { ...DEFAULT_OPTIONS }
@@ -98,14 +100,6 @@ function parseArgs(argv) {
       i += 1
       continue
     }
-    if (arg === '--with-pdf') {
-      parsed.includePdfs = true
-      continue
-    }
-    if (arg === '--no-pdf') {
-      parsed.includePdfs = false
-      continue
-    }
     if (arg === '--with-zip') {
       parsed.includeZips = true
       continue
@@ -134,8 +128,6 @@ Options:
   --language <code>      Force one dataset language for the whole run
   --languages <codes>    Restrict to top-level dataset languages (comma-separated)
   --workers <n>          Worker-thread concurrency across file shards
-  --with-pdf             Also OCR PDFs from the image tree
-  --no-pdf               Skip PDFs (default)
   --with-zip             Extract and OCR supported files from zip archives (default)
   --no-zip               Skip zip archives
   --fail-on-error        Exit non-zero if any file fails
@@ -143,6 +135,7 @@ Options:
 Notes:
   Relative paths are preserved, so downloaded_images/{lang}/... becomes samples/inputs/{lang}/...
   OCR workers are selected from the top-level language directory when available.
+  Tesseract traineddata cache is written under tesseract-artifacts/ at repo root.
   For PDF datasets, use models/scripts/data/extract-inputs-from-receipt-pdfs.mjs.
 `)
 }
@@ -156,16 +149,6 @@ function stripExtension(filePath) {
 function outputTextPathFromRelative(relativeInputPath, outputRoot) {
   const parsed = path.parse(relativeInputPath)
   return path.join(outputRoot, parsed.dir, `${parsed.name}.txt`)
-}
-
-function outputPdfPagePathFromRelative(
-  relativeInputPath,
-  pageIndex,
-  outputRoot
-) {
-  const parsed = path.parse(relativeInputPath)
-  const directory = path.join(outputRoot, parsed.dir, parsed.name)
-  return path.join(directory, `page-${String(pageIndex).padStart(3, '0')}.txt`)
 }
 
 async function ensureDirectory(filePath) {
@@ -252,10 +235,6 @@ async function findInputFiles(rootPath, options) {
         files.push(candidate)
         continue
       }
-      if (options.includePdfs && PDF_EXTS.has(ext)) {
-        files.push(candidate)
-        continue
-      }
       if (options.includeZips && ZIP_EXTS.has(ext)) {
         files.push(candidate)
       }
@@ -263,46 +242,6 @@ async function findInputFiles(rootPath, options) {
   }
 
   return files.sort((a, b) => a.localeCompare(b))
-}
-
-async function resolvePdfRenderer() {
-  try {
-    const pdfLib = await import('pdfjs-dist/legacy/build/pdf.mjs')
-    let canvasLib = null
-
-    try {
-      canvasLib = await import('@napi-rs/canvas')
-    } catch (firstError) {
-      try {
-        canvasLib = await import('canvas')
-      } catch (secondError) {
-        canvasLib = null
-      }
-    }
-
-    if (!canvasLib?.createCanvas) {
-      return null
-    }
-
-    const pdfjsRoot = path.resolve(process.cwd(), 'node_modules/pdfjs-dist')
-
-    return {
-      pdfjs: pdfLib,
-      createCanvas: canvasLib.createCanvas,
-      pdfOptions: {
-        cMapUrl: `${path.join(pdfjsRoot, 'cmaps')}${path.sep}`,
-        cMapPacked: true,
-        standardFontDataUrl: `${path.join(
-          pdfjsRoot,
-          'standard_fonts'
-        )}${path.sep}`,
-        wasmUrl: `${path.join(pdfjsRoot, 'wasm')}${path.sep}`,
-        useWorkerFetch: false,
-      },
-    }
-  } catch (error) {
-    return null
-  }
 }
 
 async function resolveImageProcessor() {
@@ -315,38 +254,8 @@ async function resolveImageProcessor() {
   }
 }
 
-async function renderPdfPages(inputPath, pdfRenderer) {
-  if (!pdfRenderer) return []
-
-  const pdfBuffer = await fs.readFile(inputPath)
-  const document = await pdfRenderer.pdfjs.getDocument({
-    data: new Uint8Array(pdfBuffer),
-    ...pdfRenderer.pdfOptions,
-  }).promise
-  const pageCount = document.numPages
-  const renderedPages = []
-
-  for (let pageIndex = 1; pageIndex <= pageCount; pageIndex += 1) {
-    const page = await document.getPage(pageIndex)
-    const viewport = page.getViewport({ scale: 2.0 })
-    const canvas = pdfRenderer.createCanvas(
-      Math.ceil(viewport.width),
-      Math.ceil(viewport.height)
-    )
-    const context = canvas.getContext('2d')
-    await page.render({ canvasContext: context, canvas, viewport }).promise
-    renderedPages.push(canvas.toBuffer('image/png'))
-    await page.cleanup()
-  }
-
-  await document.destroy()
-  return renderedPages
-}
-
-async function extractZipWithPython(zipPath, extractTo, includePdfs) {
-  const allowedExts = includePdfs
-    ? [...IMAGE_EXTS, ...PDF_EXTS]
-    : [...IMAGE_EXTS]
+async function extractZipWithPython(zipPath, extractTo) {
+  const allowedExts = [...IMAGE_EXTS]
   const script = `
 import json
 import pathlib
@@ -441,7 +350,10 @@ async function getWorkerForLanguage(datasetLanguage, workerCache) {
   }
 
   console.log(`Loading OCR worker for ${datasetLanguage} (${ocrLanguage})`)
-  const worker = await createWorker(ocrLanguage)
+  await fs.mkdir(TESSERACT_ARTIFACTS_PATH, { recursive: true })
+  const worker = await createWorker(ocrLanguage, 1, {
+    cachePath: TESSERACT_ARTIFACTS_PATH,
+  })
   workerCache.set(ocrLanguage, worker)
   return worker
 }
@@ -529,7 +441,6 @@ function runFileWorker(payload) {
 }
 
 async function processFiles(files, inputRoot, outputRoot, options) {
-  const pdfRenderer = options.includePdfs ? await resolvePdfRenderer() : null
   const imageProcessor = await resolveImageProcessor()
   const workerCache = new Map()
   const failures = []
@@ -539,12 +450,6 @@ async function processFiles(files, inputRoot, outputRoot, options) {
   if (!imageProcessor) {
     console.log(
       'Note: optional package "sharp" is not installed, so tiny-image normalization is disabled.'
-    )
-  }
-
-  if (options.includePdfs && !pdfRenderer) {
-    console.log(
-      'Note: PDF OCR requires "pdfjs-dist" plus either "@napi-rs/canvas" or "canvas". PDF files will be skipped.'
     )
   }
 
@@ -571,14 +476,9 @@ async function processFiles(files, inputRoot, outputRoot, options) {
             `receipt-ocr-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
           )
           try {
-            const extracted = await extractZipWithPython(
-              inputPath,
-              tmpExtractDir,
-              options.includePdfs
-            )
+            const extracted = await extractZipWithPython(inputPath, tmpExtractDir)
 
             for (const extractedPath of extracted) {
-              const extractedExt = path.extname(extractedPath).toLowerCase()
               const relativeInsideZip = path.relative(
                 tmpExtractDir,
                 extractedPath
@@ -587,35 +487,6 @@ async function processFiles(files, inputRoot, outputRoot, options) {
                 stripExtension(normalizedRelativeInputPath),
                 relativeInsideZip
               )
-
-              if (PDF_EXTS.has(extractedExt)) {
-                if (!pdfRenderer) {
-                  skippedCount += 1
-                  failures.push(
-                    `${virtualRelative}: PDF renderer unavailable (install pdfjs-dist + @napi-rs/canvas or canvas)`
-                  )
-                  continue
-                }
-
-                const pages = await renderPdfPages(extractedPath, pdfRenderer)
-                for (
-                  let pageIndex = 0;
-                  pageIndex < pages.length;
-                  pageIndex += 1
-                ) {
-                  const text = await recognizeText(worker, pages[pageIndex])
-                  const destination = outputPdfPagePathFromRelative(
-                    virtualRelative,
-                    pageIndex + 1,
-                    outputRoot
-                  )
-                  await ensureDirectory(destination)
-                  await fs.writeFile(destination, `${text}\n`)
-                }
-
-                successCount += 1
-                continue
-              }
 
               const preparedImage = await normalizeImageForOcr(
                 extractedPath,
@@ -633,36 +504,6 @@ async function processFiles(files, inputRoot, outputRoot, options) {
           } finally {
             await fs.rm(tmpExtractDir, { recursive: true, force: true })
           }
-          continue
-        }
-
-        if (ext === '.pdf') {
-          if (!pdfRenderer) {
-            skippedCount += 1
-            failures.push(
-              `${normalizedRelativeInputPath}: PDF renderer unavailable (install pdfjs-dist + @napi-rs/canvas or canvas)`
-            )
-            continue
-          }
-
-          const pages = await renderPdfPages(inputPath, pdfRenderer)
-          if (pages.length === 0) {
-            skippedCount += 1
-            continue
-          }
-
-          for (let i = 0; i < pages.length; i += 1) {
-            const text = await recognizeText(worker, pages[i])
-            const destination = outputPdfPagePathFromRelative(
-              normalizedRelativeInputPath,
-              i + 1,
-              outputRoot
-            )
-            await ensureDirectory(destination)
-            await fs.writeFile(destination, `${text}\n`)
-          }
-
-          successCount += 1
           continue
         }
 
