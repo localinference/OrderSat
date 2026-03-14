@@ -1,5 +1,3 @@
-import { unpack } from '@nodearchive/nodearchive'
-import fs from 'fs/promises'
 import { parseArgs } from 'util'
 import { arrayFromCommas } from '../arrayFromCommas/index.js'
 
