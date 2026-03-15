@@ -2,7 +2,7 @@ import { parseArgs } from 'util'
 import { arrayFromCommas } from '../arrayFromCommas/index.js'
 
 /**
- * @returns {{language: Array<string>}}
+ * @returns {{language: Array<string>, destinationPath: import('fs').PathLike}}
  */
 export function getArgs() {
   const { values } = parseArgs({
@@ -13,7 +13,16 @@ export function getArgs() {
         type: 'string',
         multiple: false,
       },
+      destinationPath: {
+        type: 'string',
+        short: 'D',
+        multiple: false,
+        default: './models/training_samples/inputs',
+      },
     },
   })
-  return { languages: arrayFromCommas(values.languages) }
+  return {
+    languages: arrayFromCommas(values.languages),
+    destinationPath: values.destinationPath,
+  }
 }

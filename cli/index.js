@@ -5,10 +5,13 @@ import { tmpdir } from 'os'
 import { join, basename, extname } from 'path'
 import fs from 'fs/promises'
 import { WASMagic } from 'wasmagic'
+import { pdfToImage } from './utils/pdfToImage/index.js'
+import { toUint8Array } from '@z-base/bytecodec'
+import { writeUniqueToDest } from './utils/writeUniqueToDest/index.js'
 
 const t0 = performance.now()
 /*************************************************/
-const { languages } = getArgs()
+const { languages, destinationPath } = getArgs()
 console.log('languages =', languages)
 /*************************************************/
 const paths = {}
@@ -67,30 +70,13 @@ const files = await FastGlob.async('**/*', {
 })
 console.log('files =', files)
 /***************************************************/
-const magic = await WASMagic.create()
-for (const file of files) {
-  const content = await fs.readFile(`${tempRoot}/${file}`, {
-    encoding: 'base64url',
-  })
-  const buffer = Buffer.from(content, 'base64url')
-  try {
-    const mime = magic.detect(buffer)
-    if (mime) {
-      if (mime.includes('text')) {
-        console.log(mime)
-      }
-    }
-  } catch (err) {
-    console.log(`Couldn't detect mime, because of "${err}"`)
-  }
-}
-/***************************************************/
-const listenToImageToTextWorker = (route, destinationPath) =>
+/** pool evenly for languages do asynchronous non-blocking multi-thread*/
+const spawnImageToTextWorker = (language) =>
   new Promise((resolve, reject) => {
     const worker = new Worker(
       new URL('./workers/unpack.worker.js', import.meta.url),
       {
-        workerData: {},
+        workerData: { language },
       }
     )
 
@@ -101,8 +87,38 @@ const listenToImageToTextWorker = (route, destinationPath) =>
     })
   })
 /***************************************************/
+const magic = await WASMagic.create()
+for (const file of files) {
+  const content = await fs.readFile(`${tempRoot}/${file}`, {
+    encoding: 'base64url',
+  })
+  const buffer = toUint8Array(Buffer.from(content, 'base64url'))
+  try {
+    const mime = magic.detect(buffer)
+    if (mime) {
+      if (mime.includes('image')) {
+        /** use image pool, and extract and then */
+        writeUniqueToDest(buffer, language, destinationPath)
+      }
+      if (mime.includes('pdf')) {
+        const images = await pdfToImage(buffer)
+        /** use image pool, and extract and then */
+        writeUniqueToDest(buffer, language, destinationPath)
+      }
+      if (
+        mime.includes('text') ||
+        (mime.includes('application') && !mime.includes('pdf'))
+      ) {
+        writeUniqueToDest(buffer, language, destinationPath)
+      }
+    }
+  } catch (err) {
+    console.log(`Couldn't detect mime, because of "${err}"`)
+  }
+}
+/***************************************************/
 console.log(
-  `Extracted ${files.length} input samples in ${(performance.now() - t0) / 1000} seconds.`
+  `Extracted ${files.length} unique input samples to ${destinationPath}, in ${(performance.now() - t0) / 1000} seconds.`
 )
-
 await fs.rm(tempRoot, { recursive: true, force: true })
+/***************************************************/
