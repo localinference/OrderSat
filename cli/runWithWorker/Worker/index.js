@@ -10,11 +10,22 @@ const jobs = {
 }
 
 parentPort.on('message', async (data) => {
-  runJob(data)
+  await runJob(data)
 })
 
 async function runJob({ id, job, params }) {
-  const jobRun = jobs[job]
-  const result = await jobRun(params)
-  parentPort.postMessage({ id, result })
+  try {
+    const jobRun = jobs[job]
+    const result = await jobRun(params)
+    parentPort.postMessage({ id, result })
+  } catch (err) {
+    parentPort.postMessage({
+      id,
+      error: {
+        message: err?.message ?? String(err),
+        name: err?.name ?? 'Error',
+        stack: err?.stack,
+      },
+    })
+  }
 }

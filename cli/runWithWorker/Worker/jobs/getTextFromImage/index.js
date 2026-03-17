@@ -9,7 +9,8 @@ export async function getTextFromImage({ image, language }) {
       worker = await createWorker(language)
       tesseractWorkers.set(language, worker)
     }
-    return await worker.recognize(image)
+    const result = await worker.recognize(image)
+    return result.data.text
   } catch (err) {
     throw err
   }

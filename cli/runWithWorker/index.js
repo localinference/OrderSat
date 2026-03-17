@@ -7,7 +7,7 @@ const workerPool = []
 let lastWorkerIndex = -1
 
 for (let i = 0; i < availableParallelism; i++) {
-  workerPool.push(new Worker('./cli/runWithWorker/Worker/index.js'))
+  workerPool.push(new Worker(new URL('./Worker/index.js', import.meta.url)))
 }
 
 console.log(
@@ -15,24 +15,42 @@ console.log(
 )
 
 export function runWithWorker(jobName, jobParams) {
-  try {
-    lastWorkerIndex = (lastWorkerIndex + 1) % availableParallelism
-    const worker = workerPool[lastWorkerIndex]
+  lastWorkerIndex = (lastWorkerIndex + 1) % availableParallelism
+  const worker = workerPool[lastWorkerIndex]
 
-    return new Promise((resolve) => {
-      const id = crypto.randomUUID()
+  return new Promise((resolve, reject) => {
+    const id = crypto.randomUUID()
 
-      const handleMessage = (data) => {
-        if (data.id === id) {
-          worker.off('message', handleMessage)
-          resolve(data.result)
+    const cleanup = () => {
+      worker.off('message', handleMessage)
+      worker.off('error', handleError)
+    }
+
+    const handleMessage = (data) => {
+      if (data.id === id) {
+        cleanup()
+        if (data.error) {
+          const error = new Error(data.error.message)
+          error.name = data.error.name
+          error.stack = data.error.stack
+          reject(error)
+          return
         }
+        resolve(data.result)
       }
+    }
 
-      worker.on('message', handleMessage)
-      worker.postMessage({ id, job: jobName, params: jobParams })
-    })
-  } catch (err) {
-    throw err
-  }
+    const handleError = (error) => {
+      cleanup()
+      reject(error)
+    }
+
+    worker.on('message', handleMessage)
+    worker.on('error', handleError)
+    worker.postMessage({ id, job: jobName, params: jobParams })
+  })
+}
+
+export async function closeWorkerPool() {
+  await Promise.all(workerPool.map((worker) => worker.terminate()))
 }
