@@ -2,10 +2,8 @@ import { join } from 'path'
 import { cleanText } from '@sctg/sentencepiece-js'
 import { toBase64UrlString, toString, fromString } from '@z-base/bytecodec'
 import { ensurePath } from '../utils/ensurePath/index.js'
-
 import { writeFile } from 'fs/promises'
-
-const outputRoot = './machine_learning/training_samples/inputs'
+import { outputRoot } from '../index.js'
 
 export async function writeUniqueToDest(textBuffer, language) {
   const cleanedString = cleanText(toString(textBuffer).normalize('NFKC'))

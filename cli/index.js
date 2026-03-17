@@ -17,9 +17,9 @@ import { getGlobLength } from './utils/getGlobLength/index.js'
 const t0 = performance.now()
 const ui = cliui()
 let tempRoot
-const machineLearningRoot = './.SaT'
-const dataSourcesRoot = `${machineLearningRoot}/(01)_data_sources`
-const outputRoot = `${machineLearningRoot}/(02)_training_samples/inputs`
+const satRoot = './.SaT'
+const dataSourcesRoot = `${satRoot}/01_data_sources`
+export const outputRoot = `${satRoot}/02_training_samples/inputs`
 const maxConcurrentFiles = Math.max(availableParallelism * 2, 1)
 const supportedArchiveExtensions = [
   '.nar',
@@ -35,7 +35,7 @@ try {
   const { languages } = getArgs()
   const outputGlobRoot = outputRoot.replaceAll('\\', '/')
   /*************************************************/
-  await assertRequiredDirectory(machineLearningRoot)
+  await assertRequiredDirectory(satRoot)
   await assertRequiredDirectory(dataSourcesRoot)
   console.log(
     `[CLI] Starting input sample preparation.\nLanguages: ${languages.join(', ')}.\nDestination: "${outputRoot}".\nFile concurrency per language: ${maxConcurrentFiles}.\n\n`
