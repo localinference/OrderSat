@@ -1,7 +1,7 @@
 import { getArgs } from './utils/getArgs/index.js'
 import FastGlob from 'fast-glob'
 import { tmpdir } from 'os'
-import { join, basename, extname } from 'path'
+import { join, extname } from 'path'
 import fs from 'fs/promises'
 import { WASMagic } from 'wasmagic'
 import { fromString } from '@z-base/bytecodec'
@@ -64,125 +64,55 @@ try {
   } else throw new Error('Unable to make a temp dir.')
 
   await Promise.all(
-    Object.entries(paths).map(async ([language, routes]) => {
+    languages.map(async (language) => {
+      const l0 = performance.now()
+      const routes = paths[language]
+      const magic = await WASMagic.create()
       console.log(
-        `[CLI] Starting to unpack ${routes.length} source archive(s) for language: "${language}".\n`
+        `[CLI] MIME detector ready for language "${language}". Starting archive pipeline for ${routes.length} archive(s).\n`
       )
 
       await Promise.all(
-        routes.map((route) => {
-          const unpackDestinationPath = join(
+        routes.map(async (route) => {
+          const unpackDestinationPath = getArchiveTempPath(
             tempRoot,
             language,
-            basename(route, extname(route))
+            route
           )
 
           console.log(
             `[CLI] Queueing archive unpack for "${route}" into "${unpackDestinationPath}".\n`
           )
-          return runWithWorker('unpackArchive', {
+          await runWithWorker('unpackArchive', {
             path: route,
             dest: unpackDestinationPath,
           })
+
+          const files = await FastGlob.async('**/*', {
+            cwd: unpackDestinationPath,
+            dot: true,
+            onlyFiles: true,
+          })
+
+          console.log(
+            `[CLI] Archive "${route}" unpacked into ${files.length} file(s). Starting processing immediately for language "${language}".\n`
+          )
+
+          await runWithConcurrency(files, maxConcurrentFiles, async (file) => {
+            await processExtractedFile({
+              destinationPath,
+              file,
+              filePath: join(unpackDestinationPath, file),
+              language,
+              magic,
+            })
+          })
+
+          console.log(
+            `[CLI] Finished processing archive "${route}" for language "${language}".\n`
+          )
         })
       )
-
-      console.log(
-        `[CLI] Finished unpacking sources for language: "${language}".\n\n\n`
-      )
-    })
-  )
-
-  await Promise.all(
-    languages.map(async (language) => {
-      const l0 = performance.now()
-      const files = await FastGlob.async('**/*', {
-        cwd: join(tempRoot, language),
-        dot: true,
-        onlyFiles: true,
-      })
-
-      console.log(
-        `[CLI] Starting to filter ${files.length} files into normalized unique input samples for language: "${language}".\n`
-      )
-      const magic = await WASMagic.create()
-      console.log(`[CLI] MIME detector ready for language "${language}".\n`)
-
-      await runWithConcurrency(files, maxConcurrentFiles, async (file) => {
-        const buffer = await fs.readFile(join(tempRoot, language, file))
-
-        try {
-          const mime = magic.detect(buffer)
-          if (!mime) {
-            console.log(
-              `[CLI] Skipping "${file}" for language "${language}" because no mime type was detected.\n`
-            )
-            return
-          }
-
-          console.log(
-            `[CLI] Processing "${file}" for language "${language}" as "${mime}".\n`
-          )
-
-          if (mime.includes('image')) {
-            console.log(
-              `[CLI] Requesting OCR for image "${file}" in language "${language}".\n`
-            )
-            const textFromImageResult = await runWithWorker(
-              'getTextFromImage',
-              {
-                language,
-                image: buffer,
-              }
-            )
-            await writeUniqueToDest(
-              fromString(textFromImageResult),
-              language,
-              destinationPath
-            )
-            return
-          }
-
-          if (mime.includes('pdf')) {
-            console.log(
-              `[CLI] Rendering PDF "${file}" to images for language "${language}".\n`
-            )
-            const images = await runWithWorker('pdfToImages', {
-              pdfBuffer: buffer,
-            })
-            console.log(
-              `[CLI] PDF "${file}" produced ${images.length} image page(s); requesting OCR for language "${language}".\n`
-            )
-            const text = (
-              await Promise.all(
-                images.map((image) =>
-                  runWithWorker('getTextFromImage', {
-                    language,
-                    image: image.data,
-                  })
-                )
-              )
-            ).join('')
-
-            await writeUniqueToDest(fromString(text), language, destinationPath)
-            return
-          }
-
-          if (
-            mime.includes('text') ||
-            (mime.includes('application') && !mime.includes('pdf'))
-          ) {
-            console.log(
-              `[CLI] Writing text-like file "${file}" directly for language "${language}".\n`
-            )
-            await writeUniqueToDest(buffer, language, destinationPath)
-          }
-        } catch (err) {
-          console.log(
-            `[CLI] Failed while processing "${file}" for language "${language}", because of "${err}".\n\n\n`
-          )
-        }
-      })
 
       const uniquesLength = await getGlobLength(
         `${outputGlobRoot}/${language}/*.txt`
@@ -243,4 +173,96 @@ async function runWithConcurrency(items, concurrency, run) {
       }
     })
   )
+}
+
+function getArchiveTempPath(tempRoot, language, route) {
+  const languagePrefix = `./models/.data/${language}/`
+  const relativeRoute = route.startsWith(languagePrefix)
+    ? route.slice(languagePrefix.length)
+    : route
+
+  return join(
+    tempRoot,
+    language,
+    relativeRoute.slice(0, -extname(relativeRoute).length)
+  )
+}
+
+async function processExtractedFile({
+  destinationPath,
+  file,
+  filePath,
+  language,
+  magic,
+}) {
+  const buffer = await fs.readFile(filePath)
+
+  try {
+    const mime = magic.detect(buffer)
+    if (!mime) {
+      console.log(
+        `[CLI] Skipping "${file}" for language "${language}" because no mime type was detected.\n`
+      )
+      return
+    }
+
+    console.log(
+      `[CLI] Processing "${file}" for language "${language}" as "${mime}".\n`
+    )
+
+    if (mime.includes('image')) {
+      console.log(
+        `[CLI] Requesting OCR for image "${file}" in language "${language}".\n`
+      )
+      const textFromImageResult = await runWithWorker('getTextFromImage', {
+        language,
+        image: buffer,
+      })
+      await writeUniqueToDest(
+        fromString(textFromImageResult),
+        language,
+        destinationPath
+      )
+      return
+    }
+
+    if (mime.includes('pdf')) {
+      console.log(
+        `[CLI] Rendering PDF "${file}" to images for language "${language}".\n`
+      )
+      const images = await runWithWorker('pdfToImages', {
+        pdfBuffer: buffer,
+      })
+      console.log(
+        `[CLI] PDF "${file}" produced ${images.length} image page(s); requesting OCR for language "${language}".\n`
+      )
+      const text = (
+        await Promise.all(
+          images.map((image) =>
+            runWithWorker('getTextFromImage', {
+              language,
+              image: image.data,
+            })
+          )
+        )
+      ).join('')
+
+      await writeUniqueToDest(fromString(text), language, destinationPath)
+      return
+    }
+
+    if (
+      mime.includes('text') ||
+      (mime.includes('application') && !mime.includes('pdf'))
+    ) {
+      console.log(
+        `[CLI] Writing text-like file "${file}" directly for language "${language}".\n`
+      )
+      await writeUniqueToDest(buffer, language, destinationPath)
+    }
+  } catch (err) {
+    console.log(
+      `[CLI] Failed while processing "${file}" for language "${language}", because of "${err}".\n\n\n`
+    )
+  }
 }
