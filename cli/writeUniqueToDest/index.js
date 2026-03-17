@@ -25,7 +25,7 @@ export async function writeUniqueToDest(textBuffer, language) {
       encoding: 'utf8',
       flag: 'wx',
     })
-    console.log(`Writing "${fileName}".`)
+    console.log(`[Output] Writing "${fileName}".\n`)
   } catch (err) {
     if (err?.code !== 'EEXIST') {
       throw err

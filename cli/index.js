@@ -21,7 +21,14 @@ const machineLearningRoot = './machine_learning'
 const dataSourcesRoot = `${machineLearningRoot}/data_sources`
 const outputRoot = `${machineLearningRoot}/training_samples/inputs`
 const maxConcurrentFiles = Math.max(availableParallelism * 2, 1)
-const supportedArchiveExtensions = ['.nar', '.zip', '.tar', '.tgz', '.tar.gz', '.gz']
+const supportedArchiveExtensions = [
+  '.nar',
+  '.zip',
+  '.tar',
+  '.tgz',
+  '.tar.gz',
+  '.gz',
+]
 
 try {
   /*************************************************/
@@ -140,14 +147,14 @@ try {
         `${outputGlobRoot}/${language}/*.txt`
       )
       console.log(
-        `[CLI] Created ${uniquesLength} unique "${language}" input sample(s) in ${(performance.now() - l0) / 1000} seconds.\n\n\n`
+        `[CLI] Created ${uniquesLength} unique "${language}" input sample(s) in ${Math.round((performance.now() - l0) / 1000 / 60)} minutes.\n\n\n`
       )
     })
   )
 
   /***************************************************/
   console.log(
-    `[CLI] Prepared all input samples in ${(performance.now() - t0) / 1000} seconds.\n`
+    `[CLI] Prepared all input samples in ${Math.round((performance.now() - t0) / 1000 / 60)} minutes.\n`
   )
   /***************************************************/
 } catch (err) {
