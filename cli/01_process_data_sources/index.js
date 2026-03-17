@@ -17,7 +17,7 @@ import { getGlobLength } from './utils/getGlobLength/index.js'
 const t0 = performance.now()
 const ui = cliui()
 let tempRoot
-const satRoot = './.SaT'
+const satRoot = './src'
 const dataSourcesRoot = `${satRoot}/01_data_sources`
 export const outputRoot = `${satRoot}/02_training_samples/inputs`
 const maxConcurrentFiles = Math.max(availableParallelism * 2, 1)
