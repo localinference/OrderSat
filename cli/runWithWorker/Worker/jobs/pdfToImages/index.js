@@ -1,6 +1,6 @@
 import { PDFParse } from 'pdf-parse'
 
-export async function pdfToImage(pdfBuffer) {
+export async function pdfToImages(pdfBuffer) {
   const parser = new PDFParse(pdfBuffer)
   try {
     const result = await parser.getScreenshot({ scale: 1.5 })

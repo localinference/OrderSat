@@ -1,14 +1,12 @@
 import { parentPort } from 'worker_threads'
 import { unpackArchive } from './jobs/unpackArchive/index.js'
 import { getTextFromImage } from './jobs/getTextFromImage/index.js'
-import { writeUniqueToDest } from './jobs/writeUniqueToDest/index.js'
-import { pdfToImage } from './jobs/pdfToImage/index.js'
+import { pdfToImages } from './jobs/pdfToImages/index.js'
 
 const jobs = {
-  pdfToImage,
+  pdfToImages,
   unpackArchive,
   getTextFromImage,
-  writeUniqueToDest,
 }
 
 parentPort.on('message', async (data) => {

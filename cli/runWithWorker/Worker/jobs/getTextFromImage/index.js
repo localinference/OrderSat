@@ -1,7 +1,7 @@
 import { createWorker } from 'tesseract.js'
 const tesseractWorkers = new Map()
 
-export async function getTextFromImage(image, language) {
+export async function getTextFromImage({ image, language }) {
   try {
     let worker = tesseractWorkers.get(language)
 
@@ -11,6 +11,6 @@ export async function getTextFromImage(image, language) {
     }
     return await worker.recognize(image)
   } catch (err) {
-    throw new Error(err)
+    throw err
   }
 }

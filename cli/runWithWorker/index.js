@@ -7,10 +7,12 @@ const workerPool = []
 let lastWorkerIndex = -1
 
 for (let i = 0; i < availableParallelism; i++) {
-  workerPool.push(new Worker('./cli/worker/index.js'))
+  workerPool.push(new Worker('./cli/runWithWorker/Worker/index.js'))
 }
 
-console.log(`Running with up to ${availableParallelism} threads.`)
+console.log(
+  `Extracting input samples with up to ${availableParallelism} threads.\n`
+)
 
 export function runWithWorker(jobName, jobParams) {
   try {

@@ -1,18 +1,15 @@
 import { getArgs } from './utils/getArgs/index.js'
 import FastGlob from 'fast-glob'
-import { Worker } from 'worker_threads'
 import { tmpdir } from 'os'
 import { join, basename, extname } from 'path'
 import fs from 'fs/promises'
 import { WASMagic } from 'wasmagic'
-import { pdfToImage } from './worker/jobs/pdfToImage/index.js'
-import { toUint8Array } from '@z-base/bytecodec'
-import { writeUniqueToDest } from './worker/jobs/writeUniqueToDest/index.js'
+import { fromString, toUint8Array } from '@z-base/bytecodec'
+import { writeUniqueToDest } from './writeUniqueToDest/index.js'
 import { cliui } from '@poppinss/cliui'
 import { wait } from './utils/wait/index.js'
-import os from 'os'
-import { ensurePath } from './utils/ensurePath/index.js'
 import { runWithWorker } from './runWithWorker/index.js'
+import { getGlobLength } from './utils/getGlobLength/index.js'
 const t0 = performance.now()
 const ui = cliui()
 /*************************************************/
@@ -24,8 +21,8 @@ for (const language of languages) {
   await wait(1000)
 
   paths[language] = await FastGlob.async(`./models/.data/${language}/**/*.zip`)
-  ui.logger.success(
-    `Found possible sources:\n${(() => {
+  console.log(
+    `Found ${paths[language].length} possible sources:\n${(() => {
       let out = ''
       for (const path of paths[language]) {
         out += `"${path}"\n`
@@ -43,7 +40,7 @@ await wait(1000)
 
 const tempRoot = await fs.mkdtemp(join(tmpdir(), '.data-unpack-'))
 if (tempRoot) {
-  ui.logger.success(`Created temp dir at "${tempRoot}".\n\n\n`)
+  console.log(`Created temp dir at "${tempRoot}".\n\n\n`)
 } else throw new Error('Unable to make a temp dir.')
 /****************/
 await wait(2500)
@@ -79,33 +76,16 @@ for (const [language, routes] of Object.entries(paths)) {
 await wait(2500)
 /************/
 for (const language of languages) {
+  const l0 = performance.now()
   const files = await FastGlob.async('**/*', {
     cwd: join(tempRoot, language),
     dot: true,
     onlyFiles: true,
-    markDirectories: false,
   })
 
   console.log(
     `Starting to filter ${files.length} files, to normalized unique input samples for language: "${language}".\n`
   )
-
-  const availableParallelism = os.availableParallelism()
-  const workerPool = []
-  for (let i = 0; i < availableParallelism; i++) {
-    const worker = new Worker(
-      new URL('./workers/unpack.worker.js', import.meta.url),
-      {
-        workerData: { language },
-      }
-    )
-    workerPool.push(worker)
-  }
-  await wait(2500)
-  console.log(
-    `Using up to ${availableParallelism} threads for image to text extraction.\n`
-  )
-
   const magic = await WASMagic.create()
   for (const fileIndex in files) {
     const file = files[fileIndex]
@@ -117,21 +97,34 @@ for (const language of languages) {
       const mime = magic.detect(buffer)
       if (mime) {
         if (mime.includes('image')) {
-          new Promise((res, rej) => {
-            const jobId = crypto.randomUUID()
-            const workerIndex = fileIndex % (availableParallelism - 1)
-            const selctedWorker = workerPool[workerIndex].postMessage({
-              id: jobId,
-              content: file,
-            })
-            selctedWorker.on('message', (ev) => {})
+          const textFromImageResult = await runWithWorker('getTextFromImage', {
+            language: language,
+            image: buffer,
           })
-          writeUniqueToDest(buffer, language, destinationPath)
+          writeUniqueToDest(
+            fromString(textFromImageResult),
+            language,
+            destinationPath
+          )
         }
         if (mime.includes('pdf')) {
-          const images = await pdfToImage(buffer)
-          /** use image pool, and extract and then */
-          writeUniqueToDest(buffer, language, destinationPath)
+          const running = []
+          const images = await runWithWorker('pdfToImages', {
+            pdfBuffer: buffer,
+          })
+          for (const image of images) {
+            running.push(
+              runWithWorker('getTextFromImage', {
+                language: language,
+                image: image.data,
+              })
+            )
+          }
+          let text = ''
+          for (const run of running) {
+            text += await run
+          }
+          writeUniqueToDest(fromString(text), language, destinationPath)
         }
         if (
           mime.includes('text') ||
@@ -141,17 +134,20 @@ for (const language of languages) {
         }
       }
     } catch (err) {
-      console.log(`Couldn't detect mime, because of "${err}"`)
+      console.log(`Couldn't detect mime, because of "${err}"\n\n\n`)
     }
   }
-  for (const worker of workerPool) {
-    worker.terminate()
-  }
+  const uniquesLength = await getGlobLength(
+    './models/training_samples/inputs/*.txt'
+  )
+  console.log(
+    `Prepared ${uniquesLength} unique "${language}" input samples in ${(performance.now() - l0) / 1000} seconds.\n\n\n`
+  )
 }
 
 /***************************************************/
 console.log(
-  `Extracted ${files.length} unique input samples to ${destinationPath}, in ${(performance.now() - t0) / 1000} seconds.`
+  `Preapared all input samples in ${(performance.now() - t0) / 1000} seconds.`
 )
 await fs.rm(tempRoot, { recursive: true, force: true })
 /***************************************************/
