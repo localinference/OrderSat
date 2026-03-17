@@ -17,16 +17,21 @@ import { getGlobLength } from './utils/getGlobLength/index.js'
 const t0 = performance.now()
 const ui = cliui()
 let tempRoot
+const machineLearningRoot = './machine_learning'
+const dataSourcesRoot = `${machineLearningRoot}/data_sources`
+const outputRoot = `${machineLearningRoot}/training_samples/inputs`
 const maxConcurrentFiles = Math.max(availableParallelism * 2, 1)
 const supportedArchiveExtensions = ['.nar', '.zip', '.tar', '.tgz', '.tar.gz', '.gz']
 
 try {
   /*************************************************/
-  const { languages, destinationPath } = getArgs()
-  const outputGlobRoot = destinationPath.replaceAll('\\', '/')
+  const { languages } = getArgs()
+  const outputGlobRoot = outputRoot.replaceAll('\\', '/')
   /*************************************************/
+  await assertRequiredDirectory(machineLearningRoot)
+  await assertRequiredDirectory(dataSourcesRoot)
   console.log(
-    `[CLI] Starting input sample preparation.\nLanguages: ${languages.join(', ')}.\nDestination: "${destinationPath}".\nFile concurrency per language: ${maxConcurrentFiles}.\n\n`
+    `[CLI] Starting input sample preparation.\nLanguages: ${languages.join(', ')}.\nDestination: "${outputRoot}".\nFile concurrency per language: ${maxConcurrentFiles}.\n\n`
   )
   console.log(
     `[CLI] Supported archive extensions: ${supportedArchiveExtensions.join(', ')}.\n`
@@ -34,8 +39,12 @@ try {
   const paths = Object.fromEntries(
     await Promise.all(
       languages.map(async (language) => {
+        const languageSourceRoot = getLanguageSourceRoot(language)
+
+        await assertRequiredDirectory(languageSourceRoot)
+
         console.log(
-          `[CLI] Looking up data sources for language: "${language}".\n`
+          `[CLI] Looking up data sources for language: "${language}" under "${languageSourceRoot}".\n`
         )
 
         const languagePaths = [
@@ -45,6 +54,12 @@ try {
             })
           ),
         ]
+
+        if (languagePaths.length === 0) {
+          throw new Error(
+            `[CLI] No supported archives were found for language "${language}" under "${languageSourceRoot}".`
+          )
+        }
 
         console.log(
           `[CLI] Found ${languagePaths.length} possible sources for language "${language}":\n${(() => {
@@ -108,7 +123,6 @@ try {
 
           await runWithConcurrency(files, maxConcurrentFiles, async (file) => {
             await processExtractedFile({
-              destinationPath,
               file,
               filePath: join(unpackDestinationPath, file),
               language,
@@ -184,7 +198,7 @@ async function runWithConcurrency(items, concurrency, run) {
 }
 
 function getArchiveTempPath(tempRoot, language, route) {
-  const languagePrefix = `./machine_learning/data_sources/${language}/`
+  const languagePrefix = `${getLanguageSourceRoot(language)}/`
   const relativeRoute = route.startsWith(languagePrefix)
     ? route.slice(languagePrefix.length)
     : route
@@ -198,17 +212,31 @@ function getArchiveTempPath(tempRoot, language, route) {
 
 function getArchiveSourceGlobs(language) {
   return supportedArchiveExtensions.map(
-    (extension) => `./machine_learning/data_sources/${language}/**/*${extension}`
+    (extension) => `${getLanguageSourceRoot(language)}/**/*${extension}`
   )
 }
 
-async function processExtractedFile({
-  destinationPath,
-  file,
-  filePath,
-  language,
-  magic,
-}) {
+function getLanguageSourceRoot(language) {
+  return `${dataSourcesRoot}/${language}`
+}
+
+async function assertRequiredDirectory(path) {
+  try {
+    const stats = await fs.stat(path)
+
+    if (!stats.isDirectory()) {
+      throw new Error(`[CLI] Required directory "${path}" is not a directory.`)
+    }
+  } catch (err) {
+    if (err?.code === 'ENOENT') {
+      throw new Error(`[CLI] Required directory "${path}" does not exist.`)
+    }
+
+    throw err
+  }
+}
+
+async function processExtractedFile({ file, filePath, language, magic }) {
   const buffer = await fs.readFile(filePath)
 
   try {
@@ -232,11 +260,7 @@ async function processExtractedFile({
         language,
         image: buffer,
       })
-      await writeUniqueToDest(
-        fromString(textFromImageResult),
-        language,
-        destinationPath
-      )
+      await writeUniqueToDest(fromString(textFromImageResult), language)
       return
     }
 
@@ -261,7 +285,7 @@ async function processExtractedFile({
         )
       ).join('')
 
-      await writeUniqueToDest(fromString(text), language, destinationPath)
+      await writeUniqueToDest(fromString(text), language)
       return
     }
 
@@ -272,7 +296,7 @@ async function processExtractedFile({
       console.log(
         `[CLI] Writing text-like file "${file}" directly for language "${language}".\n`
       )
-      await writeUniqueToDest(buffer, language, destinationPath)
+      await writeUniqueToDest(buffer, language)
     }
   } catch (err) {
     console.log(

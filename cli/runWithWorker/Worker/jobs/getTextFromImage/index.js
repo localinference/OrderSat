@@ -1,15 +1,23 @@
-import { createWorker } from 'tesseract.js'
+import { mkdir } from 'fs/promises'
+import { resolve } from 'path'
+import { createWorker, OEM } from 'tesseract.js'
+
 const tesseractWorkers = new Map()
+const tesseractCachePath = resolve(process.cwd(), '.cache', 'tesseract')
+const tesseractCacheReady = mkdir(tesseractCachePath, { recursive: true })
 
 export async function getTextFromImage({ image, language }) {
   try {
     let worker = tesseractWorkers.get(language)
 
     if (!worker) {
+      await tesseractCacheReady
       console.log(
-        `[OCR] Creating tesseract worker for language "${language}".\n`
+        `[OCR] Creating tesseract worker for language "${language}" using cache "${tesseractCachePath}".\n`
       )
-      worker = await createWorker(language)
+      worker = await createWorker(language, OEM.LSTM_ONLY, {
+        cachePath: tesseractCachePath,
+      })
       tesseractWorkers.set(language, worker)
     }
     console.log(
