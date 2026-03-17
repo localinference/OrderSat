@@ -1,35 +1,35 @@
 # ReceiptLine
 
 Markdown for receipts. Printable digital receipts. &#x1f9fe;  
-Generate receipt printer commands and images.  
+Generate receipt printer commands and images.
 
-|Package|Type|For|Description|
-|---|---|---|---|
-|[ReceiptLine](https://www.npmjs.com/package/receiptline)|SDK for **Node.js**|Developers|Receipt description language processor|
-|[ReceiptIO](https://www.npmjs.com/package/receiptio)|Node.js Console App|Users|Print, Convert, Printer status|
-|[Receipt.js](https://github.com/receiptline/receiptjs)|SDK for **JavaScript**|Developers|Receipt description language processor<br>Print, Convert, Printer status|
-|[Receipt.js Designer](https://receiptline.github.io/receiptjs-designer/)|Tool|All|Edit, Preview, Print|
-|[QR Code Generator](https://receiptline.github.io/receiptjs/qr/)|Tool|All|Free QR Code Generator|
-|[ReceiptSharp](https://www.nuget.org/packages/ReceiptSharp)|**.NET** Standard library|Developers|Receipt description language processor<br>Print, Convert, Printer status|
-|[Receipt Markdown](https://marketplace.visualstudio.com/items?itemName=receiptline.receipt-markdown)|VS Code Extension|All|Edit, Preview|
+| Package                                                                                              | Type                      | For        | Description                                                              |
+| ---------------------------------------------------------------------------------------------------- | ------------------------- | ---------- | ------------------------------------------------------------------------ |
+| [ReceiptLine](https://www.npmjs.com/package/receiptline)                                             | SDK for **Node.js**       | Developers | Receipt description language processor                                   |
+| [ReceiptIO](https://www.npmjs.com/package/receiptio)                                                 | Node.js Console App       | Users      | Print, Convert, Printer status                                           |
+| [Receipt.js](https://github.com/receiptline/receiptjs)                                               | SDK for **JavaScript**    | Developers | Receipt description language processor<br>Print, Convert, Printer status |
+| [Receipt.js Designer](https://receiptline.github.io/receiptjs-designer/)                             | Tool                      | All        | Edit, Preview, Print                                                     |
+| [QR Code Generator](https://receiptline.github.io/receiptjs/qr/)                                     | Tool                      | All        | Free QR Code Generator                                                   |
+| [ReceiptSharp](https://www.nuget.org/packages/ReceiptSharp)                                          | **.NET** Standard library | Developers | Receipt description language processor<br>Print, Convert, Printer status |
+| [Receipt Markdown](https://marketplace.visualstudio.com/items?itemName=receiptline.receipt-markdown) | VS Code Extension         | All        | Edit, Preview                                                            |
 
 "ReceiptLine" is a coined word from "Receipt" and "Streamline".  
-Make it more efficient by making it simpler!  
+Make it more efficient by making it simpler!
 
 ![English](screenshot_en.png)  
 ![Japanese](screenshot_ja.png)  
-![German](screenshot_de.png)  
+![German](screenshot_de.png)
 
 # Features
 
 The reference implementation of the OFSC ReceiptLine Specification.  
-http://www.ofsc.or.jp/receiptline/en/  
+http://www.ofsc.or.jp/receiptline/en/
 
 ReceiptLine is the receipt description language that expresses the output image of small roll paper.  
 It supports printing paper receipts using a receipt printer and displaying electronic receipts on a POS system or smartphone.  
-It can be described simply with receipt markdown text data that does not depend on the paper width.  
+It can be described simply with receipt markdown text data that does not depend on the paper width.
 
-This reference implementation also provides the development tool "ReceiptLine Designer" for editing, previewing, hex dumps with a virtual printer, and test printing on receipt printers.  
+This reference implementation also provides the development tool "ReceiptLine Designer" for editing, previewing, hex dumps with a virtual printer, and test printing on receipt printers.
 
 # Receipt Printers
 
@@ -39,9 +39,9 @@ This reference implementation also provides the development tool "ReceiptLine De
 - Citizen CT series
 - Fujitsu FP series
 
-Epson TM series (South Asia model) and Star MC series (StarPRNT model) can print with device font of Thai characters.  
+Epson TM series (South Asia model) and Star MC series (StarPRNT model) can print with device font of Thai characters.
 
-![Printers](readme_printer.jpg)  
+![Printers](readme_printer.jpg)
 
 # Installation
 
@@ -51,34 +51,34 @@ $ npm install receiptline
 
 # Usage
 
-`receiptline.transform()` method transforms ReceiptLine document to printer commands or SVG images.  
+`receiptline.transform()` method transforms ReceiptLine document to printer commands or SVG images.
 
 ```javascript
-const receiptline = require('receiptline');
+const receiptline = require('receiptline')
 
-const doc = '{code:2012345678903;option:ean,hri}';
+const doc = '{code:2012345678903;option:ean,hri}'
 
 // printer example
 const printer = {
-    cpl: 42,
-    encoding: 'multilingual',
-    upsideDown: false,
-    gamma: 1.8,
-    command: 'escpos'
-};
-const command = receiptline.transform(doc, printer);
+  cpl: 42,
+  encoding: 'multilingual',
+  upsideDown: false,
+  gamma: 1.8,
+  command: 'escpos',
+}
+const command = receiptline.transform(doc, printer)
 
 // display example
 const display = {
-    cpl: 42,
-    encoding: 'multilingual'
-};
-const svg = receiptline.transform(doc, display);
+  cpl: 42,
+  encoding: 'multilingual',
+}
+const svg = receiptline.transform(doc, display)
 ```
 
 ## Method
 
-`receiptline.transform(doc[, printer])`  
+`receiptline.transform(doc[, printer])`
 
 ### Parameters
 
@@ -162,19 +162,19 @@ const svg = receiptline.transform(doc, display);
 ## Generate barcodes and QR Codes
 
 `receiptline.barcode.generate()` method generates a barcode.  
-`receiptline.qrcode.generate()` method generates a QR Code.  
+`receiptline.qrcode.generate()` method generates a QR Code.
 
 ```javascript
-const bar = { data: '1234', type: 'code39', width: 2, quietZone: true };
-const barform = receiptline.barcode.generate(bar);
+const bar = { data: '1234', type: 'code39', width: 2, quietZone: true }
+const barform = receiptline.barcode.generate(bar)
 
-const qr = { data: 'abcdefgh', level: 'm', quietZone: true };
-const qrform = receiptline.qrcode.generate(qr);
+const qr = { data: 'abcdefgh', level: 'm', quietZone: true }
+const qrform = receiptline.qrcode.generate(qr)
 ```
 
 ## Method
 
-`receiptline.barcode.generate(symbol)`  
+`receiptline.barcode.generate(symbol)`
 
 ### Parameters
 
@@ -211,7 +211,7 @@ const qrform = receiptline.qrcode.generate(qr);
 
 ## Method
 
-`receiptline.qrcode.generate(symbol)`  
+`receiptline.qrcode.generate(symbol)`
 
 ### Parameters
 
@@ -229,29 +229,29 @@ const qrform = receiptline.qrcode.generate(qr);
 ### Return value
 
 - &lt;Uint8Array[]&gt;: QR Code form (matrix of dark and light modules)
-    - `0`: light
-    - `1`: dark
+  - `0`: light
+  - `1`: dark
 
-QR Code is a registered trademark of DENSO WAVE INCORPORATED.  
+QR Code is a registered trademark of DENSO WAVE INCORPORATED.
 
 ## Transform stream API
 
-`receiptline.createTransform()` method is the stream version of the `receiptline.transform()`.  
+`receiptline.createTransform()` method is the stream version of the `receiptline.transform()`.
 
 ```javascript
-const fs = require('fs');
-const receiptline = require('receiptline');
+const fs = require('fs')
+const receiptline = require('receiptline')
 
-const source = fs.createReadStream('example.receipt');
-const transform = receiptline.createTransform({ command: 'svg' });
-const destination = fs.createWriteStream('example.svg');
+const source = fs.createReadStream('example.receipt')
+const transform = receiptline.createTransform({ command: 'svg' })
+const destination = fs.createWriteStream('example.svg')
 
-source.pipe(transform).pipe(destination);
+source.pipe(transform).pipe(destination)
 ```
 
 ## Method
 
-`receiptline.createTransform([printer])`  
+`receiptline.createTransform([printer])`
 
 ### Parameters
 
@@ -266,34 +266,34 @@ source.pipe(transform).pipe(destination);
 
 ### example/receipt/\*
 
-Display digital receipts in the web browser and print paper receipts on the printer as needed.  
+Display digital receipts in the web browser and print paper receipts on the printer as needed.
 
 ### example/cloud/\*
 
-Print order slips from cloud server using Epson Server Direct Print or Star CloudPRNT.  
+Print order slips from cloud server using Epson Server Direct Print or Star CloudPRNT.
 
 ### example/nodejs/\*
 
-Enter receipt markdown text from the web form, transform it to printer commands on the server, and print it out.  
+Enter receipt markdown text from the web form, transform it to printer commands on the server, and print it out.
 
 ### example/js/\*
 
-Enter receipt markdown text from the web form, transform it to SVG images on the web browser, and display it.  
+Enter receipt markdown text from the web form, transform it to SVG images on the web browser, and display it.
 
 ### example/data/\*
 
-The documents (receipt markdown text) are the same as the examples in the OFSC ReceiptLine Specification.  
+The documents (receipt markdown text) are the same as the examples in the OFSC ReceiptLine Specification.
 
 ### example/command/\*
 
-Customize the command object to output your own commands.  
+Customize the command object to output your own commands.
 
 # Libraries
 
 ### lib/receiptline.js
 
 It works on both web browser and Node.js.  
-To output printer commands on a web browser, use [Receipt.js](https://github.com/receiptline/receiptjs) or Browserify.  
+To output printer commands on a web browser, use [Receipt.js](https://github.com/receiptline/receiptjs) or Browserify.
 
 ```bash
 $ browserify -o receiptline-full.js receiptline.js
@@ -302,86 +302,85 @@ $ browserify -o receiptline-full.js receiptline.js
 # ReceiptLine Designer
 
 Online version is available.  
-https://receiptline.github.io/designer/  
+https://receiptline.github.io/designer/
 
-The ReceiptLine Designer provides more features.  
+The ReceiptLine Designer provides more features.
 
 - Edit and preview
 - Data transmission via TCP socket
 - Hex dump view by listening TCP 19100 port
 
-![Designer](readme_designer.png)  
+![Designer](readme_designer.png)
 
 ## Setup
 
 1. Copy the following files to your working directory
-
-    - designer/*
-    - designer.js
-    - printers.json
-    - servers.json
+   - designer/\*
+   - designer.js
+   - printers.json
+   - servers.json
 
 1. Start the server
 
-    ```bash
-    $ node designer.js
-    ```
+   ```bash
+   $ node designer.js
+   ```
 
 1. Open http://localhost:8080
 
-    Use a modern browser.  
+   Use a modern browser.
 
 1. Configure printers.json
 
-    ```json
-    "printer_id": {
-        "host": "127.0.0.1",
-        "port": 19100,
-        "asImage": false,
-        "cpl": 48,
-        "encoding": "shiftjis",
-        "gradient": true,
-        "gamma": 1.8,
-        "threshold": 128,
-        "upsideDown": false,
-        "spacing": true,
-        "cutting": true,
-        "command": "escpos"
-    }
-    ```
+   ```json
+   "printer_id": {
+       "host": "127.0.0.1",
+       "port": 19100,
+       "asImage": false,
+       "cpl": 48,
+       "encoding": "shiftjis",
+       "gradient": true,
+       "gamma": 1.8,
+       "threshold": 128,
+       "upsideDown": false,
+       "spacing": true,
+       "cutting": true,
+       "command": "escpos"
+   }
+   ```
 
-    - `printer_id`
-      - printer identifier (alphanumeric or underscore characters)
-    - `host`
-      - printer address
-    - `port`
-      - printer port (will be `9100`)
-    - `asImage`
-      - `false`: print with device font (default)
-      - `true`: print as image (Requires [puppeteer](https://www.npmjs.com/package/puppeteer) or [sharp](https://www.npmjs.com/package/sharp))
-    - `landscape`
-      - `false`: normal (default)
-      - `true`: landscape orientation (for `escpos`, `epson`, `sii`, `citizen`, `starsbcs`, `starmbcs`, `starmbcs2`)
-    - `resolution`
-      - print resolution for `landscape` (values: `180`, `203`, default: `203`)
-    - `cpl`
-    - `encoding`
-    - `gradient`
-    - `gamma`
-    - `threshold`
-    - `upsideDown`
-    - `spacing`
-    - `cutting`
-    - `margin`
-    - `marginRight`
-      - see the printer configuration above
-    - `command`
-      - see the printer configuration above
-      - `png`: PNG (Requires [puppeteer](https://www.npmjs.com/package/puppeteer) or [sharp](https://www.npmjs.com/package/sharp))
+   - `printer_id`
+     - printer identifier (alphanumeric or underscore characters)
+   - `host`
+     - printer address
+   - `port`
+     - printer port (will be `9100`)
+   - `asImage`
+     - `false`: print with device font (default)
+     - `true`: print as image (Requires [puppeteer](https://www.npmjs.com/package/puppeteer) or [sharp](https://www.npmjs.com/package/sharp))
+   - `landscape`
+     - `false`: normal (default)
+     - `true`: landscape orientation (for `escpos`, `epson`, `sii`, `citizen`, `starsbcs`, `starmbcs`, `starmbcs2`)
+   - `resolution`
+     - print resolution for `landscape` (values: `180`, `203`, default: `203`)
+   - `cpl`
+   - `encoding`
+   - `gradient`
+   - `gamma`
+   - `threshold`
+   - `upsideDown`
+   - `spacing`
+   - `cutting`
+   - `margin`
+   - `marginRight`
+     - see the printer configuration above
+   - `command`
+     - see the printer configuration above
+     - `png`: PNG (Requires [puppeteer](https://www.npmjs.com/package/puppeteer) or [sharp](https://www.npmjs.com/package/sharp))
 
 ## URL query string
 
-The designer can set initial values in the URL query string.  
+The designer can set initial values in the URL query string.
 
 ### Parameters
 
@@ -400,128 +399,129 @@ The designer can set initial values in the URL query string.
 
 # Serial-LAN Converter
 
-The serial-LAN converter enables test printing to USB / Bluetooth printers that support virtual serial ports.  
+The serial-LAN converter enables test printing to USB / Bluetooth printers that support virtual serial ports.
 
 ## Setup
 
 1. Install the virtual serial port driver for the printer and [Node Serialport](https://www.npmjs.com/package/serialport)
 
-    ```bash
-    $ npm install serialport
-    ```
+   ```bash
+   $ npm install serialport
+   ```
 
 1. Configure servers.json
 
-    ```json
-    "serial": {
-        "host": "127.0.0.1",
-        "port": 9100,
-        "device": "COM9"
-    }
-    ```
+   ```json
+   "serial": {
+       "host": "127.0.0.1",
+       "port": 9100,
+       "device": "COM9"
+   }
+   ```
 
-    - `serial`
-      - to enable it, change from `_serial`
-    - `host`
-      - local address
-    - `port`
-      - local port
-    - `device`
-      - the system path of the serial port
-      - `<system path>[:<options>]`
+   - `serial`
+     - to enable it, change from `_serial`
+   - `host`
+     - local address
+   - `port`
+     - local port
+   - `device`
+     - the system path of the serial port
+     - `<system path>[:<options>]`
 
-    Serial port options  
+   Serial port options
 
-    ```json
-        "device": "COM9:9600,N,8,1"
-    ```
-    - `<options>`
-      - `<baud rate>,<parity>,<data bits>,<stop bits>[,<flow control>]`
-      - default: `9600,N,8,1,N`
-      - commas can be omitted
-    - `<baud rate>`
-      - `2400`, `4800`, `9600`, `19200`, `38400`, `57600`, `115200`
-    - `<parity>`
-      - `N`: none, `E`: even, `O`: odd
-    - `<data bits>`
-      - `8`, `7`
-    - `<stop bits>`
-      - `1`, `2`
-    - `<flow control>`
-      - `N`: none, `R`: rts/cts, `X`: xon/xoff
+   ```json
+       "device": "COM9:9600,N,8,1"
+   ```
+
+   - `<options>`
+     - `<baud rate>,<parity>,<data bits>,<stop bits>[,<flow control>]`
+     - default: `9600,N,8,1,N`
+     - commas can be omitted
+   - `<baud rate>`
+     - `2400`, `4800`, `9600`, `19200`, `38400`, `57600`, `115200`
+   - `<parity>`
+     - `N`: none, `E`: even, `O`: odd
+   - `<data bits>`
+     - `8`, `7`
+   - `<stop bits>`
+     - `1`, `2`
+   - `<flow control>`
+     - `N`: none, `R`: rts/cts, `X`: xon/xoff
 
 1. Restart the server
 
-    ```bash
-    $ node designer.js
-    ```
+   ```bash
+   $ node designer.js
+   ```
 
 # Syntax
 
 ## Railroad diagram
 
 **_document_**  
-![document](./designer/image/document.png)  
+![document](./designer/image/document.png)
 
 **_line_**  
-![line](./designer/image/line.png)  
+![line](./designer/image/line.png)
 
 **_columns_**  
-![columns](./designer/image/columns.png)  
+![columns](./designer/image/columns.png)
 
 **_column_**  
-![column](./designer/image/column.png)  
+![column](./designer/image/column.png)
 
 **_text_**  
-![text](./designer/image/text.png)  
+![text](./designer/image/text.png)
 
 **_char_**  
-![char](./designer/image/char.png)  
+![char](./designer/image/char.png)
 
 **_escape_**  
-![escape](./designer/image/escape.png)  
+![escape](./designer/image/escape.png)
 
 **_ws (whitespace)_**  
-![ws](./designer/image/ws.png)  
+![ws](./designer/image/ws.png)
 
 **_property_**  
-![property](./designer/image/property.png)  
+![property](./designer/image/property.png)
 
 **_member_**  
-![member](./designer/image/member.png)  
+![member](./designer/image/member.png)
 
 **_key_**  
-![key](./designer/image/key.png)  
+![key](./designer/image/key.png)
 
 **_value_**  
-![value](./designer/image/value.png)  
+![value](./designer/image/value.png)
 
 # Grammar
 
 ## Structure
 
-The receipt is made of a table, which separates each column with a pipe `|`.  
+The receipt is made of a table, which separates each column with a pipe `|`.
 
-|Line|Content|Description|
-|---|---|---|
-|_column_<br><code>&#x7c;</code> _column_ <code>&#x7c;</code><br><code>&#x7c;</code> _column_<br>_column_ <code>&#x7c;</code>|Text<br>Property|Single column|
-|_column_ <code>&#x7c;</code> _column_ <br><code>&#x7c;</code> _column_ <code>&#x7c;</code> _column_ <code>&#x7c;</code><br><code>&#x7c;</code> _column_ <code>&#x7c;</code> _column_<br>_column_ <code>&#x7c;</code> _column_ <code>&#x7c;</code>|Text|Double column|
-|_column_ <code>&#x7c;</code> _..._ <code>&#x7c;</code> _column_<br><code>&#x7c;</code> _column_ <code>&#x7c;</code> _..._ <code>&#x7c;</code> _column_ <code>&#x7c;</code><br><code>&#x7c;</code> _column_ <code>&#x7c;</code> _..._ <code>&#x7c;</code> _column_<br>_column_ <code>&#x7c;</code> _..._ <code>&#x7c;</code> _column_ <code>&#x7c;</code>|Text|Multiple columns|
+| Line                                                                                                                                                                                                                                                                                                                                                     | Content          | Description      |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ---------------- |
+| _column_<br><code>&#x7c;</code> _column_ <code>&#x7c;</code><br><code>&#x7c;</code> _column_<br>_column_ <code>&#x7c;</code>                                                                                                                                                                                                                             | Text<br>Property | Single column    |
+| _column_ <code>&#x7c;</code> _column_ <br><code>&#x7c;</code> _column_ <code>&#x7c;</code> _column_ <code>&#x7c;</code><br><code>&#x7c;</code> _column_ <code>&#x7c;</code> _column_<br>_column_ <code>&#x7c;</code> _column_ <code>&#x7c;</code>                                                                                                        | Text             | Double column    |
+| _column_ <code>&#x7c;</code> _..._ <code>&#x7c;</code> _column_<br><code>&#x7c;</code> _column_ <code>&#x7c;</code> _..._ <code>&#x7c;</code> _column_ <code>&#x7c;</code><br><code>&#x7c;</code> _column_ <code>&#x7c;</code> _..._ <code>&#x7c;</code> _column_<br>_column_ <code>&#x7c;</code> _..._ <code>&#x7c;</code> _column_ <code>&#x7c;</code> | Text             | Multiple columns |
 
 ## Alignment
 
 The column is attracted to the pipe `|` like a magnet.  
-<code>&#x2423;</code> means one or more whitespaces.  
+<code>&#x2423;</code> means one or more whitespaces.
 
-|Column|Description|
-|---|---|
-|_column_<br><code>&#x7c;</code>_column_<code>&#x7c;</code><br><code>&#x7c;&#x2423;</code>_column_<code>&#x2423;&#x7c;</code>|Center|
-|<code>&#x7c;</code>_column_<br><code>&#x7c;</code>_column_<code>&#x2423;&#x7c;</code><br>_column_<code>&#x2423;&#x7c;</code>|Left|
-|_column_<code>&#x7c;</code><br><code>&#x7c;&#x2423;</code>_column_<code>&#x7c;</code><br><code>&#x7c;&#x2423;</code>_column_|Right|
+| Column                                                                                                                       | Description |
+| ---------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| _column_<br><code>&#x7c;</code>_column_<code>&#x7c;</code><br><code>&#x7c;&#x2423;</code>_column_<code>&#x2423;&#x7c;</code> | Center      |
+| <code>&#x7c;</code>_column_<br><code>&#x7c;</code>_column_<code>&#x2423;&#x7c;</code><br>_column_<code>&#x2423;&#x7c;</code> | Left        |
+| _column_<code>&#x7c;</code><br><code>&#x7c;&#x2423;</code>_column_<code>&#x7c;</code><br><code>&#x7c;&#x2423;</code>_column_ | Right       |
 
 ## Text
 
-The text is valid for any column.  
+The text is valid for any column.
 
 ```
 Asparagus | 0.99
@@ -533,128 +533,128 @@ Carrot | 2.99
 
 Characters are printed in a monospace font (12 x 24 px).  
 Wide characters are twice as wide as Latin characters (24 x 24 px).  
-Control characters are ignored.  
+Control characters are ignored.
 
 ## Special characters in text
 
-Special characters are assigned to characters that are rarely used in the receipt.  
+Special characters are assigned to characters that are rarely used in the receipt.
 
-|Special character|Description|
-|---|---|
-|`\`|Character escape|
-|<code>&#x7c;</code>|Column delimiter|
-|`{`|Property delimiter (Start)|
-|`}`|Property delimiter (End)|
-|`-` (1 or more, exclusive)|Horizontal rule|
-|`=` (1 or more, exclusive)|Paper cut|
-|`~`|Space|
-|`_`|Underline|
-|`"`|Emphasis|
-|`` ` ``|Invert|
-|`^`|Double width|
-|`^^`|Double height|
-|`^^^`|2x size|
-|`^^^^`|3x size|
-|`^^^^^`|4x size|
-|`^^^^^^`|5x size|
-|`^^^^^^^` (7 or more)|6x size|
+| Special character          | Description                |
+| -------------------------- | -------------------------- |
+| `\`                        | Character escape           |
+| <code>&#x7c;</code>        | Column delimiter           |
+| `{`                        | Property delimiter (Start) |
+| `}`                        | Property delimiter (End)   |
+| `-` (1 or more, exclusive) | Horizontal rule            |
+| `=` (1 or more, exclusive) | Paper cut                  |
+| `~`                        | Space                      |
+| `_`                        | Underline                  |
+| `"`                        | Emphasis                   |
+| `` ` ``                    | Invert                     |
+| `^`                        | Double width               |
+| `^^`                       | Double height              |
+| `^^^`                      | 2x size                    |
+| `^^^^`                     | 3x size                    |
+| `^^^^^`                    | 4x size                    |
+| `^^^^^^`                   | 5x size                    |
+| `^^^^^^^` (7 or more)      | 6x size                    |
 
 ## Escape sequences in text
 
-Escape special characters.  
+Escape special characters.
 
-|Escape sequence|Description|
-|---|---|
-|`\\`|&#x5c;|
-|<code>&#x5c;&#x7c;</code>|&#x7c;|
-|`\{`|&#x7b;|
-|`\}`|&#x7d;|
-|`\-`|&#x2d; (Cancel horizontal rule)|
-|`\=`|&#x3d; (Cancel paper cut)|
-|`\~`|&#x7e;|
-|`\_`|&#x5f;|
-|`\"`|&#x5f;|
-|``\` ``|&#x60;|
-|`\^`|&#x5e;|
-|`\n`|Wrap text manually|
-|`\x`_nn_|Hexadecimal character code|
-|`\`_char_ (Others)|Ignore|
+| Escape sequence           | Description                     |
+| ------------------------- | ------------------------------- |
+| `\\`                      | &#x5c;                          |
+| <code>&#x5c;&#x7c;</code> | &#x7c;                          |
+| `\{`                      | &#x7b;                          |
+| `\}`                      | &#x7d;                          |
+| `\-`                      | &#x2d; (Cancel horizontal rule) |
+| `\=`                      | &#x3d; (Cancel paper cut)       |
+| `\~`                      | &#x7e;                          |
+| `\_`                      | \_                              |
+| `\"`                      | \_                              |
+| ``\` ``                   | &#x60;                          |
+| `\^`                      | &#x5e;                          |
+| `\n`                      | Wrap text manually              |
+| `\x`_nn_                  | Hexadecimal character code      |
+| `\`_char_ (Others)        | Ignore                          |
 
 ## Properties
 
-The property is valid for lines with a single column.  
+The property is valid for lines with a single column.
 
 ```
 { width: * 10; comment: the column width is specified in characters }
 ```
 
-|Key|Abbreviation|Value|Case-sensitive|Default|Saved|Description|
-|---|---|---|---|---|---|---|
-|`image`|`i`|_base64 png format_|✓|-|-|Image<br>(Recommended: monochrome, critical chunks only)|
-|`code`|`c`|_textdata_|✓|-|-|Barcode / 2D code|
-|`option`|`o`|_see below_|-|`code128 2 72 nohri 3 l`|✓|Barcode / 2D code options<br>(Options are separated by commas or one or more whitespaces)|
-|`align`|`a`|`left`<br>`center`<br>`right`|-|`center`|✓|Line alignment<br>(Valid when line width &lt; CPL)|
-|`width`|`w`|`auto`<br>`*`<br>`0` -|-|`auto`<br>(`*` for all columns)|✓|Column widths (chars)<br>(Widths are separated by commas or one or more whitespaces)|
-|`border`|`b`|`line`<br>`space`<br>`none`<br>`0` - `2`|-|`space`|✓|Column border (chars)<br>(Border width: line=1, space=1, none=0)|
-|`text`|`t`|`wrap`<br>`nowrap`|-|`wrap`|✓|Text wrapping|
-|`command`|`x`|_textdata_|✓|-|-|Device-specific commands|
-|`comment`|`_`|_textdata_|✓|-|-|Comment|
+| Key       | Abbreviation | Value                                    | Case-sensitive | Default                         | Saved | Description                                                                               |
+| --------- | ------------ | ---------------------------------------- | -------------- | ------------------------------- | ----- | ----------------------------------------------------------------------------------------- |
+| `image`   | `i`          | _base64 png format_                      | ✓              | -                               | -     | Image<br>(Recommended: monochrome, critical chunks only)                                  |
+| `code`    | `c`          | _textdata_                               | ✓              | -                               | -     | Barcode / 2D code                                                                         |
+| `option`  | `o`          | _see below_                              | -              | `code128 2 72 nohri 3 l`        | ✓     | Barcode / 2D code options<br>(Options are separated by commas or one or more whitespaces) |
+| `align`   | `a`          | `left`<br>`center`<br>`right`            | -              | `center`                        | ✓     | Line alignment<br>(Valid when line width &lt; CPL)                                        |
+| `width`   | `w`          | `auto`<br>`*`<br>`0` -                   | -              | `auto`<br>(`*` for all columns) | ✓     | Column widths (chars)<br>(Widths are separated by commas or one or more whitespaces)      |
+| `border`  | `b`          | `line`<br>`space`<br>`none`<br>`0` - `2` | -              | `space`                         | ✓     | Column border (chars)<br>(Border width: line=1, space=1, none=0)                          |
+| `text`    | `t`          | `wrap`<br>`nowrap`                       | -              | `wrap`                          | ✓     | Text wrapping                                                                             |
+| `command` | `x`          | _textdata_                               | ✓              | -                               | -     | Device-specific commands                                                                  |
+| `comment` | `_`          | _textdata_                               | ✓              | -                               | -     | Comment                                                                                   |
 
 ## Barcode options
 
-Barcode options are separated by commas or one or more whitespaces.  
+Barcode options are separated by commas or one or more whitespaces.
 
-|Barcode option|Description|
-|---|---|
-|`upc`|UPC-A, UPC-E<br>(Check digit can be omitted)|
-|`ean`<br>`jan`|EAN-13, EAN-8<br>(Check digit can be omitted)|
-|`code39`|CODE39|
-|`itf`|Interleaved 2 of 5|
-|`codabar`<br>`nw7`|Codabar (NW-7)|
-|`code93`|CODE93|
-|`code128`|CODE128|
-|`2` - `4`|Barcode module width (px)|
-|`24` - `240`|Barcode module height (px)|
-|`hri`|With human readable interpretation|
-|`nohri`|Without human readable interpretation|
+| Barcode option     | Description                                   |
+| ------------------ | --------------------------------------------- |
+| `upc`              | UPC-A, UPC-E<br>(Check digit can be omitted)  |
+| `ean`<br>`jan`     | EAN-13, EAN-8<br>(Check digit can be omitted) |
+| `code39`           | CODE39                                        |
+| `itf`              | Interleaved 2 of 5                            |
+| `codabar`<br>`nw7` | Codabar (NW-7)                                |
+| `code93`           | CODE93                                        |
+| `code128`          | CODE128                                       |
+| `2` - `4`          | Barcode module width (px)                     |
+| `24` - `240`       | Barcode module height (px)                    |
+| `hri`              | With human readable interpretation            |
+| `nohri`            | Without human readable interpretation         |
 
 ## 2D code options
 
-2D code options are separated by commas or one or more whitespaces.  
+2D code options are separated by commas or one or more whitespaces.
 
-|2D code option|Description|
-|---|---|
-|`qrcode`|QR Code|
-|`3` - `8`|Cell size (px)|
-|`l`<br>`m`<br>`q`<br>`h`|Error correction level|
+| 2D code option           | Description            |
+| ------------------------ | ---------------------- |
+| `qrcode`                 | QR Code                |
+| `3` - `8`                | Cell size (px)         |
+| `l`<br>`m`<br>`q`<br>`h` | Error correction level |
 
 ## Special characters in property values
 
-Special characters in property values are different from special characters in text.  
+Special characters in property values are different from special characters in text.
 
-|Special character|Description|
-|---|---|
-|`\`|Character escape|
-|<code>&#x7c;</code>|Column delimiter|
-|`{`|Property delimiter (Start)|
-|`}`|Property delimiter (End)|
-|`:`|Key-value separator|
-|`;`|Key-value delimiter|
+| Special character   | Description                |
+| ------------------- | -------------------------- |
+| `\`                 | Character escape           |
+| <code>&#x7c;</code> | Column delimiter           |
+| `{`                 | Property delimiter (Start) |
+| `}`                 | Property delimiter (End)   |
+| `:`                 | Key-value separator        |
+| `;`                 | Key-value delimiter        |
 
 ## Escape sequences in property values
 
-Escape special characters.  
+Escape special characters.
 
-|Escape sequence|Description|
-|---|---|
-|`\\`|&#x5c;|
-|<code>&#x5c;&#x7c;</code>|&#x7c;|
-|`\{`|&#x7b;|
-|`\}`|&#x7d;|
-|`\;`|&#x3b;|
-|`\n`|New line|
-|`\x`_nn_|Hexadecimal character code|
-|`\`_char_ (Others)|Ignore|
+| Escape sequence           | Description                |
+| ------------------------- | -------------------------- |
+| `\\`                      | &#x5c;                     |
+| <code>&#x5c;&#x7c;</code> | &#x7c;                     |
+| `\{`                      | &#x7b;                     |
+| `\}`                      | &#x7d;                     |
+| `\;`                      | &#x3b;                     |
+| `\n`                      | New line                   |
+| `\x`_nn_                  | Hexadecimal character code |
+| `\`_char_ (Others)        | Ignore                     |
 
 # Restrictions
 
@@ -673,4 +673,4 @@ Escape special characters.
 # Author
 
 Open Foodservice System Consortium  
-http://www.ofsc.or.jp/  
+http://www.ofsc.or.jp/

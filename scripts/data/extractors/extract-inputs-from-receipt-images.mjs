@@ -476,7 +476,10 @@ async function processFiles(files, inputRoot, outputRoot, options) {
             `receipt-ocr-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
           )
           try {
-            const extracted = await extractZipWithPython(inputPath, tmpExtractDir)
+            const extracted = await extractZipWithPython(
+              inputPath,
+              tmpExtractDir
+            )
 
             for (const extractedPath of extracted) {
               const relativeInsideZip = path.relative(

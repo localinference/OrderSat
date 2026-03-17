@@ -96,7 +96,7 @@ Options:
 function stableJsonValue(value) {
   if (Array.isArray(value)) {
     return value.map((item) =>
-      item === undefined ? null : stableJsonValue(item),
+      item === undefined ? null : stableJsonValue(item)
     )
   }
   if (value && typeof value === 'object') {
@@ -129,7 +129,7 @@ function percentile(sortedNumbers, fraction) {
   if (sortedNumbers.length === 0) return 0
   const index = Math.min(
     sortedNumbers.length - 1,
-    Math.max(0, Math.ceil(sortedNumbers.length * fraction) - 1),
+    Math.max(0, Math.ceil(sortedNumbers.length * fraction) - 1)
   )
   return sortedNumbers[index]
 }
@@ -173,7 +173,7 @@ function parseCorpusLine(line, lineNumber) {
     parsed = JSON.parse(line)
   } catch (error) {
     throw new Error(
-      `Invalid JSONL at line ${lineNumber}: ${error?.message ?? String(error)}`,
+      `Invalid JSONL at line ${lineNumber}: ${error?.message ?? String(error)}`
     )
   }
 
@@ -217,7 +217,7 @@ function tokenizeSample(processor, parsed, lineNumber) {
 
 function splitSamples(samples, options) {
   const ordered = [...samples].sort((a, b) =>
-    a.sample_id.localeCompare(b.sample_id),
+    a.sample_id.localeCompare(b.sample_id)
   )
   const validationCount = resolveValidationCount(ordered.length, options)
   const validation = ordered.slice(0, validationCount)
@@ -269,15 +269,22 @@ async function run() {
     sampleCount: tokenizedSamples.length,
     trainCount: train.length,
     validationCount: validation.length,
-    inputLengths: summarizeLengths(tokenizedSamples.map((sample) => sample.input_length)),
-    labelLengths: summarizeLengths(tokenizedSamples.map((sample) => sample.label_length)),
+    inputLengths: summarizeLengths(
+      tokenizedSamples.map((sample) => sample.input_length)
+    ),
+    labelLengths: summarizeLengths(
+      tokenizedSamples.map((sample) => sample.label_length)
+    ),
   }
 
   await fs.mkdir(outputRoot, { recursive: true })
   await Promise.all([
     writeJsonl(path.join(outputRoot, 'train.jsonl'), train),
     writeJsonl(path.join(outputRoot, 'validation.jsonl'), validation),
-    fs.writeFile(path.join(outputRoot, 'stats.json'), `${JSON.stringify(stats, null, 2)}\n`),
+    fs.writeFile(
+      path.join(outputRoot, 'stats.json'),
+      `${JSON.stringify(stats, null, 2)}\n`
+    ),
   ])
 
   console.log(`Done. Tokenized dataset written to ${outputRoot}`)

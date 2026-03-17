@@ -16,33 +16,32 @@ Your job is not transcription. Your job is **semantic normalization** of noisy O
 
 Output must be:
 
-* valid JSON
-* valid JSON-LD
-* only the JSON-LD object
-* no markdown fences
-* no explanations
-* no commentary
-* no citations inside the JSON-LD
-* no debug notes
-* no provenance/audit section unless explicitly requested
+- valid JSON
+- valid JSON-LD
+- only the JSON-LD object
+- no markdown fences
+- no explanations
+- no commentary
+- no citations inside the JSON-LD
+- no debug notes
+- no provenance/audit section unless explicitly requested
 
 Use:
 
-* `"@context": "https://schema.org"`
-* either:
-
-  * a single top-level object, or
-  * `"@graph"` when multiple linked entities are needed
+- `"@context": "https://schema.org"`
+- either:
+  - a single top-level object, or
+  - `"@graph"` when multiple linked entities are needed
 
 Use stable local `@id` references such as:
 
-* `"#order"`
-* `"#merchant"`
-* `"#customer"`
-* `"#delivery"`
-* `"#offer-1"`
-* `"#order-item-1"`
-* `"#product-1"`
+- `"#order"`
+- `"#merchant"`
+- `"#customer"`
+- `"#delivery"`
+- `"#offer-1"`
+- `"#order-item-1"`
+- `"#product-1"`
 
 ---
 
@@ -52,12 +51,12 @@ Convert noisy OCR receipt text into the most semantically correct **Schema.org O
 
 The model must learn all of the following behaviors:
 
-* general broken values may be corrected when strongly supported by the receipt text itself
-* unique or sensitive specific values must not be guessed
-* intact unique/sensitive values should be copied faithfully
-* broken unique/sensitive values must be represented with typed machine-readable error markers instead of invented corrections
-* absent facts must not be added
-* ambiguous facts must be omitted or marked unresolved rather than hallucinated
+- general broken values may be corrected when strongly supported by the receipt text itself
+- unique or sensitive specific values must not be guessed
+- intact unique/sensitive values should be copied faithfully
+- broken unique/sensitive values must be represented with typed machine-readable error markers instead of invented corrections
+- absent facts must not be added
+- ambiguous facts must be omitted or marked unresolved rather than hallucinated
 
 ---
 
@@ -65,15 +64,15 @@ The model must learn all of the following behaviors:
 
 Treat the document as an `Order` by default when it is any of the following:
 
-* a receipt
-* an order confirmation
-* a purchase confirmation
-* a paid order summary
-* a checkout confirmation
-* a shipped-order summary that still clearly describes the purchase
-* a pickup-ready order notice
-* a service purchase confirmation
-* a digital purchase confirmation
+- a receipt
+- an order confirmation
+- a purchase confirmation
+- a paid order summary
+- a checkout confirmation
+- a shipped-order summary that still clearly describes the purchase
+- a pickup-ready order notice
+- a service purchase confirmation
+- a digital purchase confirmation
 
 Do **not** switch away from `Order` merely because the document is sparse, ugly, or OCR-damaged.
 
@@ -98,20 +97,20 @@ Use Schema.org objects wherever they fit naturally. Do not flatten everything to
 
 Use these when appropriate:
 
-* `Order`
-* `OrderItem`
-* `Offer`
-* `Product`
-* `Service`
-* `Organization`
-* `LocalBusiness`
-* `Store`
-* `Person`
-* `PostalAddress`
-* `QuantitativeValue`
-* `PriceSpecification`
-* `PropertyValue`
-* `ParcelDelivery`
+- `Order`
+- `OrderItem`
+- `Offer`
+- `Product`
+- `Service`
+- `Organization`
+- `LocalBusiness`
+- `Store`
+- `Person`
+- `PostalAddress`
+- `QuantitativeValue`
+- `PriceSpecification`
+- `PropertyValue`
+- `ParcelDelivery`
 
 These are all official Schema.org types or values relevant to order/receipt modeling. `OrderItem` is for line items in an order, `acceptedOffer` is a property on `Order`, `orderDelivery` links order delivery information, `ParcelDelivery` models delivery state, `PropertyValue` is the generic property/value type, and `PaymentComplete` is the payment status meaning payment has been received and processed. ([Schema.org][1])
 
@@ -119,42 +118,34 @@ These are all official Schema.org types or values relevant to order/receipt mode
 
 Use the most semantically correct structure available:
 
-* merchant or seller:
+- merchant or seller:
+  - `Store`
+  - `LocalBusiness`
+  - `Organization`
 
-  * `Store`
-  * `LocalBusiness`
-  * `Organization`
+- address:
+  - `PostalAddress`
 
-* address:
+- purchased line:
+  - `Offer`
+  - optionally also `OrderItem`
 
-  * `PostalAddress`
+- purchased thing:
+  - `Product`
+  - or `Service`
 
-* purchased line:
+- quantity:
+  - `QuantitativeValue`
 
-  * `Offer`
-  * optionally also `OrderItem`
+- leftover labeled fact with no better schema property:
+  - `PropertyValue`
 
-* purchased thing:
+- shipping/delivery information:
+  - `ParcelDelivery`
 
-  * `Product`
-  * or `Service`
-
-* quantity:
-
-  * `QuantitativeValue`
-
-* leftover labeled fact with no better schema property:
-
-  * `PropertyValue`
-
-* shipping/delivery information:
-
-  * `ParcelDelivery`
-
-* totals, subtotal, discounts, taxes, rounding, tendered amount, change:
-
-  * scalar properties where appropriate
-  * or `PriceSpecification` when a structured price object is clearly useful
+- totals, subtotal, discounts, taxes, rounding, tendered amount, change:
+  - scalar properties where appropriate
+  - or `PriceSpecification` when a structured price object is clearly useful
 
 ---
 
@@ -180,39 +171,39 @@ You must not silently “clean up” specific values from intuition alone.
 
 These are often general or semi-general values:
 
-* date formats
-* time formats
-* currency codes
-* decimal separators
-* common payment words
-* obvious total/subtotal/tax labels
-* obvious product words when the receipt clearly supports the correction
-* obvious generic store words such as `MARKET`, `STORE`, `TOTAL`, `CASH`, `VAT`, when the OCR damage is trivial
+- date formats
+- time formats
+- currency codes
+- decimal separators
+- common payment words
+- obvious total/subtotal/tax labels
+- obvious product words when the receipt clearly supports the correction
+- obvious generic store words such as `MARKET`, `STORE`, `TOTAL`, `CASH`, `VAT`, when the OCR damage is trivial
 
 ### Examples of values that must not be guessed
 
 These are often specific, unique, personal, or identifier-like:
 
-* phone numbers
-* merchant names when uncertain
-* company names
-* company registration numbers
-* VAT numbers
-* tax IDs
-* receipt numbers
-* order numbers
-* invoice/document numbers
-* transaction IDs
-* member IDs
-* loyalty numbers
-* customer names
-* cashier names
-* account identifiers
-* card tail numbers when unclear
-* street addresses when unclear
-* URLs
-* emails
-* GTIN / barcode numbers when unclear
+- phone numbers
+- merchant names when uncertain
+- company names
+- company registration numbers
+- VAT numbers
+- tax IDs
+- receipt numbers
+- order numbers
+- invoice/document numbers
+- transaction IDs
+- member IDs
+- loyalty numbers
+- customer names
+- cashier names
+- account identifiers
+- card tail numbers when unclear
+- street addresses when unclear
+- URLs
+- emails
+- GTIN / barcode numbers when unclear
 
 If such a value is broken and cannot be recovered with high confidence from the receipt itself, do **not** guess it.
 
@@ -250,10 +241,10 @@ When a clearly identified field contains a **specific** value that is broken, no
 
 This is required so the model learns:
 
-* correct general values when grounded
-* preserve intact specific values
-* do not hallucinate broken specific values
-* emit typed failure states for broken specific values
+- correct general values when grounded
+- preserve intact specific values
+- do not hallucinate broken specific values
+- emit typed failure states for broken specific values
 
 ### Required pattern for broken specific values
 
@@ -308,72 +299,72 @@ Use the narrowest correct error code you can justify.
 
 ### Merchant / company / identity errors
 
-* `BROKEN_COMPANY_NAME`
-* `BROKEN_MERCHANT_NAME`
-* `BROKEN_BRANCH_NAME`
-* `BROKEN_COMPANY_NUMBER`
-* `BROKEN_VAT_ID`
-* `BROKEN_TAX_ID`
-* `BROKEN_BUSINESS_ID`
+- `BROKEN_COMPANY_NAME`
+- `BROKEN_MERCHANT_NAME`
+- `BROKEN_BRANCH_NAME`
+- `BROKEN_COMPANY_NUMBER`
+- `BROKEN_VAT_ID`
+- `BROKEN_TAX_ID`
+- `BROKEN_BUSINESS_ID`
 
 ### Contact errors
 
-* `BROKEN_PHONE_NUMBER`
-* `BROKEN_EMAIL`
-* `BROKEN_URL`
+- `BROKEN_PHONE_NUMBER`
+- `BROKEN_EMAIL`
+- `BROKEN_URL`
 
 ### Person-related errors
 
-* `BROKEN_PERSON_NAME`
-* `BROKEN_CUSTOMER_NAME`
-* `BROKEN_CASHIER_NAME`
-* `BROKEN_MEMBER_NAME`
+- `BROKEN_PERSON_NAME`
+- `BROKEN_CUSTOMER_NAME`
+- `BROKEN_CASHIER_NAME`
+- `BROKEN_MEMBER_NAME`
 
 ### Identifier errors
 
-* `BROKEN_ORDER_NUMBER`
-* `BROKEN_RECEIPT_NUMBER`
-* `BROKEN_DOCUMENT_NUMBER`
-* `BROKEN_TRANSACTION_ID`
-* `BROKEN_MEMBER_ID`
-* `BROKEN_LOYALTY_ID`
-* `BROKEN_ACCOUNT_ID`
-* `BROKEN_CARD_LAST4`
-* `BROKEN_BARCODE`
-* `BROKEN_GTIN`
+- `BROKEN_ORDER_NUMBER`
+- `BROKEN_RECEIPT_NUMBER`
+- `BROKEN_DOCUMENT_NUMBER`
+- `BROKEN_TRANSACTION_ID`
+- `BROKEN_MEMBER_ID`
+- `BROKEN_LOYALTY_ID`
+- `BROKEN_ACCOUNT_ID`
+- `BROKEN_CARD_LAST4`
+- `BROKEN_BARCODE`
+- `BROKEN_GTIN`
 
 ### Address errors
 
-* `BROKEN_STREET_ADDRESS`
-* `BROKEN_POSTAL_CODE`
-* `BROKEN_LOCALITY`
-* `BROKEN_REGION`
-* `BROKEN_COUNTRY`
-* `BROKEN_FULL_ADDRESS`
+- `BROKEN_STREET_ADDRESS`
+- `BROKEN_POSTAL_CODE`
+- `BROKEN_LOCALITY`
+- `BROKEN_REGION`
+- `BROKEN_COUNTRY`
+- `BROKEN_FULL_ADDRESS`
 
 ### Date / time / monetary errors
 
 Use these more carefully. General fields may often be normalized instead of error-coded.
 
-* `BROKEN_ORDER_DATE`
-* `BROKEN_ORDER_TIME`
-* `BROKEN_CURRENCY`
-* `BROKEN_TOTAL`
-* `BROKEN_SUBTOTAL`
-* `BROKEN_TAX_AMOUNT`
+- `BROKEN_ORDER_DATE`
+- `BROKEN_ORDER_TIME`
+- `BROKEN_CURRENCY`
+- `BROKEN_TOTAL`
+- `BROKEN_SUBTOTAL`
+- `BROKEN_TAX_AMOUNT`
 
 ### Product / line-item specificity errors
 
 Use these only when the value is uniquely identifying or would otherwise require guessing.
 
-* `BROKEN_PRODUCT_NAME`
-* `BROKEN_SERVICE_NAME`
-* `BROKEN_ITEM_CODE`
-* `BROKEN_SKU`
+- `BROKEN_PRODUCT_NAME`
+- `BROKEN_SERVICE_NAME`
+- `BROKEN_ITEM_CODE`
+- `BROKEN_SKU`
 
 ### Fallback only when truly necessary
 
-* `BROKEN_UNIQUE_VALUE`
+- `BROKEN_UNIQUE_VALUE`
 
 Do not use broad fallback codes when a more precise code is justified.
 
@@ -383,15 +374,15 @@ Do not use broad fallback codes when a more precise code is justified.
 
 Use an empty string unresolved marker only when:
 
-* the field identity is clear, and
-* the value is present-but-unreadable or clearly intended by the document, and
-* the value cannot be recovered with sufficient confidence
+- the field identity is clear, and
+- the value is present-but-unreadable or clearly intended by the document, and
+- the value cannot be recovered with sufficient confidence
 
 Examples:
 
-* a clearly labeled phone number line with unreadable digits
-* a clearly labeled member ID with OCR corruption
-* a clear company-number label with damaged value
+- a clearly labeled phone number line with unreadable digits
+- a clearly labeled member ID with OCR corruption
+- a clear company-number label with damaged value
 
 Do **not** use empty strings as a lazy substitute for omitted unknown structure.
 
@@ -405,11 +396,11 @@ Prefer omission over fabrication.
 
 Omit the field when:
 
-* the field identity is unclear
-* the text might represent several different things
-* the OCR fragment does not justify a semantic assignment
-* a candidate correction would require guessing
-* the document does not actually contain that fact
+- the field identity is unclear
+- the text might represent several different things
+- the OCR fragment does not justify a semantic assignment
+- a candidate correction would require guessing
+- the document does not actually contain that fact
 
 Do not preserve meaningless garbage merely to fill space.
 
@@ -421,16 +412,16 @@ Do not add factual information that is absent from the receipt.
 
 Do not add:
 
-* merchant websites unless printed
-* canonical branch names not shown on the receipt
-* alternate registration numbers from external knowledge
-* inferred city/country/postal details not printed
-* corrected product catalog details not supported by the receipt
-* external merchant metadata
-* geocoding-derived address components
-* guessed loyalty program expansions
-* guessed cashier identity
-* guessed customer identity
+- merchant websites unless printed
+- canonical branch names not shown on the receipt
+- alternate registration numbers from external knowledge
+- inferred city/country/postal details not printed
+- corrected product catalog details not supported by the receipt
+- external merchant metadata
+- geocoding-derived address components
+- guessed loyalty program expansions
+- guessed cashier identity
+- guessed customer identity
 
 External knowledge is not part of the supervision target.
 
@@ -460,42 +451,42 @@ Normalize when grounded.
 
 ### Dates and times
 
-* normalize dates to ISO 8601 where possible
-* if both date and time are reliably present, prefer full datetime
-* if only date is reliable, use date only
-* if the date is clearly present but broken and not recoverable, use an error code rather than guessing
+- normalize dates to ISO 8601 where possible
+- if both date and time are reliably present, prefer full datetime
+- if only date is reliable, use date only
+- if the date is clearly present but broken and not recoverable, use an error code rather than guessing
 
 ### Currency
 
-* normalize currency to codes such as `EUR`, `USD`, `GBP`, `MYR`
-* do not infer a currency merely from merchant identity unless the receipt itself supports it
+- normalize currency to codes such as `EUR`, `USD`, `GBP`, `MYR`
+- do not infer a currency merely from merchant identity unless the receipt itself supports it
 
 ### Numbers
 
-* normalize machine-readable numbers cleanly
-* normalize decimal separators conservatively
-* do not coerce broken numeric fragments into a specific value when ambiguous
+- normalize machine-readable numbers cleanly
+- normalize decimal separators conservatively
+- do not coerce broken numeric fragments into a specific value when ambiguous
 
 ### Names
 
-* normalize merchant names only when strongly supported
-* do not beautify or expand names beyond what the receipt supports
+- normalize merchant names only when strongly supported
+- do not beautify or expand names beyond what the receipt supports
 
 ### Addresses
 
-* structure addresses into `PostalAddress` only when supported
-* do not split a messy address into precise components unless the structure is actually evidenced
+- structure addresses into `PostalAddress` only when supported
+- do not split a messy address into precise components unless the structure is actually evidenced
 
 ### Product lines
 
-* normalize quantities and prices when possible
-* keep product/service names conservative
-* do not convert stray OCR fragments into confident product names
+- normalize quantities and prices when possible
+- keep product/service names conservative
+- do not convert stray OCR fragments into confident product names
 
 ### Barcodes and identifiers
 
-* normalize GTIN or barcode values only when the digits are strongly supported
-* do not “repair” long identifiers by intuition
+- normalize GTIN or barcode values only when the digits are strongly supported
+- do not “repair” long identifiers by intuition
 
 ---
 
@@ -509,11 +500,11 @@ If order state is clearly represented, use an appropriate order status.
 
 Examples of order-like status situations that may still be represented as `Order`:
 
-* completed / paid
-* shipped
-* delivered
-* pickup available
-* pending
+- completed / paid
+- shipped
+- delivered
+- pickup available
+- pending
 
 Keep status assignment conservative.
 
@@ -525,9 +516,9 @@ Use the receipt merchant as the seller.
 
 Model the seller as the most appropriate type supported by the receipt:
 
-* `Store` for a clear retail store
-* `LocalBusiness` for a specific local merchant
-* `Organization` when the receipt only supports organization-level identity
+- `Store` for a clear retail store
+- `LocalBusiness` for a specific local merchant
+- `Organization` when the receipt only supports organization-level identity
 
 If merchant and branch/store location are both clearly present, the branch/store may be the seller and the parent organization may appear separately if the receipt supports both.
 
@@ -543,18 +534,18 @@ Represent each purchased line item as an `Offer` linked to a `Product` or `Servi
 
 ### Minimum acceptable line pattern
 
-* `Offer`
-* `price`
-* `priceCurrency`
-* `itemOffered` as `Product` or `Service` when identifiable
+- `Offer`
+- `price`
+- `priceCurrency`
+- `itemOffered` as `Product` or `Service` when identifiable
 
 ### Better pattern when quantity is available
 
-* `Offer`
-* `price`
-* `priceCurrency`
-* `eligibleQuantity` as `QuantitativeValue`
-* `itemOffered`
+- `Offer`
+- `price`
+- `priceCurrency`
+- `eligibleQuantity` as `QuantitativeValue`
+- `itemOffered`
 
 ### Optional richer pattern
 
@@ -570,17 +561,17 @@ Facts that clearly exist on the receipt but have no better natural property shou
 
 Typical cases:
 
-* cashier identifier or label
-* terminal number
-* lane number
-* member number
-* store notice code
-* payment reference
-* ad hoc flags
-* rounding line labels
-* tax label variants
-* loyalty metadata
-* receipt footer facts
+- cashier identifier or label
+- terminal number
+- lane number
+- member number
+- store notice code
+- payment reference
+- ad hoc flags
+- rounding line labels
+- tax label variants
+- loyalty metadata
+- receipt footer facts
 
 Use a normalized `name` and a clean `value`.
 
@@ -592,16 +583,16 @@ If the value is broken and unique/sensitive, use an empty `value` with a typed e
 
 The following input documents are usually in-scope for `Order`:
 
-* paper receipts
-* PDF receipts
-* order confirmations
-* checkout confirmations
-* web shop purchase confirmations
-* POS purchase records
-* pickup-ready notifications
-* shipped-order notifications that still describe purchased items
-* digital product purchase confirmations
-* service purchase confirmations
+- paper receipts
+- PDF receipts
+- order confirmations
+- checkout confirmations
+- web shop purchase confirmations
+- POS purchase records
+- pickup-ready notifications
+- shipped-order notifications that still describe purchased items
+- digital product purchase confirmations
+- service purchase confirmations
 
 ---
 
@@ -611,14 +602,14 @@ Do not remap these blindly to `Order` unless the text is actually functioning as
 
 ### Out of scope or secondary
 
-* pure invoices requesting payment
-* bank statements
-* standalone shipment tracking notices with no purchase details
-* reservations that are fundamentally reservation objects rather than orders
-* generic advertisements
-* store policies not tied to a transaction
-* pure account summaries
-* support emails with no transaction confirmation
+- pure invoices requesting payment
+- bank statements
+- standalone shipment tracking notices with no purchase details
+- reservations that are fundamentally reservation objects rather than orders
+- generic advertisements
+- store policies not tied to a transaction
+- pure account summaries
+- support emails with no transaction confirmation
 
 If a document includes both order data and another concept, the output may contain multiple linked entities as long as `Order` remains the primary transaction representation when appropriate.
 
@@ -628,36 +619,36 @@ If a document includes both order data and another concept, the output may conta
 
 ### Include when reliably supported
 
-* `@type: "Order"`
-* seller
-* order number / receipt number / document number
-* order date
-* currency
-* line items
-* totals
-* taxes
-* discounts
-* payment status
-* change
-* tendered cash
-* cashier
-* member / loyalty information
-* delivery information
-* store address
-* notices or extra facts via `additionalProperty`
+- `@type: "Order"`
+- seller
+- order number / receipt number / document number
+- order date
+- currency
+- line items
+- totals
+- taxes
+- discounts
+- payment status
+- change
+- tendered cash
+- cashier
+- member / loyalty information
+- delivery information
+- store address
+- notices or extra facts via `additionalProperty`
 
 ### Do not force when absent or ambiguous
 
-* customer identity
-* merchant website
-* full postal decomposition
-* product brand
-* GTIN
-* transaction ID
-* card details
-* country
-* branch name
-* phone number
+- customer identity
+- merchant website
+- full postal decomposition
+- product brand
+- GTIN
+- transaction ID
+- card details
+- country
+- branch name
+- phone number
 
 ---
 
@@ -677,16 +668,16 @@ If the document includes delivery or shipping details related to the purchase, m
 
 Use:
 
-* `orderDelivery` on the `Order`
-* `ParcelDelivery` for shipment or parcel-related details
+- `orderDelivery` on the `Order`
+- `ParcelDelivery` for shipment or parcel-related details
 
 Possible delivery facts:
 
-* tracking number
-* expected arrival
-* pickup location
-* pickup status
-* delivery address
+- tracking number
+- expected arrival
+- pickup location
+- pickup status
+- delivery address
 
 Keep delivery facts tied to actual receipt/order evidence.
 
@@ -698,52 +689,52 @@ Keep delivery facts tied to actual receipt/order evidence.
 
 Use:
 
-* `Store` or `LocalBusiness` as seller
-* `Order`
-* `acceptedOffer` array
-* `Offer` + `Product`
-* totals and currency on the order
-* `additionalProperty` for leftovers
+- `Store` or `LocalBusiness` as seller
+- `Order`
+- `acceptedOffer` array
+- `Offer` + `Product`
+- totals and currency on the order
+- `additionalProperty` for leftovers
 
 ## Pattern 2: Rich line-item receipt
 
 Use:
 
-* `Order`
-* `acceptedOffer`
-* optional `OrderItem`
-* `Offer`
-* `Product`
-* `QuantitativeValue`
-* structured totals and tax lines
+- `Order`
+- `acceptedOffer`
+- optional `OrderItem`
+- `Offer`
+- `Product`
+- `QuantitativeValue`
+- structured totals and tax lines
 
 ## Pattern 3: Service receipt
 
 Use:
 
-* `Order`
-* `acceptedOffer`
-* `Service` as `itemOffered`
-* service-specific dates or references in `additionalProperty`
+- `Order`
+- `acceptedOffer`
+- `Service` as `itemOffered`
+- service-specific dates or references in `additionalProperty`
 
 ## Pattern 4: Delivery-related order confirmation
 
 Use:
 
-* `Order`
-* seller
-* `acceptedOffer`
-* `orderDelivery`
-* `ParcelDelivery`
+- `Order`
+- seller
+- `acceptedOffer`
+- `orderDelivery`
+- `ParcelDelivery`
 
 ## Pattern 5: Sparse damaged receipt
 
 Use:
 
-* `Order`
-* only the fields truly supported
-* unresolved empty values plus error codes for broken specific fields
-* omit unsupported details
+- `Order`
+- only the fields truly supported
+- unresolved empty values plus error codes for broken specific fields
+- omit unsupported details
 
 Sparse output is acceptable. Weak receipts are allowed to produce sparse JSON-LD.
 
@@ -843,19 +834,19 @@ Sparse output is acceptable. Weak receipts are allowed to produce sparse JSON-LD
 
 If OCR says something like:
 
-* `T0TAL`
-* `CASHH`
-* `EUP`
-* `2O24-0I-3I`
+- `T0TAL`
+- `CASHH`
+- `EUP`
+- `2O24-0I-3I`
 
 you may normalize these only when the receipt evidence strongly supports the intended reading.
 
 Examples of acceptable normalization:
 
-* `T0TAL` -> `Total`
-* `CASHH` -> `Cash`
-* `EUP` -> `EUR` when the local receipt context supports euro
-* `2O24-0I-3I` -> `2024-01-31` when the intended digits are strongly supported
+- `T0TAL` -> `Total`
+- `CASHH` -> `Cash`
+- `EUP` -> `EUR` when the local receipt context supports euro
+- `2O24-0I-3I` -> `2024-01-31` when the intended digits are strongly supported
 
 Do not normalize uncertain specific strings using this logic.
 
@@ -865,18 +856,18 @@ Do not normalize uncertain specific strings using this logic.
 
 If the OCR contains a fragment like:
 
-* `Mbr x8?1?`
-* `St.... A....`
-* `Trx ???`
+- `Mbr x8?1?`
+- `St.... A....`
+- `Trx ???`
 
 and the field identity or value is unclear, omit it.
 
 Do not create:
 
-* fake member IDs
-* fake street names
-* fake transaction IDs
-* fake labels just to preserve structure
+- fake member IDs
+- fake street names
+- fake transaction IDs
+- fake labels just to preserve structure
 
 ---
 
@@ -884,17 +875,17 @@ Do not create:
 
 Before finalizing the JSON-LD, verify:
 
-* Is the document fundamentally an order/receipt-like transaction record?
-* Is `Order` the primary top-level type?
-* Did I use more specific Schema.org types where clearly appropriate?
-* Did I avoid adding facts absent from the receipt?
-* Did I correct only values grounded in the receipt?
-* Did I avoid guessing specific unique/sensitive values?
-* Did I use typed error codes for broken specific values?
-* Did I omit fields whose identity is unclear?
-* Is the JSON valid?
-* Is the JSON-LD structurally coherent?
-* Is the output sparse when the evidence is sparse?
+- Is the document fundamentally an order/receipt-like transaction record?
+- Is `Order` the primary top-level type?
+- Did I use more specific Schema.org types where clearly appropriate?
+- Did I avoid adding facts absent from the receipt?
+- Did I correct only values grounded in the receipt?
+- Did I avoid guessing specific unique/sensitive values?
+- Did I use typed error codes for broken specific values?
+- Did I omit fields whose identity is unclear?
+- Is the JSON valid?
+- Is the JSON-LD structurally coherent?
+- Is the output sparse when the evidence is sparse?
 
 ---
 
@@ -902,18 +893,18 @@ Before finalizing the JSON-LD, verify:
 
 Never do any of the following:
 
-* hallucinate a merchant name
-* hallucinate a phone number
-* hallucinate a person name
-* hallucinate a company number
-* hallucinate a product name from random OCR fragments
-* invent missing IDs
-* invent missing addresses
-* enrich from the web beyond receipt-supported validation
-* output placeholder junk such as `"Unknown item"`
-* preserve garbage OCR as if it were reliable structured data
-* add explanation text outside the JSON-LD
-* convert an invoice into the target just because it looks vaguely transaction-shaped
+- hallucinate a merchant name
+- hallucinate a phone number
+- hallucinate a person name
+- hallucinate a company number
+- hallucinate a product name from random OCR fragments
+- invent missing IDs
+- invent missing addresses
+- enrich from the web beyond receipt-supported validation
+- output placeholder junk such as `"Unknown item"`
+- preserve garbage OCR as if it were reliable structured data
+- add explanation text outside the JSON-LD
+- convert an invoice into the target just because it looks vaguely transaction-shaped
 
 ---
 
@@ -923,21 +914,21 @@ Produce the most semantically correct, receipt-grounded, conservative, machine-u
 
 The model should learn this exact behavior:
 
-* fix grounded general OCR noise
-* preserve intact specific values
-* never invent broken unique values
-* use typed error codes for broken specific fields
-* omit unsupported facts
-* represent receipt/order-like documents primarily as `Order`
+- fix grounded general OCR noise
+- preserve intact specific values
+- never invent broken unique values
+- use typed error codes for broken specific fields
+- omit unsupported facts
+- represent receipt/order-like documents primarily as `Order`
 
 ---
 
 ## Reference material
 
-* Schema.org `Order` defines an order as a confirmation of a transaction and supports accepted offers, order status, payment status, and delivery linkage. ([Schema.org][1])
-* JSON-LD 1.1 is the W3C Recommendation for JSON-based linked data, and supports `@context` and graph-oriented linked structures. ([W3C][2])
+- Schema.org `Order` defines an order as a confirmation of a transaction and supports accepted offers, order status, payment status, and delivery linkage. ([Schema.org][1])
+- JSON-LD 1.1 is the W3C Recommendation for JSON-based linked data, and supports `@context` and graph-oriented linked structures. ([W3C][2])
 
 This version is already usable as your annotation file. The next refinement would be a stripped training-operator edition with the same rules but less prose and more rigid decision blocks.
 
-[1]: https://schema.org/Order?utm_source=chatgpt.com "Order - Schema.org Type"
-[2]: https://www.w3.org/TR/json-ld11/?utm_source=chatgpt.com "JSON-LD 1.1"
+[1]: https://schema.org/Order?utm_source=chatgpt.com 'Order - Schema.org Type'
+[2]: https://www.w3.org/TR/json-ld11/?utm_source=chatgpt.com 'JSON-LD 1.1'

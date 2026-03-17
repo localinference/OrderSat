@@ -25,8 +25,8 @@ conditions:
 limitations:
   - liability
   - warranty
-
 ---
+
 MIT License
 
 Copyright (c) [year] [fullname]

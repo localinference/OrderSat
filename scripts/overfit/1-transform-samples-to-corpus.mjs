@@ -109,7 +109,13 @@ function scoreCandidateMatch(candidateRelativePath, targetRelativePath) {
   const archivePenalty = candidate.startsWith('archive-zip/') ? -80 : 0
   const lengthPenalty = candidate.length
 
-  return exactMatch + imagesBias + prefixScore + archivePenalty - lengthPenalty * 0.001
+  return (
+    exactMatch +
+    imagesBias +
+    prefixScore +
+    archivePenalty -
+    lengthPenalty * 0.001
+  )
 }
 
 async function buildInputIndex(inputsRoot) {
@@ -139,7 +145,9 @@ async function buildInputIndex(inputsRoot) {
   }
 
   index.forEach((matches, key) => {
-    index.set(key, [...new Map(matches.map((match) => [match.path, match])).values()])
+    index.set(key, [
+      ...new Map(matches.map((match) => [match.path, match])).values(),
+    ])
   })
 
   return index
@@ -151,7 +159,10 @@ function findMatchingInput(relativeOutputPath, inputIndex) {
   const parts = parsed.dir.split(path.sep)
   const language = parts[0]
   const dataset = parts[1]
-  const outputRelativeFromDataset = path.posix.join(...parts.slice(2), `${parsed.name}.txt`)
+  const outputRelativeFromDataset = path.posix.join(
+    ...parts.slice(2),
+    `${parsed.name}.txt`
+  )
   const fullKey = `${language}/${dataset}/${outputRelativeFromDataset}`
   const exactMatches = inputIndex.get(fullKey) ?? []
 
@@ -176,7 +187,10 @@ function findMatchingInput(relativeOutputPath, inputIndex) {
 
   const ranked = candidates.map((candidate) => ({
     ...candidate,
-    score: scoreCandidateMatch(candidate.datasetRelativePath, outputRelativeFromDataset),
+    score: scoreCandidateMatch(
+      candidate.datasetRelativePath,
+      outputRelativeFromDataset
+    ),
   }))
   ranked.sort((a, b) => {
     if (a.score !== b.score) return b.score - a.score
@@ -188,7 +202,9 @@ function findMatchingInput(relativeOutputPath, inputIndex) {
 
   if (tied.length > 1) {
     const paths = tied.map((candidate) => candidate.path).join(', ')
-    console.warn(`Warning: ambiguous input match for ${relativeOutputPath}. Using: ${paths}`)
+    console.warn(
+      `Warning: ambiguous input match for ${relativeOutputPath}. Using: ${paths}`
+    )
   }
 
   if (exactMatches.length > 0) {

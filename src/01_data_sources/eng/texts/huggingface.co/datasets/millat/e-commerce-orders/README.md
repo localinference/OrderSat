@@ -1,11 +1,12 @@
 ---
 license: mit
 language:
-- en
+  - en
 pretty_name: E-commerce Customer Order Behavior Dataset
 size_categories:
-- 10K<n<100K
+  - 10K<n<100K
 ---
+
 # E-commerce Customer Order Behavior Dataset
 
 A synthetic e-commerce dataset containing 10,000 orders with realistic customer behavior patterns, suitable for e-commerce analytics and machine learning tasks.
@@ -55,23 +56,23 @@ Each instance represents a single e-commerce order with the following fields:
 
 #### Data Fields
 
-| Field Name | Type | Description | Value Range |
-|------------|------|-------------|-------------|
-| order_id | string | Unique order identifier (UUID4) | - |
-| customer_id | int | Customer identifier | 1-3,000 |
-| product_id | int | Product identifier | 1-1,000 |
-| category | string | Product category | Electronics, Clothing, Home, Books, Beauty, Toys |
-| price | float | Product price | $5.00-$500.00 |
-| quantity | int | Order quantity | 1-10 |
-| order_date | datetime | Order placement timestamp | Last 12 months |
-| shipping_date | datetime | Shipping timestamp | 1-7 days after order_date |
-| delivery_status | string | Delivery status | Pending, Shipped, Delivered, Returned |
-| payment_method | string | Payment method used | Credit Card, PayPal, Debit Card, Apple Pay, Google Pay |
-| device_type | string | Ordering device | Desktop, Mobile, Tablet |
-| channel | string | Marketing channel | Organic, Paid Search, Email, Social |
-| shipping_address | string | Delivery address | Street, City, State, ZIP |
-| billing_address | string | Billing address | Street, City, State, ZIP |
-| customer_segment | string | Customer type | New, Returning, VIP |
+| Field Name       | Type     | Description                     | Value Range                                            |
+| ---------------- | -------- | ------------------------------- | ------------------------------------------------------ |
+| order_id         | string   | Unique order identifier (UUID4) | -                                                      |
+| customer_id      | int      | Customer identifier             | 1-3,000                                                |
+| product_id       | int      | Product identifier              | 1-1,000                                                |
+| category         | string   | Product category                | Electronics, Clothing, Home, Books, Beauty, Toys       |
+| price            | float    | Product price                   | $5.00-$500.00                                          |
+| quantity         | int      | Order quantity                  | 1-10                                                   |
+| order_date       | datetime | Order placement timestamp       | Last 12 months                                         |
+| shipping_date    | datetime | Shipping timestamp              | 1-7 days after order_date                              |
+| delivery_status  | string   | Delivery status                 | Pending, Shipped, Delivered, Returned                  |
+| payment_method   | string   | Payment method used             | Credit Card, PayPal, Debit Card, Apple Pay, Google Pay |
+| device_type      | string   | Ordering device                 | Desktop, Mobile, Tablet                                |
+| channel          | string   | Marketing channel               | Organic, Paid Search, Email, Social                    |
+| shipping_address | string   | Delivery address                | Street, City, State, ZIP                               |
+| billing_address  | string   | Billing address                 | Street, City, State, ZIP                               |
+| customer_segment | string   | Customer type                   | New, Returning, VIP                                    |
 
 #### Data Splits
 
@@ -97,6 +98,7 @@ No manual annotations (synthetic data)
 #### Social Impact of Dataset
 
 This dataset is designed for:
+
 - Development of e-commerce analytics systems
 - Testing of order processing systems
 - Training of machine learning models for e-commerce
@@ -105,12 +107,14 @@ This dataset is designed for:
 #### Discussion of Biases
 
 As a synthetic dataset, care has been taken to:
+
 - Use realistic distributions for order patterns
 - Maintain proper relationships between dates
 - Create realistic customer segments
 - Avoid demographic biases in address generation
 
 However, users should note that:
+
 - The data patterns are simplified compared to real e-commerce data
 - The customer behavior patterns are based on general assumptions
 - Geographic distribution might not reflect real-world patterns
@@ -120,6 +124,7 @@ However, users should note that:
 Total Records: 10,000
 
 Distribution Statistics:
+
 - Delivery Status:
   - Delivered: 70%
   - Shipped: 20%
@@ -151,6 +156,7 @@ prices = dataset['train']['price']
 ### Data Quality
 
 The dataset has been validated to ensure:
+
 - No missing values
 - Proper value ranges
 - Valid categorical values

@@ -2,17 +2,17 @@
 annotations_creators: []
 language: en
 size_categories:
-- n<1K
+  - n<1K
 task_categories:
-- object-detection
-- visual-question-answering
-- visual-document-retrieval
+  - object-detection
+  - visual-question-answering
+  - visual-document-retrieval
 task_ids: []
 pretty_name: icdar-sroie-train
 tags:
-- fiftyone
-- image
-- object-detection
+  - fiftyone
+  - image
+  - object-detection
 dataset_summary: >
 
 
@@ -64,8 +64,6 @@ license: cc-by-4.0
 
 ![image/png](icdar_sroie.gif)
 
-
-
 This is a [FiftyOne](https://github.com/voxel51/fiftyone) dataset with 712 samples.
 
 ## Installation
@@ -90,7 +88,6 @@ dataset = load_from_hub("Voxel51/scanned_receipts")
 session = fo.launch_app(dataset)
 ```
 
-
 ### Dataset Description
 
 The **ICDAR-SROIE (Scanned Receipts OCR and Information Extraction)** dataset comprises **1,000 whole scanned receipt images** collected from real-world scenarios. This dataset was introduced as part of the **ICDAR 2019 Competition** to advance research in document analysis, optical character recognition (OCR), and information extraction from structured documents.
@@ -98,12 +95,13 @@ The **ICDAR-SROIE (Scanned Receipts OCR and Information Extraction)** dataset co
 The dataset supports three interconnected tasks:
 
 1. **Scanned Receipt Text Localization**: Accurately localizing text regions in receipt images
-2. **Scanned Receipt OCR**: Recognizing and transcribing text content from detected regions  
+2. **Scanned Receipt OCR**: Recognizing and transcribing text content from detected regions
 3. **Key Information Extraction**: Extracting structured information (company, address, date, total) from receipts
 
 The receipts originate primarily from shops, stores, and restaurants, representing diverse real-world formats, layouts, and printing qualities. This diversity makes it an excellent benchmark for evaluating robust document understanding systems.
 
 **Key Characteristics:**
+
 - **Total Images**: 1,000 scanned receipt images
 - **Training Set**: 712 images with annotations
 - **Test Set**: 347 images (with 361 in some versions)
@@ -113,7 +111,7 @@ The receipts originate primarily from shops, stores, and restaurants, representi
 
 **Curated by:** Zheng Huang, Kai Chen, Jianhua He, Xiang Bai, Dimosthenis Karatzas, Shijian Lu, C.V. Jawahar  
 **Funded by:** ICDAR 2019 Competition organizers  
-**Language(s)**: Primarily English (en) with multilingual elements  
+**Language(s)**: Primarily English (en) with multilingual elements
 
 ### Dataset Sources
 
@@ -124,17 +122,21 @@ The receipts originate primarily from shops, stores, and restaurants, representi
 ### Supported Tasks and Leaderboards
 
 #### Task 1: Scanned Receipt Text Localization
+
 Detect and localize all text regions in receipt images using quadrilateral bounding boxes.
 
 **Evaluation Metrics**: Precision, Recall, F1-Score (IoU threshold-based)
 
-#### Task 2: Scanned Receipt OCR  
+#### Task 2: Scanned Receipt OCR
+
 Transcribe text from detected regions into machine-readable format.
 
 **Evaluation Metrics**: Word-level and character-level accuracy
 
 #### Task 3: Key Information Extraction
+
 Extract four key fields from receipts:
+
 - **Company**: Business/merchant name
 - **Address**: Business address
 - **Date**: Transaction date
@@ -145,6 +147,7 @@ Extract four key fields from receipts:
 ### Dataset Information Summary
 
 The ICDAR-SROIE dataset contains scanned receipt images with:
+
 - **Text bounding boxes**: Quadrilateral bounding boxes (4 vertices) with coordinates in clockwise order starting from the top
 - **Text transcripts**: The OCR text for each bounding box
 - **Metadata**: Key information extracted from receipts including:
@@ -156,6 +159,7 @@ The ICDAR-SROIE dataset contains scanned receipt images with:
 ## Dataset Structure
 
 Each image in the dataset has associated annotation files:
+
 ```
 X00016469612.jpg              # Receipt image
 X00016469612_bbox.txt         # Text bounding boxes and transcripts
@@ -165,14 +169,17 @@ X00016469612_metadata.txt     # Extracted key information (JSON)
 ### Bounding Box Format
 
 Each line in the `_bbox.txt` file contains:
+
 ```
 x1,y1,x2,y2,x3,y3,x4,y4,transcript
 ```
+
 Where `(x1,y1)`, `(x2,y2)`, `(x3,y3)`, `(x4,y4)` are the four vertices of the bounding box in clockwise order.
 
 ### Metadata Format
 
 The `_metadata.txt` file contains JSON with extracted information:
+
 ```json
 {
   "company": "STARBUCKS STORE #10208",
@@ -232,7 +239,6 @@ Once the dataset is loaded in FiftyOne, you can:
 - Create custom views and tags
 - Export annotations in various formats
 
-
 ## Use Cases
 
 ### Direct Use
@@ -248,6 +254,7 @@ The ICDAR-SROIE dataset is intended for:
 7. **Multi-task Learning**: Training models that jointly optimize for detection, recognition, and extraction
 
 **Recommended Use Cases:**
+
 - Academic research in computer vision and NLP
 - Development of commercial OCR systems (subject to licensing)
 - Educational projects for learning document AI
@@ -272,12 +279,14 @@ The competition format encouraged development of complete end-to-end systems rat
 #### Data Collection and Processing
 
 **Collection Process:**
+
 - Receipts were collected from real-world transactions at various retail establishments
 - Images were captured using scanners and mobile devices to reflect practical use cases
 - Sources included shops, restaurants, and service providers
 - Collection focused on ensuring diversity in layouts, formats, and printing styles
 
 **Processing Steps:**
+
 1. **Image Standardization**: Receipts were scanned and converted to JPEG format
 2. **Quality Control**: Images were reviewed for readability and completeness
 3. **Annotation**: Expert annotators marked text bounding boxes and transcribed content
@@ -286,6 +295,7 @@ The competition format encouraged development of complete end-to-end systems rat
 6. **Format Conversion**: Annotations were stored in accessible text formats
 
 **Tools and Methods:**
+
 - Manual annotation of bounding boxes using annotation software
 - Multiple annotator validation for quality assurance
 - Standardized guidelines for consistent annotation
@@ -293,12 +303,14 @@ The competition format encouraged development of complete end-to-end systems rat
 #### Who are the Source Data Producers?
 
 **Data Sources:**
+
 - Real receipts from actual business transactions
 - Establishments primarily located in Asia (based on business names and languages observed)
 - Mix of local shops, international chains, and restaurants
 - Time period: Receipts from approximately 2015-2018 based on dates in metadata
 
 **Collectors:**
+
 - Dataset curated by research teams from multiple institutions
 - Part of ICDAR 2019 competition organization efforts
 - No personally identifiable information of customers was intentionally collected
@@ -308,24 +320,28 @@ The competition format encouraged development of complete end-to-end systems rat
 #### Annotation Process
 
 **Text Localization (Task 1):**
+
 - Annotators manually drew quadrilateral bounding boxes around each text instance
 - Vertices marked in clockwise order starting from the top-left
 - Boxes follow text orientation (can be rotated for angled text)
 - Approximately 30-50 text regions per receipt on average
 
 **OCR Transcription (Task 2):**
+
 - Each bounded text region was manually transcribed
 - Transcriptions preserve original text including punctuation and special characters
 - Multi-line text blocks were typically annotated as separate instances
 - Quality control included cross-validation by multiple annotators
 
 **Key Information Extraction (Task 3):**
+
 - Four fields manually extracted: company, address, date, total
 - JSON format for structured storage
 - Guidelines provided for handling edge cases (multiple totals, missing information)
 - Consistency checks performed across the dataset
 
 **Annotation Guidelines:**
+
 - Detailed instructions provided to ensure consistency
 - Inter-annotator agreement measured and discrepancies resolved
 - Estimated annotation time: 10-15 minutes per receipt
@@ -333,12 +349,14 @@ The competition format encouraged development of complete end-to-end systems rat
 #### Who are the Annotators?
 
 The annotations were created by:
+
 - Trained human annotators with expertise in document analysis
 - Researchers and competition organizers
 - Quality control performed by domain experts
 - Multi-stage validation process to ensure accuracy
 
 **Annotator Demographics:**
+
 - Information about specific annotator demographics is not publicly available
 - Likely included researchers familiar with OCR and document understanding
 - Native language speakers for multilingual content validation
@@ -348,23 +366,27 @@ The annotations were created by:
 **Privacy Considerations:**
 
 The dataset contains real-world receipts which may include:
+
 - ✅ **Business Names**: Company names are public information
 - ✅ **Business Addresses**: Public business addresses
 - ✅ **Transaction Dates**: Non-sensitive temporal information
 - ✅ **Transaction Amounts**: Individual transaction totals
 
 The dataset does NOT intentionally contain:
+
 - ❌ Customer names
 - ❌ Credit card numbers
 - ❌ Personal phone numbers or email addresses
 - ❌ Customer addresses
 
 **Anonymization:**
+
 - Receipts were selected/processed to exclude personal customer information
 - Any customer-identifying information visible should be considered incidental
 - Business information (company names, addresses) is inherently public
 
 **Usage Recommendations:**
+
 - Researchers should not attempt to identify individuals from this data
 - Any incidentally visible personal information should not be extracted or shared
 - Follow ethical guidelines for research with real-world data
@@ -372,7 +394,6 @@ The dataset does NOT intentionally contain:
 ## Citation
 
 If you use the ICDAR-SROIE dataset in your research, please cite the original competition paper:
-
 
 ### BibTeX
 
@@ -390,8 +411,7 @@ If you use the ICDAR-SROIE dataset in your research, please cite the original co
 
 ### APA
 
-Huang, Z., Chen, K., He, J., Bai, X., Karatzas, D., Lu, S., & Jawahar, C. V. (2019). ICDAR2019 Competition on Scanned Receipt OCR and Information Extraction. In *2019 International Conference on Document Analysis and Recognition (ICDAR)* (pp. 1516-1520). IEEE.
-
+Huang, Z., Chen, K., He, J., Bai, X., Karatzas, D., Lu, S., & Jawahar, C. V. (2019). ICDAR2019 Competition on Scanned Receipt OCR and Information Extraction. In _2019 International Conference on Document Analysis and Recognition (ICDAR)_ (pp. 1516-1520). IEEE.
 
 ## References
 

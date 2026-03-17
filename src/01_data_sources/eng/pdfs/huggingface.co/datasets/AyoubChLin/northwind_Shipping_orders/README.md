@@ -1,25 +1,22 @@
 ---
 license: apache-2.0
 task_categories:
-- feature-extraction
-- text-classification
+  - feature-extraction
+  - text-classification
 language:
-- en
+  - en
 tags:
-- finance
-pretty_name: PDF northwind 
-
+  - finance
+pretty_name: PDF northwind
 ---
-
 
 # Northwind Shipping Orders and Related Documents
 
 This dataset contains a collection of Shipping Orders and related documents from the Northwind database, a sample database used by Microsoft for demonstrating database functionalities.
 
-The Shipping Orders include information about the ship name, Address , Region, postal code ,country, customer ,employee shipped date  product names, quantities, unit prices, and total prices. The related documents include shipping documents and stock documents.
+The Shipping Orders include information about the ship name, Address , Region, postal code ,country, customer ,employee shipped date product names, quantities, unit prices, and total prices. The related documents include shipping documents and stock documents.
 
 This dataset was created by [CHERGUELAINE Ayoub](https://www.linkedin.com/in/ayoub-cherguelaine/) & [BOUBEKRI Faycal](https://www.linkedin.com/in/faycal-boubekri-832848199/) for the purpose of classifying company documents. It can be used for document classification and other NLP tasks.
-
 
 ## Northwind Shipping Orders Dataset
 
@@ -63,4 +60,7 @@ Predicting future sales and trends
 # Acknowledgements
 
 This dataset was sourced from the Northwind database, which is a sample database used by Microsoft for educational purposes.
+
+```
+
 ```

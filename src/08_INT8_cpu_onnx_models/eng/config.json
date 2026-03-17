@@ -5,14 +5,8 @@
   "tokenizerModelFile": "tokenizer.model",
   "tokenizerVocabFile": "tokenizer.vocab",
   "metricsFile": "metrics.json",
-  "inputNames": [
-    "input_ids",
-    "attention_mask",
-    "decoder_input_ids"
-  ],
-  "outputNames": [
-    "logits"
-  ],
+  "inputNames": ["input_ids", "attention_mask", "decoder_input_ids"],
+  "outputNames": ["logits"],
   "tokenIds": {
     "bos": 1,
     "eos": 2,
@@ -32,83 +26,36 @@
     "opsetVersion": 18
   },
   "validation": {
-    "inputs": [
-      "input_ids",
-      "attention_mask",
-      "decoder_input_ids"
-    ],
-    "outputs": [
-      "logits"
-    ],
-    "providers": [
-      "CPUExecutionProvider"
-    ],
+    "inputs": ["input_ids", "attention_mask", "decoder_input_ids"],
+    "outputs": ["logits"],
+    "providers": ["CPUExecutionProvider"],
     "cases": [
       {
         "name": "example",
         "inputShape": {
-          "input_ids": [
-            1,
-            16
-          ],
-          "attention_mask": [
-            1,
-            16
-          ],
-          "decoder_input_ids": [
-            1,
-            8
-          ]
+          "input_ids": [1, 16],
+          "attention_mask": [1, 16],
+          "decoder_input_ids": [1, 8]
         },
-        "outputShape": [
-          1,
-          8,
-          4329
-        ]
+        "outputShape": [1, 8, 4329]
       },
       {
         "name": "max_source_single_decoder",
         "inputShape": {
-          "input_ids": [
-            1,
-            256
-          ],
-          "attention_mask": [
-            1,
-            256
-          ],
-          "decoder_input_ids": [
-            1,
-            1
-          ]
+          "input_ids": [1, 256],
+          "attention_mask": [1, 256],
+          "decoder_input_ids": [1, 1]
         },
-        "outputShape": [
-          1,
-          1,
-          4329
-        ]
+        "outputShape": [1, 1, 4329]
       },
       {
         "name": "max_lengths",
         "inputShape": {
-          "input_ids": [
-            1,
-            256
-          ],
-          "attention_mask": [
-            1,
-            256
-          ],
-          "decoder_input_ids": [
-            1,
-            513
-          ]
+          "input_ids": [1, 256],
+          "attention_mask": [1, 256],
+          "decoder_input_ids": [1, 513]
         },
-        "outputShape": [
-          1,
-          513,
-          4329
-        ]
+        "outputShape": [1, 513, 4329]
       }
     ]
   },
