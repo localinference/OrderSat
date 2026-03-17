@@ -3,16 +3,7 @@ import { cleanText } from '@sctg/sentencepiece-js'
 import { toBase64UrlString, toString, fromString } from '@z-base/bytecodec'
 import { ensurePath } from '../utils/ensurePath/index.js'
 
-import { access, constants, writeFile } from 'fs/promises'
-
-async function exists(path) {
-  try {
-    await access(path, constants.F_OK)
-    return true
-  } catch {
-    return false
-  }
-}
+import { writeFile } from 'fs/promises'
 
 export async function writeUniqueToDest(textBuffer, language, destinationPath) {
   const cleanedString = cleanText(toString(textBuffer).normalize('NFKC'))
@@ -29,10 +20,15 @@ export async function writeUniqueToDest(textBuffer, language, destinationPath) {
 
   const path = join(languageDestinationPath, fileName)
 
-  if (exists(path)) return
-
-  console.log(`Writing: "${fileName}".`)
-  await writeFile(path, cleanedString, {
-    encoding: 'utf8',
-  })
+  try {
+    await writeFile(path, cleanedString, {
+      encoding: 'utf8',
+      flag: 'wx',
+    })
+    console.log(`Writing "${fileName}".`)
+  } catch (err) {
+    if (err?.code !== 'EEXIST') {
+      throw err
+    }
+  }
 }
