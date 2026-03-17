@@ -14,7 +14,7 @@ for (let i = 0; i < availableParallelism; i++) {
 }
 
 console.log(
-  `Extracting input samples with up to ${availableParallelism} threads.\n`
+  `[Pool] Worker pool ready with up to ${availableParallelism} thread(s).\n`
 )
 
 export function runWithWorker(jobName, jobParams) {
@@ -23,19 +23,27 @@ export function runWithWorker(jobName, jobParams) {
   }
 
   return new Promise((resolve, reject) => {
+    const id = crypto.randomUUID()
+
     pendingJobs.push({
-      id: crypto.randomUUID(),
+      id,
       jobName,
       jobParams,
       reject,
       resolve,
     })
+    console.log(
+      `[Pool] Queued ${formatJob(jobName, id)}. Pending: ${pendingJobs.length}. Running: ${runningJobs.size}.\n`
+    )
     drainQueue()
   })
 }
 
 export async function closeWorkerPool() {
   isClosing = true
+  console.log(
+    `[Pool] Closing worker pool. Pending: ${pendingJobs.length}. Running: ${runningJobs.size}.\n`
+  )
 
   const queuedJobs = pendingJobs.splice(0)
   for (const job of queuedJobs) {
@@ -52,10 +60,12 @@ export async function closeWorkerPool() {
 
   const workers = workerPool.splice(0)
   await Promise.all(workers.map((worker) => worker.terminate()))
+  console.log(`[Pool] Worker pool termination finished.\n`)
 }
 
 function createWorker() {
   const worker = new Worker(new URL('./Worker/index.js', import.meta.url))
+  console.log(`[Pool] Created worker ${worker.threadId}.\n`)
 
   worker.on('message', (data) => {
     const runningJob = runningJobs.get(worker)
@@ -64,6 +74,9 @@ function createWorker() {
     }
 
     runningJobs.delete(worker)
+    console.log(
+      `[Pool] Completed ${formatJob(runningJob.jobName, runningJob.id)} on worker ${worker.threadId}. Pending: ${pendingJobs.length}. Running: ${runningJobs.size}.\n`
+    )
     if (!isClosing) {
       idleWorkers.push(worker)
       drainQueue()
@@ -73,6 +86,9 @@ function createWorker() {
       const error = new Error(data.error.message)
       error.name = data.error.name
       error.stack = data.error.stack
+      console.log(
+        `[Pool] ${formatJob(runningJob.jobName, runningJob.id)} failed on worker ${worker.threadId}: "${error}".\n`
+      )
       runningJob.reject(error)
       return
     }
@@ -100,6 +116,9 @@ function drainQueue() {
     const job = pendingJobs.shift()
 
     runningJobs.set(worker, job)
+    console.log(
+      `[Pool] Dispatching ${formatJob(job.jobName, job.id)} to worker ${worker.threadId}. Pending: ${pendingJobs.length}. Running: ${runningJobs.size}.\n`
+    )
     worker.postMessage({
       id: job.id,
       job: job.jobName,
@@ -112,6 +131,10 @@ function failWorker(worker, error) {
   if (!removeWorker(worker)) {
     return
   }
+
+  console.log(
+    `[Pool] Worker ${worker.threadId} failed: "${error}". Replacing worker.\n`
+  )
 
   const runningJob = runningJobs.get(worker)
   if (runningJob) {
@@ -139,4 +162,8 @@ function removeWorker(worker) {
   }
 
   return true
+}
+
+function formatJob(jobName, id) {
+  return `job "${jobName}" (${id.slice(0, 8)})`
 }

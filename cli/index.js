@@ -24,17 +24,22 @@ try {
   const { languages, destinationPath } = getArgs()
   const outputGlobRoot = destinationPath.replaceAll('\\', '/')
   /*************************************************/
+  console.log(
+    `[CLI] Starting input sample preparation.\nLanguages: ${languages.join(', ')}.\nDestination: "${destinationPath}".\nFile concurrency per language: ${maxConcurrentFiles}.\n\n`
+  )
   const paths = Object.fromEntries(
     await Promise.all(
       languages.map(async (language) => {
-        console.log(`Looking up data sources for language: "${language}".\n`)
+        console.log(
+          `[CLI] Looking up data sources for language: "${language}".\n`
+        )
 
         const languagePaths = await FastGlob.async(
           `./models/.data/${language}/**/*.zip`
         )
 
         console.log(
-          `Found ${languagePaths.length} possible sources:\n${(() => {
+          `[CLI] Found ${languagePaths.length} possible sources for language "${language}":\n${(() => {
             let out = ''
             for (const path of languagePaths) {
               out += `"${path}"\n`
@@ -48,16 +53,21 @@ try {
       })
     )
   )
-  console.log(`Creating a temp dir for zip unpacking.\n`)
+  console.log(
+    `[CLI] Finished source discovery for ${languages.length} language(s).\n`
+  )
+  console.log(`[CLI] Creating a temp dir for zip unpacking.\n`)
 
   tempRoot = await fs.mkdtemp(join(tmpdir(), '.data-unpack-'))
   if (tempRoot) {
-    console.log(`Created temp dir at "${tempRoot}".\n\n\n`)
+    console.log(`[CLI] Created temp dir at "${tempRoot}".\n\n\n`)
   } else throw new Error('Unable to make a temp dir.')
 
   await Promise.all(
     Object.entries(paths).map(async ([language, routes]) => {
-      console.log(`Starting to unpack sources for language: "${language}".\n`)
+      console.log(
+        `[CLI] Starting to unpack ${routes.length} source archive(s) for language: "${language}".\n`
+      )
 
       await Promise.all(
         routes.map((route) => {
@@ -67,7 +77,9 @@ try {
             basename(route, extname(route))
           )
 
-          console.log(`Unpacking "${route}".\n`)
+          console.log(
+            `[CLI] Queueing archive unpack for "${route}" into "${unpackDestinationPath}".\n`
+          )
           return runWithWorker('unpackArchive', {
             path: route,
             dest: unpackDestinationPath,
@@ -75,8 +87,8 @@ try {
         })
       )
 
-      ui.logger.success(
-        `Successfully unpacked sources for language: "${language}".\n\n\n`
+      console.log(
+        `[CLI] Finished unpacking sources for language: "${language}".\n\n\n`
       )
     })
   )
@@ -91,9 +103,10 @@ try {
       })
 
       console.log(
-        `Starting to filter ${files.length} files, to normalized unique input samples for language: "${language}".\n`
+        `[CLI] Starting to filter ${files.length} files into normalized unique input samples for language: "${language}".\n`
       )
       const magic = await WASMagic.create()
+      console.log(`[CLI] MIME detector ready for language "${language}".\n`)
 
       await runWithConcurrency(files, maxConcurrentFiles, async (file) => {
         const buffer = await fs.readFile(join(tempRoot, language, file))
@@ -101,10 +114,20 @@ try {
         try {
           const mime = magic.detect(buffer)
           if (!mime) {
+            console.log(
+              `[CLI] Skipping "${file}" for language "${language}" because no mime type was detected.\n`
+            )
             return
           }
 
+          console.log(
+            `[CLI] Processing "${file}" for language "${language}" as "${mime}".\n`
+          )
+
           if (mime.includes('image')) {
+            console.log(
+              `[CLI] Requesting OCR for image "${file}" in language "${language}".\n`
+            )
             const textFromImageResult = await runWithWorker(
               'getTextFromImage',
               {
@@ -121,9 +144,15 @@ try {
           }
 
           if (mime.includes('pdf')) {
+            console.log(
+              `[CLI] Rendering PDF "${file}" to images for language "${language}".\n`
+            )
             const images = await runWithWorker('pdfToImages', {
               pdfBuffer: buffer,
             })
+            console.log(
+              `[CLI] PDF "${file}" produced ${images.length} image page(s); requesting OCR for language "${language}".\n`
+            )
             const text = (
               await Promise.all(
                 images.map((image) =>
@@ -143,25 +172,30 @@ try {
             mime.includes('text') ||
             (mime.includes('application') && !mime.includes('pdf'))
           ) {
+            console.log(
+              `[CLI] Writing text-like file "${file}" directly for language "${language}".\n`
+            )
             await writeUniqueToDest(buffer, language, destinationPath)
           }
         } catch (err) {
-          console.log(`Couldn't detect mime, because of "${err}"\n\n\n`)
+          console.log(
+            `[CLI] Failed while processing "${file}" for language "${language}", because of "${err}".\n\n\n`
+          )
         }
       })
 
       const uniquesLength = await getGlobLength(
         `${outputGlobRoot}/${language}/*.txt`
       )
-      ui.logger.success(
-        `Created ${uniquesLength} unique "${language}" input samples in ${(performance.now() - l0) / 1000} seconds.\n\n\n`
+      console.log(
+        `[CLI] Created ${uniquesLength} unique "${language}" input sample(s) in ${(performance.now() - l0) / 1000} seconds.\n\n\n`
       )
     })
   )
 
   /***************************************************/
   console.log(
-    `Preapared all input samples in ${(performance.now() - t0) / 1000} seconds.`
+    `[CLI] Prepared all input samples in ${(performance.now() - t0) / 1000} seconds.\n`
   )
   /***************************************************/
 } catch (err) {
@@ -169,7 +203,9 @@ try {
   process.exitCode = 1
 } finally {
   try {
+    console.log(`[CLI] Closing worker pool.\n`)
     await closeWorkerPool()
+    console.log(`[CLI] Worker pool closed.\n`)
   } catch (err) {
     ui.logger.error(`Failed to close worker pool, because of "${err}".`)
     process.exitCode = 1
@@ -177,7 +213,9 @@ try {
 
   if (tempRoot) {
     try {
+      console.log(`[CLI] Cleaning temp dir "${tempRoot}".\n`)
       await fs.rm(tempRoot, { recursive: true, force: true })
+      console.log(`[CLI] Cleaned temp dir "${tempRoot}".\n`)
     } catch (err) {
       ui.logger.error(
         `Failed to clean temp dir "${tempRoot}", because of "${err}".`

@@ -30,5 +30,6 @@ export async function writeUniqueToDest(textBuffer, language, destinationPath) {
     if (err?.code !== 'EEXIST') {
       throw err
     }
+    console.log(`[Output] Skipping existing output "${fileName}".\n`)
   }
 }
