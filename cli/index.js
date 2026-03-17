@@ -35,7 +35,7 @@ try {
         )
 
         const languagePaths = await FastGlob.async(
-          `./models/.data/${language}/**/*.zip`
+          `./machine_learning/data_sources/${language}/**/*.zip`
         )
 
         console.log(
