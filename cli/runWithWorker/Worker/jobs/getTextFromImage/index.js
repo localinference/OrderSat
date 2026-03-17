@@ -3,7 +3,7 @@ import { resolve } from 'path'
 import { createWorker, OEM } from 'tesseract.js'
 
 const tesseractWorkers = new Map()
-const tesseractCachePath = resolve(process.cwd(), '.cache', 'tesseract')
+const tesseractCachePath = resolve(process.cwd(), '.SaT', '.cache', 'tesseract')
 const tesseractCacheReady = mkdir(tesseractCachePath, { recursive: true })
 
 export async function getTextFromImage({ image, language }) {
