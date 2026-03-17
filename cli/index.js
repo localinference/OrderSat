@@ -18,6 +18,7 @@ const t0 = performance.now()
 const ui = cliui()
 let tempRoot
 const maxConcurrentFiles = Math.max(availableParallelism * 2, 1)
+const supportedArchiveExtensions = ['.nar', '.zip', '.tar', '.tgz', '.tar.gz', '.gz']
 
 try {
   /*************************************************/
@@ -27,6 +28,9 @@ try {
   console.log(
     `[CLI] Starting input sample preparation.\nLanguages: ${languages.join(', ')}.\nDestination: "${destinationPath}".\nFile concurrency per language: ${maxConcurrentFiles}.\n\n`
   )
+  console.log(
+    `[CLI] Supported archive extensions: ${supportedArchiveExtensions.join(', ')}.\n`
+  )
   const paths = Object.fromEntries(
     await Promise.all(
       languages.map(async (language) => {
@@ -34,9 +38,13 @@ try {
           `[CLI] Looking up data sources for language: "${language}".\n`
         )
 
-        const languagePaths = await FastGlob.async(
-          `./machine_learning/data_sources/${language}/**/*.zip`
-        )
+        const languagePaths = [
+          ...new Set(
+            await FastGlob.async(getArchiveSourceGlobs(language), {
+              onlyFiles: true,
+            })
+          ),
+        ]
 
         console.log(
           `[CLI] Found ${languagePaths.length} possible sources for language "${language}":\n${(() => {
@@ -56,7 +64,7 @@ try {
   console.log(
     `[CLI] Finished source discovery for ${languages.length} language(s).\n`
   )
-  console.log(`[CLI] Creating a temp dir for zip unpacking.\n`)
+  console.log(`[CLI] Creating a temp dir for archive unpacking.\n`)
 
   tempRoot = await fs.mkdtemp(join(tmpdir(), '.data-unpack-'))
   if (tempRoot) {
@@ -176,7 +184,7 @@ async function runWithConcurrency(items, concurrency, run) {
 }
 
 function getArchiveTempPath(tempRoot, language, route) {
-  const languagePrefix = `./models/.data/${language}/`
+  const languagePrefix = `./machine_learning/data_sources/${language}/`
   const relativeRoute = route.startsWith(languagePrefix)
     ? route.slice(languagePrefix.length)
     : route
@@ -185,6 +193,12 @@ function getArchiveTempPath(tempRoot, language, route) {
     tempRoot,
     language,
     relativeRoute.slice(0, -extname(relativeRoute).length)
+  )
+}
+
+function getArchiveSourceGlobs(language) {
+  return supportedArchiveExtensions.map(
+    (extension) => `./machine_learning/data_sources/${language}/**/*${extension}`
   )
 }
 
