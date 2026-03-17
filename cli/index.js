@@ -17,9 +17,9 @@ import { getGlobLength } from './utils/getGlobLength/index.js'
 const t0 = performance.now()
 const ui = cliui()
 let tempRoot
-const machineLearningRoot = './machine_learning'
-const dataSourcesRoot = `${machineLearningRoot}/data_sources`
-const outputRoot = `${machineLearningRoot}/training_samples/inputs`
+const machineLearningRoot = './.SaT'
+const dataSourcesRoot = `${machineLearningRoot}/(01)_data_sources`
+const outputRoot = `${machineLearningRoot}/(02)_training_samples/inputs`
 const maxConcurrentFiles = Math.max(availableParallelism * 2, 1)
 const supportedArchiveExtensions = [
   '.nar',
