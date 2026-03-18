@@ -2,7 +2,6 @@
 from __future__ import annotations
 import json
 import pathlib
-from dataclasses import dataclass
 import torch
 import Seq2SeqCollator
 import Seq2SeqTransformer
@@ -10,6 +9,14 @@ import TokenizedJsonlDataset
 from args.parse import parse_args
 from vocab.read_size import read_vocab_size
 from stats.parse import parse_stats
+from torch.utils.data import DataLoader
+from device.build import build_device
+from seed.set import set_seed
+from epoch.train import train_epoch
+from parameters.count import count_parameters
+from loss.evaluate import evaluate_loss
+from match.compute import compute_exact_match
+from artifacts.save import save_artifacts
 
 
 TOKENIZERS_ROOT = pathlib.Path("src/03_tokenizers")
@@ -31,6 +38,7 @@ EOS_ID = 2
 LABEL_PAD_ID = -100
 GRAD_CLIP = 1.0
 ACCUMULATION_STEPS = 16
+DEVICE = "auto"
 
 
 # DYNAMIC CONFIG
@@ -56,15 +64,21 @@ def main() -> None:
     args = parse_args()
     language = args["language"]
 
+    save_dir = PYTORCH_MODELS_ROOT / language
+
     vocab_path = TOKENIZERS_ROOT / language / TOKENIZER_VOCAB_FILE
     training_dataset_path = DATASETS_ROOT / language / TRAINING_DATA_FILE
     validation_dataset_path = DATASETS_ROOT / language / VALIDATION_DATA_FILE
     vocab_size = read_vocab_size(vocab_path)
 
+    log_frequency = LOG_FREQUENCY
     input_pad_id = vocab_size
     label_pad_id = LABEL_PAD_ID
+    grad_clip = GRAD_CLIP
     bos_id = BOS_ID
     eos_id = EOS_ID
+    device = DEVICE
+    seed= SEED
 
     train_dataset = TokenizedJsonlDataset(training_dataset_path, vocab_size)
     validation_dataset = TokenizedJsonlDataset(
@@ -77,6 +91,23 @@ def main() -> None:
 
     max_input_length = stats["max_input_length"]
     max_label_length = stats["max_label_length"]
+
+    dataset_scale = stats["dataset_scale"]{}
+
+    epochs = CONFIG["epochs"][dataset_scale]
+    d_model = CONFIG["d_model"][dataset_scale]
+    batch_size = CONFIG["batch_size"][dataset_scale]
+    exact_match_frequency = CONFIG["exact_match_frequency"][dataset_scale]
+    effective_batch_size = CONFIG["effective_batch_size"][dataset_scale]
+    attention_heads = CONFIG["attention_heads"][dataset_scale]
+    ff_dimension = CONFIG["ff_dimension"][dataset_scale]
+    encoder_layers = CONFIG["encoder_layers"][dataset_scale]
+    decoder_layers = CONFIG["decoder_layers"][dataset_scale]
+    dropout = CONFIG["dropout"][dataset_scale]
+    learning_rate = CONFIG["learning_rate"][dataset_scale]
+    weight_decay = CONFIG["weight_decay"][dataset_scale]
+    early_stopping_min_delta = CONFIG["early_stopping_min_delta"][dataset_scale]
+    early_stopping_patience = CONFIG["early_stopping_patience"][dataset_scale]
 
 
     sequence_lengths = resolve_effective_sequence_lengths(
@@ -97,60 +128,58 @@ def main() -> None:
 
     train_loader = DataLoader(
         train_dataset,
-        batch_size=args.batch_size,
+        batch_size,
         shuffle=True,
         collate_fn=collator,
     )
     evaluation_train_loader = DataLoader(
         train_dataset,
-        batch_size=args.batch_size,
+        batch_size,
         shuffle=False,
         collate_fn=collator,
     )
     validation_loader = DataLoader(
         validation_dataset,
-        batch_size=args.batch_size,
+        batch_size,
         shuffle=False,
         collate_fn=collator,
     )
 
-    device = build_device(args.device)
-    set_seed(args.seed)
+    device = build_device(device)
+    set_seed(seed)
 
     model = Seq2SeqTransformer(
-        vocab_size=vocab_size,
-        pad_id=pad_id,
-        d_model=args.d_model,
-        num_heads=args.num_heads,
-        num_encoder_layers=args.num_encoder_layers,
-        num_decoder_layers=args.num_decoder_layers,
-        ffn_dim=args.ffn_dim,
-        dropout=args.dropout,
+        vocab_size,
+        input_pad_id,
+        d_model,
+        attention_heads,
+        encoder_layers,
+        decoder_layers,
+        ff_dimension,
+        dropout,
         max_source_positions=sequence_lengths.max_source_positions,
         max_target_positions=sequence_lengths.max_target_positions,
     ).to(device)
 
     optimizer = torch.optim.AdamW(
         model.parameters(),
-        lr=args.learning_rate,
-        weight_decay=args.weight_decay,
+        lr=learning_rate,
+        weight_decay=weight_decay,
     )
 
-    if args.max_generation_length is None:
-        max_generation_length = sequence_lengths.max_target_positions
-    else:
-        max_generation_length = args.max_generation_length
+    
+    max_generation_length = sequence_lengths.max_target_positions
 
     best_metrics: dict | None = None
     best_validation_loss: float | None = None
     epochs_without_improvement = 0
 
-    print(f"Language: {args.language}")
-    print(f"Train split: {split_paths.train_path}")
-    print(f"Validation split: {split_paths.validation_path}")
-    print(f"Tokenizer vocab: {split_paths.vocab_path}")
+    print(f"Language: {language}")
+    print(f"Train split: {training_dataset_path}")
+    print(f"Validation split: {validation_dataset_path}")
+    print(f"Tokenizer vocab: {vocab_path}")
     print(f"Vocab size: {vocab_size}")
-    print(f"Pad id: {pad_id}")
+    print(f"Input Pad id: {input_pad_id}")
     print(f"Train samples: {len(train_dataset)}")
     print(f"Validation samples: {len(validation_dataset)}")
     print(f"Observed max input length: {max(len(record['input_ids']) for record in train_dataset.records + validation_dataset.records)}")
@@ -163,26 +192,26 @@ def main() -> None:
     print(f"Device: {device}")
     print(f"Save dir: {save_dir}")
 
-    for epoch in range(1, args.epochs + 1):
+    for epoch in range(1, epochs + 1):
         train_loss = train_epoch(
             model,
             train_loader,
             optimizer,
-            device=device,
-            label_pad_id=args.label_pad_id,
-            grad_clip=args.grad_clip,
+            device,
+            label_pad_id,
+            grad_clip,
         )
         validation_loss = evaluate_loss(
             model,
             validation_loader,
-            device=device,
-            label_pad_id=args.label_pad_id,
+            device,
+            label_pad_id,
         )
         should_run_exact_match = (
-            args.exact_match_every > 0
+            exact_match_frequency > 0
             and (
-                epoch % args.exact_match_every == 0
-                or epoch == args.epochs
+                epoch % exact_match_frequency == 0
+                or epoch == epochs
             )
         )
         train_exact_match: float | None = None
@@ -191,17 +220,17 @@ def main() -> None:
             train_exact_match = compute_exact_match(
                 model,
                 evaluation_train_loader,
-                device=device,
-                bos_id=args.bos_id,
-                eos_id=args.eos_id,
+                device,
+                bos_id,
+                eos_id,
                 max_generation_length=max_generation_length,
             )
             validation_exact_match = compute_exact_match(
                 model,
                 validation_loader,
-                device=device,
-                bos_id=args.bos_id,
-                eos_id=args.eos_id,
+                device,
+                bos_id,
+                eos_id,
                 max_generation_length=max_generation_length,
             )
 
@@ -215,7 +244,7 @@ def main() -> None:
 
         improved_validation = (
             best_validation_loss is None
-            or validation_loss < best_validation_loss - args.early_stopping_min_delta
+            or validation_loss < best_validation_loss - early_stopping_min_delta
         )
 
         if improved_validation:
@@ -241,7 +270,7 @@ def main() -> None:
                 optimizer=optimizer,
             )
 
-        if epoch == 1 or epoch % args.log_every == 0 or epoch == args.epochs:
+        if epoch == 1 or epoch % log_frequency == 0 or epoch == epochs:
             log_message = (
                 "epoch="
                 f"{epoch} "
@@ -260,11 +289,11 @@ def main() -> None:
             print(f"Stopping early at epoch {epoch}: train_exact_match reached 1.000")
             break
 
-        if epochs_without_improvement >= args.early_stopping_patience:
+        if epochs_without_improvement >= early_stopping_patience:
             print(
                 "Stopping early at epoch "
                 f"{epoch}: validation loss did not improve for "
-                f"{args.early_stopping_patience} epochs"
+                f"{early_stopping_patience} epochs"
             )
             break
 

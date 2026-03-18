@@ -1,3 +1,5 @@
+import torch
+import Seq2SeqTransformer
 
 def greedy_generate(
     model: Seq2SeqTransformer,
