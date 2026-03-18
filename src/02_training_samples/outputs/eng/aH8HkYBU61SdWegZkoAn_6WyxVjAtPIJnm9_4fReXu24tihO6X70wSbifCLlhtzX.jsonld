@@ -1,0 +1,160 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "name": "Rattlesnake Canyon Grocery",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "rattc"
+      }
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Federal Shipping",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Shipper ID",
+        "value": "3"
+      }
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "streetAddress": "2817 Milton Dr.",
+        "addressLocality": "Albuquerque",
+        "addressRegion": "North America",
+        "addressCountry": "USA",
+        "postalCode": "87110"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "orderNumber": "11000",
+      "orderDate": "2018-04-06",
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "1075.0"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Employee Name",
+          "value": "Andrew Fuller"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2018-04-14"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "550.0",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 25,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "22.0",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "Chef Anton's Cajun Seasoning"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "135.0",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 30,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-2"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "4.5",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-2",
+      "@type": "Product",
+      "name": "Guarana Fantastica"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "390.0",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 30,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-3"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "13.0",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-3",
+      "@type": "Product",
+      "name": "[ERROR:UNCERTAIN] original frankfurter griine sofie"
+    }
+  ]
+}

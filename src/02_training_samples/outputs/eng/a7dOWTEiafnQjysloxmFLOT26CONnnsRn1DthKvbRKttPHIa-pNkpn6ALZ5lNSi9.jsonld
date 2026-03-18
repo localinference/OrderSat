@@ -1,0 +1,190 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "name": "Antonio Moreno Taqueria",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "anton"
+      }
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Speedy Express",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Shipper ID",
+        "value": "1"
+      }
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "streetAddress": "Mataderos 2312",
+        "addressLocality": "México D.F.",
+        "addressRegion": "Central America",
+        "addressCountry": "Mexico",
+        "postalCode": "5023"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "orderNumber": "10535",
+      "orderDate": "2017-05-13",
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        },
+        {
+          "@id": "#offer-4"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "2156.5"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Employee Name",
+          "value": "Margaret Peacock"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2017-05-21"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "1050.0",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 50,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "21.0",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "Queso Cabrales"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "184.0",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 10,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-2"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "18.4",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-2",
+      "@type": "Product",
+      "name": "Boston Crab Meat"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "97.5",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 5,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-3"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "19.5",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-3",
+      "@type": "Product",
+      "name": "Ravioli Angelo"
+    },
+    {
+      "@id": "#offer-4",
+      "@type": "Offer",
+      "price": "825.0",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 15,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-4"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "55.0",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-4",
+      "@type": "Product",
+      "name": "Raclette Courdavault"
+    }
+  ]
+}
