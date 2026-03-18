@@ -76,7 +76,15 @@ def log_run_overview(
             "decoder_layers": training_config["decoder_layers"],
             "ff_dimension": training_config["ff_dimension"],
             "dropout": f"{training_config['dropout']:.2f}",
-            "batch_size": training_config["batch_size"],
+            "average_sequence_tokens": training_config["average_sequence_tokens"],
+            "estimated_examples_per_batch": training_config[
+                "estimated_examples_per_batch"
+            ],
+            "max_batch_size": training_config["max_batch_size"],
+            "target_tokens_per_batch": training_config["target_tokens_per_batch"],
+            "target_tokens_per_optimizer_step": training_config[
+                "target_tokens_per_optimizer_step"
+            ],
             "accumulation_steps": training_config["accumulation_steps"],
             "effective_batch_size": training_config["achieved_effective_batch_size"],
             "num_workers": training_config["num_workers"],

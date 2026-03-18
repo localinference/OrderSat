@@ -13,6 +13,15 @@ class TokenizedJsonlDataset(Dataset):
     def __init__(self, file_path: pathlib.Path, vocab_size: int) -> None:
         self.file_path = file_path
         self.records = self._load_records(file_path, vocab_size)
+        self.input_lengths = [len(record["input_ids"]) for record in self.records]
+        self.target_lengths = [len(record["labels"]) + 1 for record in self.records]
+        self.sequence_token_counts = [
+            input_length + target_length
+            for input_length, target_length in zip(
+                self.input_lengths,
+                self.target_lengths,
+            )
+        ]
 
     @staticmethod
     def _load_records(file_path: pathlib.Path, vocab_size: int) -> list[dict]:
@@ -109,3 +118,12 @@ class TokenizedJsonlDataset(Dataset):
 
     def __getitem__(self, index: int) -> dict:
         return self.records[index]
+
+    def get_input_length(self, index: int) -> int:
+        return self.input_lengths[index]
+
+    def get_target_length(self, index: int) -> int:
+        return self.target_lengths[index]
+
+    def get_sequence_token_count(self, index: int) -> int:
+        return self.sequence_token_counts[index]

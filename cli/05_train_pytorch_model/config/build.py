@@ -22,7 +22,7 @@ def _round_to_multiple(value: float, multiple: int) -> int:
     return max(multiple, rounded)
 
 
-def _resolve_batch_size(
+def _resolve_estimated_examples_per_batch(
     *,
     dataset_stats: DatasetStats,
     device_capabilities: DeviceCapabilities,
@@ -77,8 +77,12 @@ class TrainingConfig:
     decoder_layers: int
     ff_dimension: int
     dropout: float
+    average_sequence_tokens: int
     target_effective_batch_size: int
-    batch_size: int
+    estimated_examples_per_batch: int
+    max_batch_size: int
+    target_tokens_per_batch: int
+    target_tokens_per_optimizer_step: int
     accumulation_steps: int
     achieved_effective_batch_size: int
     num_workers: int
@@ -111,8 +115,12 @@ class TrainingConfig:
                 "dropout": self.dropout,
             },
             "batching": {
+                "average_sequence_tokens": self.average_sequence_tokens,
                 "target_effective_batch_size": self.target_effective_batch_size,
-                "batch_size": self.batch_size,
+                "estimated_examples_per_batch": self.estimated_examples_per_batch,
+                "max_batch_size": self.max_batch_size,
+                "target_tokens_per_batch": self.target_tokens_per_batch,
+                "target_tokens_per_optimizer_step": self.target_tokens_per_optimizer_step,
                 "accumulation_steps": self.accumulation_steps,
                 "achieved_effective_batch_size": self.achieved_effective_batch_size,
                 "num_workers": self.num_workers,
@@ -163,14 +171,36 @@ def build_training_config(
     ff_dimension = d_model * 4
     dropout = _clamp_float(0.10 / capacity_scale, 0.10, 0.20)
 
+    average_sequence_tokens = _round_to_multiple(
+        dataset_stats.input_lengths.avg + dataset_stats.label_lengths.avg + 1.0,
+        32,
+    )
     target_effective_batch_size = 16
-    batch_size = _resolve_batch_size(
+    estimated_examples_per_batch = _resolve_estimated_examples_per_batch(
         dataset_stats=dataset_stats,
         device_capabilities=device_capabilities,
         capacity_scale=capacity_scale,
     )
-    accumulation_steps = max(1, round(target_effective_batch_size / batch_size))
-    achieved_effective_batch_size = batch_size * accumulation_steps
+    max_batch_size = _clamp_int(
+        estimated_examples_per_batch * 4,
+        estimated_examples_per_batch,
+        target_effective_batch_size,
+    )
+    target_tokens_per_batch = _round_to_multiple(
+        average_sequence_tokens * estimated_examples_per_batch,
+        64,
+    )
+    target_tokens_per_optimizer_step = _round_to_multiple(
+        average_sequence_tokens * target_effective_batch_size,
+        64,
+    )
+    accumulation_steps = max(
+        1,
+        round(target_effective_batch_size / estimated_examples_per_batch),
+    )
+    achieved_effective_batch_size = (
+        estimated_examples_per_batch * accumulation_steps
+    )
     batch_scale = math.sqrt(
         achieved_effective_batch_size / target_effective_batch_size
     )
@@ -201,8 +231,12 @@ def build_training_config(
         decoder_layers=decoder_layers,
         ff_dimension=ff_dimension,
         dropout=dropout,
+        average_sequence_tokens=average_sequence_tokens,
         target_effective_batch_size=target_effective_batch_size,
-        batch_size=batch_size,
+        estimated_examples_per_batch=estimated_examples_per_batch,
+        max_batch_size=max_batch_size,
+        target_tokens_per_batch=target_tokens_per_batch,
+        target_tokens_per_optimizer_step=target_tokens_per_optimizer_step,
         accumulation_steps=accumulation_steps,
         achieved_effective_batch_size=achieved_effective_batch_size,
         num_workers=num_workers,
@@ -227,7 +261,9 @@ def build_training_config(
         d_model=config.d_model,
         encoder_layers=config.encoder_layers,
         decoder_layers=config.decoder_layers,
-        batch_size=config.batch_size,
+        estimated_examples_per_batch=config.estimated_examples_per_batch,
+        max_batch_size=config.max_batch_size,
+        target_tokens_per_batch=config.target_tokens_per_batch,
         accumulation_steps=config.accumulation_steps,
         effective_batch_size=config.achieved_effective_batch_size,
         learning_rate=f"{config.learning_rate:.6f}",

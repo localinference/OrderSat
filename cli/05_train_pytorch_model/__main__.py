@@ -13,6 +13,7 @@ from Seq2SeqTransformer.constructor import Seq2SeqTransformer
 from TokenizedJsonlDataset.constructor import TokenizedJsonlDataset
 from args.parse import parse_args
 from artifacts.save import save_artifacts
+from batching.sampler import TokenBudgetBatchSampler
 from checkpoint.load import build_model_signature, load_checkpoint
 from config.build import build_training_config
 from device.build import build_device
@@ -91,36 +92,44 @@ def build_loader(
     *,
     loader_name: str,
     dataset,
-    batch_size: int,
+    target_tokens_per_batch: int,
+    max_batch_size: int,
     shuffle: bool,
     collate_fn,
     num_workers: int,
     pin_memory: bool,
     persistent_workers: bool,
-    generator: torch.Generator | None = None,
+    seed: int = 0,
 ) -> DataLoader:
     started_at = time.perf_counter()
     dataset_path = getattr(dataset, "file_path", None)
+    batch_sampler = TokenBudgetBatchSampler(
+        dataset,
+        target_tokens_per_batch=target_tokens_per_batch,
+        max_batch_size=max_batch_size,
+        shuffle=shuffle,
+        seed=seed,
+    )
+    batch_plan = batch_sampler.describe_current_plan()
     log_stage_start(
         "loader.build",
         loader_name=loader_name,
         dataset_path=str(dataset_path) if dataset_path is not None else "<unknown>",
-        batch_size=batch_size,
+        batch_strategy="token_budget",
         shuffle=shuffle,
+        target_tokens_per_batch=target_tokens_per_batch,
+        max_batch_size=max_batch_size,
         num_workers=num_workers,
         pin_memory=pin_memory,
     )
 
     loader_kwargs = {
         "dataset": dataset,
-        "batch_size": batch_size,
-        "shuffle": shuffle,
+        "batch_sampler": batch_sampler,
         "collate_fn": collate_fn,
         "num_workers": num_workers,
         "pin_memory": pin_memory,
     }
-    if generator is not None:
-        loader_kwargs["generator"] = generator
     if num_workers > 0:
         loader_kwargs["persistent_workers"] = persistent_workers
 
@@ -130,8 +139,11 @@ def build_loader(
         duration_seconds=time.perf_counter() - started_at,
         loader_name=loader_name,
         dataset_path=str(dataset_path) if dataset_path is not None else "<unknown>",
-        batch_count=len(loader),
-        batch_size=batch_size,
+        batch_count=batch_plan.batch_count,
+        average_batch_size=f"{batch_plan.average_batch_size:.2f}",
+        max_batch_size_observed=batch_plan.max_batch_size_observed,
+        average_batch_tokens=f"{batch_plan.average_batch_tokens:.2f}",
+        max_batch_tokens_observed=batch_plan.max_batch_tokens_observed,
     )
     return loader
 
@@ -250,24 +262,23 @@ def main() -> None:
         label_pad_id=LABEL_PAD_ID,
     )
 
-    train_generator = torch.Generator()
-    train_generator.manual_seed(SEED)
-
     train_loader = build_loader(
         loader_name="train",
         dataset=training_dataset,
-        batch_size=training_config.batch_size,
+        target_tokens_per_batch=training_config.target_tokens_per_batch,
+        max_batch_size=training_config.max_batch_size,
         shuffle=True,
         collate_fn=collator,
         num_workers=training_config.num_workers,
         pin_memory=training_config.pin_memory,
         persistent_workers=training_config.persistent_workers,
-        generator=train_generator,
+        seed=SEED,
     )
     evaluation_train_loader = build_loader(
-        loader_name="train_eval",
+        loader_name="train_audit",
         dataset=training_dataset,
-        batch_size=training_config.batch_size,
+        target_tokens_per_batch=training_config.target_tokens_per_batch,
+        max_batch_size=training_config.max_batch_size,
         shuffle=False,
         collate_fn=collator,
         num_workers=training_config.num_workers,
@@ -277,7 +288,8 @@ def main() -> None:
     validation_loader = build_loader(
         loader_name="validation",
         dataset=validation_dataset,
-        batch_size=training_config.batch_size,
+        target_tokens_per_batch=training_config.target_tokens_per_batch,
+        max_batch_size=training_config.max_batch_size,
         shuffle=False,
         collate_fn=collator,
         num_workers=training_config.num_workers,

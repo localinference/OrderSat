@@ -31,7 +31,7 @@ The trainer does this, in this order:
 8. Load tokenized train and validation datasets from [constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/TokenizedJsonlDataset/constructor.py).
 9. Resolve effective sequence lengths in [get_effective_lenght.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/sequence/get_effective_lenght.py).
 10. Build the collator in [constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/Seq2SeqCollator/constructor.py).
-11. Build the train, train-audit, and validation loaders in [__main__.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
+11. Build token-budgeted, length-bucketed train, train-audit, and validation loaders in [__main__.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
 12. Build the model in [constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/Seq2SeqTransformer/constructor.py).
 13. Build the optimizer in [__main__.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
 14. Resolve checkpoint reuse policy in [load.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/checkpoint/load.py).
@@ -112,7 +112,10 @@ derives:
 
 - model width and depth
 - dropout
-- physical batch size
+- estimated examples per batch
+- max batch size
+- target tokens per batch
+- target tokens per optimizer step
 - accumulation steps
 - effective batch size
 - learning rate
@@ -124,6 +127,23 @@ derives:
 
 The adjusted options are always logged as a JSON block so the scaling decision
 is visible in the terminal.
+
+### Token-Budgeted Batching
+
+The trainer no longer batches by a fixed raw sample count.
+
+Instead it uses [sampler.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/batching/sampler.py), which:
+
+- estimates batch cost as padded source tokens plus padded target tokens
+- groups similar-length samples together
+- caps each batch by a token budget
+- still enforces a maximum batch size
+
+Why:
+
+- padding waste is a real cost in seq2seq training
+- similar-length batches are cheaper to train and evaluate
+- token budget is a better proxy for memory and step cost than sample count alone
 
 ### Training Objective vs Selection Objective
 
@@ -195,7 +215,7 @@ You can observe:
 - adaptive config build
 - adjusted options JSON
 - dataset load
-- loader build
+- loader build with token-budget batch-plan summaries
 - model build
 - optimizer build
 - checkpoint load decision
