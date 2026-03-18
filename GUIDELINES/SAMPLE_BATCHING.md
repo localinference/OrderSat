@@ -1,42 +1,61 @@
 # Sample Batching Guidelines
 
-Batching is driven mainly by memory and sequence lengths, not by sample count.
+Batching is capability-bound and sequence-length-bound. It should not be derived from training-set size.
 
-## Physical batch size
+## Capability inputs
 
-Use the largest `BATCH_SIZE` that fits reliably after sequence lengths are finalized.
+Read raw capability values from `get_device_capabilities()`.
 
-For this repo's current seq2seq setup, the safe default is:
+Use:
+
+- `capabilities.accelerator_memory_gb`
+- `capabilities.system_memory_gb`
+- `capabilities.cpu_count`
+- `capabilities.supports_fp16`
+- `capabilities.supports_bf16`
+- `capabilities.pin_memory`
+- `capabilities.recommended_num_workers`
+- `capabilities.device_scale`
+
+## Default target
+
+Use:
+
+- `TARGET_EFFECTIVE_BATCH = 16`
+
+This is the optimization target. Physical batch and accumulation are just the mechanism used to hit it.
+
+## Physical batch rule
+
+Start with:
 
 - `BATCH_SIZE = 1`
 
-Why: decoder-side memory grows quickly when labels are long, and long labels are normal in this task.
+Then raise physical batch only after final sequence lengths are known and the step fits in memory.
 
-## Gradient accumulation
+## Accumulation rule
 
-Use gradient accumulation to reach a stable effective batch instead of forcing a larger physical batch.
+Set:
 
-Best default:
+- `ACCUMULATION_STEPS = max(1, round(TARGET_EFFECTIVE_BATCH / BATCH_SIZE))`
 
-- `ACCUMULATION_STEPS = 16`
+This keeps the achieved effective batch near the target even on small devices.
 
-This gives:
+## Environment rule
 
-- effective batch = `BATCH_SIZE * ACCUMULATION_STEPS`
+Use:
 
-## Practical rule
+- `PIN_MEMORY = capabilities.pin_memory`
+- `NUM_WORKERS = capabilities.recommended_num_workers`
 
-Use this pattern:
+Why:
 
-- if `BATCH_SIZE = 1`, use `ACCUMULATION_STEPS = 16`
-- if `BATCH_SIZE = 2`, use `ACCUMULATION_STEPS = 8`
-- if `BATCH_SIZE = 4`, use `ACCUMULATION_STEPS = 4`
-- if `BATCH_SIZE = 8`, use `ACCUMULATION_STEPS = 2`
-
-The target is an effective batch close to `16`.
+- memory capacity limits physical batch
+- CPU throughput limits how aggressively the input pipeline should parallelize
+- environment capability should shape data loading and batch realization, not dataset-size heuristics
 
 ## Rules
 
-- Set sequence lengths first, then tune batch size.
-- Do not pretend batching is data-size driven when the real limit is VRAM.
-- If accumulation is not implemented in the trainer yet, keep the physical batch small and do not write fake recommendations around it.
+- Set sequence lengths first, then tune batching.
+- Do not invent sample-count scaling for batching.
+- If accumulation is not wired into the trainer yet, keep physical batch small and stable.

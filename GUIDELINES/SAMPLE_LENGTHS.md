@@ -1,34 +1,29 @@
 # Sample Length Guidelines
 
-Sequence-length defaults should come from the tokenized dataset statistics produced during dataset creation.
+Sequence lengths must come from measured tokenized dataset statistics, not from training-set size and not from guessed defaults.
 
 ## Default rule
 
-Use `max`, not `p95`.
+Use tokenized `max`, not `p95`.
 
 Set:
 
-- `MAX_INPUT_LENGTH = round_up_to_multiple(input_length_max, 32)`
-- `MAX_LABEL_LENGTH = round_up_to_multiple(label_length_max, 32)`
+- `MAX_INPUT_LENGTH = round_up_to_multiple(inputLengths.max, 32)`
+- `MAX_LABEL_LENGTH = round_up_to_multiple(labelLengths.max, 32)`
 
-This is the default guideline for this project.
+These values must be derived from the dataset stats file written during dataset creation.
 
 ## Why
 
-- This project is correctness-first, not throughput-first.
-- Truncation is not a harmless optimization when the model is expected to reproduce full structured outputs correctly.
-- Rare long samples can still be important cases, not disposable outliers.
-- Using `max` keeps the training target faithful to the dataset instead of silently dropping the tail.
+- This project is correctness-first.
+- Truncation is not a harmless optimization when the goal is full structured-output fidelity.
+- Rare long samples may still be important cases.
+- Measured max length is more faithful than a percentile cut.
 
 ## Rules
 
 - Measure lengths after tokenization, not from character counts.
-- Derive both limits from the dataset stats written at dataset creation time.
+- Read them from dataset stats, not from training-size regimes.
+- Recompute them whenever the dataset changes materially.
 - Round upward to a multiple of `32`.
-- Recompute the stats whenever the dataset changes materially.
 - Do not hardcode guessed lengths when real stats already exist.
-- Do not use sample-count buckets here. Lengths should come from measured distributions, not from dataset size categories.
-
-## Exception
-
-Use a smaller percentile-based limit only if faster training is explicitly more important than preserving full sequence fidelity.

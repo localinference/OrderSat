@@ -1,36 +1,40 @@
 # Model Size and Precision Guidelines
 
-Use one canonical model format and derive deployment variants from it.
+Precision policy is deployment-target-bound, not training-size-bound.
 
-## Default rule
+Do not tie this file to scaling-law logic or `trainCount`.
 
-Use this exact path:
+## Capability inputs
 
-1. train and keep the canonical model in `FP32`
-2. export one canonical `FP32` ONNX model
-3. create deployment variants from that export:
+Read precision support from `get_device_capabilities()`.
+
+Use:
+
+- `capabilities.supports_fp16`
+- `capabilities.supports_bf16`
+
+These values matter for training-time mixed precision support, not for the canonical checkpoint format.
+
+## Canonical path
+
+Use this path:
+
+1. Train and keep the canonical model in `FP32`.
+2. Export one canonical `FP32 ONNX` model.
+3. Derive deployment variants from that export:
    GPU: `FP16`
    CPU: `INT8`
 
-This is the project guideline.
-
 ## Why
 
-- `FP32` is the correct canonical baseline for this model class
-- GPU deployment usually benefits first from `FP16`
-- CPU deployment usually benefits first from `INT8`
-- this keeps the workflow simple, predictable, and aligned with standard deployment tooling
+- `FP32` is the correct canonical baseline.
+- GPU deployment usually benefits first from `FP16`.
+- CPU deployment usually benefits first from `INT8`.
+- device precision support may change training convenience, but it does not change the canonical export policy
 
 ## Rules
 
-- do not use `FP64` as the canonical training or export format
-- do not treat `INT4` as a default deployment target
-- always export from the canonical `FP32` model, not from an already compressed variant
-- evaluate task quality after conversion, not just latency or model size
-
-## Summary
-
-- canonical model: `FP32`
-- export format: `FP32 ONNX`
-- GPU deployment: `FP16`
-- CPU deployment: `INT8`
+- Do not use `FP64` as the canonical format.
+- Do not treat `INT4` as a default deployment target.
+- Always export from the canonical `FP32` model, not from an already compressed variant.
+- Evaluate task quality after conversion, not just latency or model size.

@@ -1,39 +1,39 @@
 # Training Epoch Guidelines
 
-Epoch policy should scale with sample count because each epoch means something different at different dataset sizes.
+Training schedule should scale with training-set size, not with raw device labels.
 
-## Small data
+Device capability matters to wall-clock time, but it should not change the optimization target unless it forces a materially different effective batch.
 
-If `sampleCount < 10_000`, use:
+## Data-scale rule
 
-- `EPOCHS = 100`
-- `EARLY_STOPPING_PATIENCE = 20`
-- `EARLY_STOPPING_MIN_DELTA = 1e-5`
+Set:
 
-Why: with small data, the model needs repeated exposure and validation loss is noisy.
+- `DATA_SCALE = clamp((trainCount / 10_000) ** 0.25, 0.5, 2.0)`
 
-## Medium data
+Use `trainCount`, not total `sampleCount`.
 
-If `10_000 <= sampleCount <= 100_000`, use:
+## Base schedule
 
-- `EPOCHS = 30`
-- `EARLY_STOPPING_PATIENCE = 8`
-- `EARLY_STOPPING_MIN_DELTA = 1e-4`
+Use these base values at `DATA_SCALE = 1.0`:
 
-Why: at this size, one epoch already covers meaningful variation, so training should stop earlier and ignore tiny validation noise.
+- `EPOCHS_BASE = 30`
+- `EARLY_STOPPING_PATIENCE_BASE = 8`
+- `EARLY_STOPPING_MIN_DELTA_BASE = 1e-4`
+- `EXACT_MATCH_FREQUENCY_BASE = 2`
 
-## Large data
+## Derived schedule
 
-If `sampleCount > 100_000`, use:
+Set:
 
-- `EPOCHS = 10`
-- `EARLY_STOPPING_PATIENCE = 3`
-- `EARLY_STOPPING_MIN_DELTA = 1e-3`
-
-Why: large datasets make each epoch expensive and small validation changes less meaningful.
+- `EPOCHS = clamp(round(EPOCHS_BASE / (DATA_SCALE ** 2)), 10, 100)`
+- `EARLY_STOPPING_PATIENCE = clamp(round(EARLY_STOPPING_PATIENCE_BASE / DATA_SCALE), 3, 20)`
+- `EARLY_STOPPING_MIN_DELTA = clamp(EARLY_STOPPING_MIN_DELTA_BASE * DATA_SCALE, 1e-5, 1e-3)`
+- `EXACT_MATCH_FREQUENCY = clamp(round(EXACT_MATCH_FREQUENCY_BASE * DATA_SCALE), 1, 3)`
 
 ## Rules
 
+- Do not scale epochs from device class.
+- If achieved effective batch differs materially from target, revisit learning-rate policy before changing schedule policy.
 - Patience is epoch-based in this trainer.
 - Keep early stopping enabled.
-- If train exact match reaches `1.0` very early while validation remains weak, that is memorization, not success.
+- If train exact match reaches `1.0` early while validation remains weak, that is memorization, not success.

@@ -1,49 +1,68 @@
 # Model Architecture Guidelines
 
-Architecture size should scale with the amount of supervised training data. For this repo's random-init seq2seq model, use one default per sample-count regime.
+Only capacity knobs should scale with dataset size.
 
-## Small data
+Use one multiplier for what the data can justify, and a separate multiplier for what the current machine can realistically carry.
 
-If `sampleCount < 10_000`, use:
+## Data-scale rule
 
-- `D_MODEL = 128`
-- `ATTENTION_HEADS = 4`
-- `ENCODER_LAYERS = 2`
-- `DECODER_LAYERS = 2`
-- `FF_DIMENSION = 512`
-- `DROPOUT = 0.20`
+Use `trainCount`, not total `sampleCount`.
 
-Why: with small supervised datasets, the main risk is over-capacity and memorization, not lack of width.
+Set:
 
-## Medium data
+- `DATA_SCALE = clamp((trainCount / 10_000) ** 0.25, 0.5, 2.0)`
 
-If `10_000 <= sampleCount <= 100_000`, use:
+Why:
 
-- `D_MODEL = 256`
-- `ATTENTION_HEADS = 4`
-- `ENCODER_LAYERS = 4`
-- `DECODER_LAYERS = 4`
-- `FF_DIMENSION = 1024`
-- `DROPOUT = 0.10`
+- useful model capacity should grow sublinearly, not linearly
+- fake small or medium or large buckets throw away information
 
-Why: this is the point where a wider and deeper model usually starts paying for itself without becoming needlessly brittle.
+## Device-scale rule
 
-## Large data
+Read raw capability values from `get_device_capabilities()`.
 
-If `sampleCount > 100_000`, use:
+Set:
 
-- `D_MODEL = 512`
-- `ATTENTION_HEADS = 8`
-- `ENCODER_LAYERS = 6`
-- `DECODER_LAYERS = 6`
-- `FF_DIMENSION = 2048`
-- `DROPOUT = 0.10`
+- `DEVICE_SCALE = capabilities.device_scale`
 
-Why: above this scale, the standard Transformer shape becomes a reasonable default from scratch.
+This value is a bounded hardware and environment multiplier derived from available memory and host-side throughput.
+
+## Final capacity rule
+
+Set:
+
+- `CAPACITY_SCALE = min(DATA_SCALE, DEVICE_SCALE)`
+
+Why:
+
+- data may justify a larger model than the machine can train
+- hardware may allow a larger model than the dataset can support
+- the final architecture should respect both constraints
+
+## Base architecture
+
+Use these base values at `CAPACITY_SCALE = 1.0`:
+
+- `D_MODEL_BASE = 256`
+- `ENCODER_LAYERS_BASE = 4`
+- `DECODER_LAYERS_BASE = 4`
+- `FF_RATIO = 4`
+- `DROPOUT_BASE = 0.10`
+
+## Derived architecture
+
+Set:
+
+- `D_MODEL = round_to_multiple(D_MODEL_BASE * CAPACITY_SCALE, 64)`
+- `ATTENTION_HEADS = 4` if `D_MODEL <= 256`, else `8`
+- `ENCODER_LAYERS = clamp(round(ENCODER_LAYERS_BASE * CAPACITY_SCALE), 2, 6)`
+- `DECODER_LAYERS = clamp(round(DECODER_LAYERS_BASE * CAPACITY_SCALE), 2, 6)`
+- `FF_DIMENSION = FF_RATIO * D_MODEL`
+- `DROPOUT = clamp(DROPOUT_BASE / CAPACITY_SCALE, 0.10, 0.20)`
 
 ## Rules
 
 - Keep `D_MODEL % ATTENTION_HEADS == 0`.
 - Prefer increasing width before increasing depth.
-- Do not increase heads on a narrow model just because more heads sound better.
-- Treat dropout as regularization, not as a substitute for sane model size.
+- Do not increase heads without increasing width enough to justify them.
+- Do not use `trainCount` or `DEVICE_SCALE` to set sequence lengths.
