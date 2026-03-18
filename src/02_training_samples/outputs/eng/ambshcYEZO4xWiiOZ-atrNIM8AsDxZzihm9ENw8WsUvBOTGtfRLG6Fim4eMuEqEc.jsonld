@@ -1,0 +1,135 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Restoran Wan Sheng",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "No. 2, Jalan Temenggung 19/4, Seksyen 9, Bandar Mahkota Chieras",
+        "postalCode": "43200",
+        "addressLocality": "Cheras",
+        "addressRegion": "Selangol"
+      },
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Business Registration Number",
+        "value": "002043319-W"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": {
+        "@id": "#merchant"
+      },
+      "orderNumber": "1170190",
+      "orderDate": "2018-06-01T18:21:09",
+      "priceCurrency": "MYR",
+      "paymentMethod": "https://schema.org/Cash",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "4.80",
+        "priceCurrency": "MYR"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier",
+          "value": "Nicole"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Total Quantity",
+          "value": "4"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Total Excluding GST",
+          "value": "4.80",
+          "unitText": "MYR"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cash Tendered",
+          "value": "4.80",
+          "unitText": "MYR"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "4.40",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 2,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "priceCurrency": "MYR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "2.20",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        },
+        "priceCurrency": "MYR"
+      },
+      "seller": {
+        "@id": "#merchant"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "[ERROR:UNCERTAIN] cham (b)"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "0.40",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 2,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-2"
+      },
+      "priceCurrency": "MYR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "0.20",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        },
+        "priceCurrency": "MYR"
+      },
+      "seller": {
+        "@id": "#merchant"
+      }
+    },
+    {
+      "@id": "#product-2",
+      "@type": "Product",
+      "name": "take away"
+    }
+  ]
+}

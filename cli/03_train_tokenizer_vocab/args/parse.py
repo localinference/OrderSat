@@ -39,7 +39,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "-S",
-        "max-sentence-length",
+        "--max-sentence-length",
         type=int,
         default=16384,
         help="SentencePiece max input sentence/string lenght(default: 16384)",
