@@ -1,42 +1,46 @@
 # Seq2Seq Trainer Walkthrough
 
-This module trains the project’s PyTorch encoder-decoder model from the tokenized JSONL datasets in `src/04_training_datasets/{language}` using the tokenizer vocabulary in `src/03_tokenizers/{language}`.
+This module trains the project’s PyTorch encoder-decoder model from the
+tokenized JSONL datasets in `src/04_training_datasets/{language}` using the
+tokenizer vocabulary in `src/03_tokenizers/{language}`.
 
-It is intentionally `FP32`-only in this phase. Mixed precision belongs in a later module.
+It is intentionally `FP32`-only in this phase. Mixed precision belongs in a
+later module.
 
 ## Entrypoint
 
 Run:
 
 ```powershell
-python cli/05_train_pytorch_model/__main__.py --language eng --device auto
+python cli/05_train_pytorch_model/__main__.py --language eng --device auto --checkpoint-mode auto
 ```
 
-The entrypoint is [**main**.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
+The entrypoint is [__main__.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
 
 ## High-Level Flow
 
 The trainer does this, in this order:
 
-1. Parse CLI args from [args/parse.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/args/parse.py).
-2. Set reproducible seeds in [seed/set.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/seed/set.py).
-3. Resolve all run paths in [**main**.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
-4. Read dataset stats from [stats/parse.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/stats/parse.py).
-5. Detect environment and device capability in [device/capabilities.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/device/capabilities.py).
-6. Resolve the concrete torch device in [device/build.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/device/build.py).
-7. Read tokenizer vocab size from [vocab/read_size.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/vocab/read_size.py).
-8. Load tokenized train and validation datasets from [TokenizedJsonlDataset/constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/TokenizedJsonlDataset/constructor.py).
-9. Build the derived training config in [config/build.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/config/build.py).
-10. Resolve effective sequence lengths in [sequence/get_effective_lenght.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/sequence/get_effective_lenght.py).
-11. Build the collator from [Seq2SeqCollator/constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/Seq2SeqCollator/constructor.py).
-12. Build train, train-eval, and validation `DataLoader`s in [**main**.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
-13. Build the model from [Seq2SeqTransformer/constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/Seq2SeqTransformer/constructor.py).
-14. Build the AdamW optimizer in [**main**.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
-15. Train epoch-by-epoch with [epoch/train.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/epoch/train.py).
-16. Evaluate validation loss with [loss/evaluate.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/loss/evaluate.py).
-17. Periodically run exact-match generation with [match/compute.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/match/compute.py) and [greedy/generate.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/greedy/generate.py).
-18. Persist current run state every epoch and refresh the best checkpoint only on validation improvement through [artifacts/save.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/artifacts/save.py).
-19. Print a final run summary through [reporting/log.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/reporting/log.py).
+1. Parse CLI args from [parse.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/args/parse.py).
+2. Set reproducible seeds in [set.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/seed/set.py).
+3. Resolve tokenizer, dataset, stats, and save paths in [__main__.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
+4. Read dataset stats from [parse.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/stats/parse.py).
+5. Detect environment and device capability in [capabilities.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/device/capabilities.py).
+6. Build the adaptive training config in [build.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/config/build.py).
+7. Read tokenizer vocab size from [read_size.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/vocab/read_size.py).
+8. Load tokenized train and validation datasets from [constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/TokenizedJsonlDataset/constructor.py).
+9. Resolve effective sequence lengths in [get_effective_lenght.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/sequence/get_effective_lenght.py).
+10. Build the collator in [constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/Seq2SeqCollator/constructor.py).
+11. Build the train, train-audit, and validation loaders in [__main__.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
+12. Build the model in [constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/Seq2SeqTransformer/constructor.py).
+13. Build the optimizer in [__main__.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
+14. Resolve checkpoint reuse policy in [load.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/checkpoint/load.py).
+15. Train epoch-by-epoch with [train.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/epoch/train.py).
+16. Evaluate validation loss every epoch with [evaluate.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/loss/evaluate.py).
+17. Run full validation exact match only on the configured cadence with [compute.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/match/compute.py).
+18. Rank checkpoints by validation exact match first and validation loss second using [rank.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/selection/rank.py).
+19. Persist run state every epoch and refresh `best.pt` only when a checkpoint actually beats the current canonical best through [save.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/artifacts/save.py).
+20. Run a final full train exact-match audit on the canonical best checkpoint.
 
 ## What It Reads
 
@@ -46,46 +50,65 @@ For `--language eng`, the trainer reads:
 - training split from `src/04_training_datasets/eng/train.jsonl`
 - validation split from `src/04_training_datasets/eng/validation.jsonl`
 - dataset stats from `src/04_training_datasets/eng/stats.json`
+- optional checkpoint from `src/05_pytorch_models/eng/best.pt`
 
-Those paths are resolved in [**main**.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py) by `build_run_paths`.
+Those paths are resolved by `build_run_paths()`.
+
+## Checkpoint Reuse
+
+`--checkpoint-mode` controls how the current `best.pt` is used.
+
+Supported modes:
+
+- `auto`
+  Loads the current `best.pt` as a warm-start only when it is compatible.
+- `fresh`
+  Ignores `best.pt`.
+- `warm_start`
+  Requires a compatible `best.pt` and loads model weights only.
+- `resume`
+  Requires a compatible `best.pt` with optimizer and runtime state and resumes the same optimization run.
+
+Compatibility is checked in [load.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/checkpoint/load.py).
+
+The loader verifies:
+
+- vocab and padding layout
+- model width and depth
+- feed-forward size
+- position-embedding sizes
+- BOS, EOS, and label-pad conventions when metadata is available
+
+If the existing checkpoint is from an older incompatible tokenizer or model
+shape, the trainer logs the mismatch and falls back to a fresh run in `auto`
+mode.
 
 ## Why Each Step Exists
 
-### Args and Seed
-
-`parse_args()` decides which language directory and device policy to use.
-
-`set_seed()` exists so runs are repeatable enough to compare changes. It seeds Python, NumPy, and PyTorch, and also disables CuDNN nondeterministic shortcuts.
-
 ### Stats and Capabilities
 
-`parse_stats()` reads the measured dataset facts, especially:
+The trainer reads measured dataset facts instead of guessing:
 
 - `trainCount`
 - `validationCount`
-- tokenized input length stats
-- tokenized label length stats
+- tokenized input lengths
+- tokenized label lengths
 
-This is important because the trainer should not guess lengths or scale from hand-written constants.
+The trainer also reads machine capability facts:
 
-`get_device_capabilities()` reads what the machine can realistically support:
-
-- resolved device family
+- resolved device
 - accelerator memory
 - system memory
 - CPU count
-- a bounded `device_scale`
+- bounded `device_scale`
 
-This is important because model capacity and physical batching should respect the current machine, not only the dataset.
+Those two inputs are combined so model capacity reflects both what the data can
+justify and what the machine can actually train.
 
-### Config Resolution
+### Adaptive Config
 
-`build_training_config()` combines:
-
-- data-driven scale from `trainCount`
-- machine-driven scale from `device_scale`
-
-and derives:
+[build.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/config/build.py)
+derives:
 
 - model width and depth
 - dropout
@@ -96,150 +119,103 @@ and derives:
 - weight decay
 - epoch count
 - early stopping settings
-- exact-match frequency
+- validation exact-match cadence
+- whether to run a final full train exact-match audit
 
-This is why the trainer adapts without using crude hard-coded size buckets in the runtime path.
+The adjusted options are always logged as a JSON block so the scaling decision
+is visible in the terminal.
 
-### Dataset Loading
+### Training Objective vs Selection Objective
 
-`TokenizedJsonlDataset` loads JSONL records and validates that each record has:
+The trainer uses token-level cross-entropy for optimization.
 
-- `sample_id`
-- `input_ids`
-- `labels`
+That is the efficient training objective.
 
-It also validates token id bounds against the tokenizer vocab size. That is there to fail early if the dataset and tokenizer are out of sync.
+Checkpoint selection is different:
 
-### Sequence Length Resolution
+- primary metric: validation exact match
+- tie-breaker: validation loss
 
-`get_effective_sequence_lengths()` computes the actually observed max lengths in the current train and validation splits and checks that they do not exceed the measured stats maxima.
+This matters because the project is correctness-first. A lower loss does not
+matter if the whole structured output is still wrong.
 
-This exists to prevent silent truncation drift and to ensure the current dataset still matches the stats file.
+### Exact-Match Cost Control
 
-### Collation
+Exact match stays central, but the expensive part is controlled.
 
-The collator:
+The trainer now does this:
 
-- truncates to the chosen max lengths
-- pads encoder inputs with `pad_id`
-- builds `attention_mask`
-- prepends `BOS` to decoder inputs
-- appends `EOS` to decoder targets
-- pads labels with `LABEL_PAD_ID`
+- validation loss every epoch
+- full validation exact match only on the configured cadence
+- full train exact match only once at the end as an audit
 
-This is why the model gets teacher-forced decoder inputs and masked labels in the correct shape.
+This reduces monitoring cost without removing exact match from the training
+process.
 
-### Model
+### Target-Aware Exact Match
 
-`Seq2SeqTransformer` is the actual encoder-decoder network. It builds:
+[compute.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/match/compute.py)
+uses target-aware greedy decoding for exact-match evaluation.
 
-- one shared token embedding
-- learned source position embeddings
-- learned target position embeddings
-- a Transformer encoder
-- a Transformer decoder
-- an output projection to vocabulary logits
+That means:
 
-The model is parameterized by the resolved training config, not by a fixed static architecture.
+- the decoder only runs up to the gold target length for that batch
+- a sample stops as soon as exact match becomes impossible
+- a sample also stops as soon as the correct `EOS` position is reached
 
-### Training
+This is much cheaper than always decoding to the dataset-wide maximum target
+length.
 
-`train_epoch()`:
+### Canonical Best Checkpoint
 
-- loops over the train loader
-- computes token-normalized cross-entropy
-- divides loss by accumulation steps
-- backpropagates
-- clips gradients
-- steps the optimizer only when accumulation says so
-
-This is why the trainer can keep a stable effective batch even when physical batch size must stay small.
-
-### Validation
-
-`evaluate_loss()` computes validation loss without gradients.
-
-`compute_exact_match()` performs greedy generation and compares the generated token sequence against the full target sequence.
-
-Loss tells you whether the model is fitting the distribution.
-Exact match tells you whether the model is producing fully correct structured outputs.
-
-### Saving
-
-Every epoch, `save_artifacts()` updates:
-
-- `history.json`
-- `run.json`
-- `best_metrics.json`
-
-When validation loss improves, it also refreshes:
-
-- `best.pt`
-
-into `src/05_pytorch_models/{language}`.
-
-This is why every best checkpoint carries not just weights but also the resolved run context.
-
-## Terminal Logging
-
-Logging is produced by [reporting/log.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/reporting/log.py).
-
-You now get stage-level messages such as:
-
-- `args.parsed`
-- `seed.set.start` / `seed.set.complete`
-- `stats.parse.start` / `stats.parse.complete`
-- `device.capabilities.start` / `device.capabilities.complete`
-- `config.build.start` / `config.build.complete`
-- `dataset.load.start` / `dataset.load.complete`
-- `config.adjusted_options`
-- `loader.build.start` / `loader.build.complete`
-- `model.build.start` / `model.build.complete`
-- `optimizer.build.start` / `optimizer.build.complete`
-- `train.epoch.start` / `train.epoch.complete`
-- `validation.loss.start` / `validation.loss.complete`
-- `train.exact_match.start` / `train.exact_match.complete`
-- `validation.exact_match.start` / `validation.exact_match.complete`
-- `validation.exact_match.skipped`
-- `artifacts.save.start` / `artifacts.save.complete`
-- `checkpoint.saved`
-- `training.memorization_signal`
-- `epoch.complete`
-- `training.stop`
-- `training.complete`
-
-The logs intentionally include:
-
-- language
-- file paths
-- resolved device
-- adjusted options derived from data scale and compute scale
-- parameter counts
-- batch counts
-- batch size and accumulation
-- epoch timing
-- evaluation timing
-- exact-match timing
-- total run time
-
-So from the terminal you can tell both what the trainer is doing and how long each stage took.
-
-## Outputs
-
-Best-run artifacts are written to:
+The save policy is still intentionally overwrite-by-design:
 
 - `src/05_pytorch_models/{language}/best.pt`
 - `src/05_pytorch_models/{language}/best_metrics.json`
 - `src/05_pytorch_models/{language}/history.json`
 - `src/05_pytorch_models/{language}/run.json`
 
-`run.json` is the most important context file for later debugging because it includes the resolved config, device capabilities, dataset stats, and sequence lengths that produced the checkpoint.
+`best.pt` is the canonical best checkpoint for that language, not an archive of
+every run.
+
+The current run can warm-start from it, but a new checkpoint only overwrites it
+if it actually beats the incumbent canonical best by the validation-first
+ranking rule.
+
+## Terminal Logging
+
+Logging is produced by [log.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/reporting/log.py).
+
+You can observe:
+
+- parsed args and checkpoint mode
+- resolved paths
+- stats parsing
+- device capabilities
+- adaptive config build
+- adjusted options JSON
+- dataset load
+- loader build
+- model build
+- optimizer build
+- checkpoint load decision
+- train epoch timing
+- validation loss timing
+- validation exact-match timing
+- checkpoint save events
+- final train exact-match audit
+- early stopping
+- total run time
+
+Each log block is separated by a blank line so the terminal output stays
+readable during long runs.
 
 ## Design Intent
 
-The trainer is built around four rules:
+The trainer is built around these rules:
 
 1. Read measured facts from the dataset instead of guessing.
-2. Respect current machine capability instead of pretending every environment is the same.
-3. Keep the runtime path semantically explicit enough that failures are easy to localize.
-4. Emit enough terminal-visible state that a training run can be understood while it is happening, not only after it finishes.
+2. Keep `FP32` training simple in this phase.
+3. Use exact match as the correctness metric, but do not waste compute on the most expensive version of it every epoch.
+4. Prefer validation generalization signals over train memorization signals.
+5. Reuse the current canonical best checkpoint when compatible, but do not overwrite it with weaker candidates.

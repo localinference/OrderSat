@@ -47,6 +47,8 @@ def log_adjusted_options(*, adjusted_options: dict) -> None:
 def log_run_overview(
     *,
     language: str,
+    checkpoint_mode: str,
+    checkpoint_applied_mode: str,
     run_paths: dict,
     dataset_stats: dict,
     device_capabilities: dict,
@@ -58,6 +60,8 @@ def log_run_overview(
         "run.start",
         {
             "language": language,
+            "checkpoint_mode": checkpoint_mode,
+            "checkpoint_applied_mode": checkpoint_applied_mode,
             "train_samples": dataset_stats["train_count"],
             "validation_samples": dataset_stats["validation_count"],
             "sample_count": dataset_stats["sample_count"],
@@ -81,7 +85,12 @@ def log_run_overview(
             "weight_decay": f"{training_config['weight_decay']:.6f}",
             "epochs": training_config["epochs"],
             "patience": training_config["early_stopping_patience"],
-            "exact_match_frequency": training_config["exact_match_frequency"],
+            "validation_exact_match_frequency": training_config[
+                "validation_exact_match_frequency"
+            ],
+            "run_train_exact_match_at_end": training_config[
+                "run_train_exact_match_at_end"
+            ],
             "max_input_length": sequence_lengths["max_input_length"],
             "max_label_length": sequence_lengths["max_label_length"],
             "parameter_count": parameter_count,
@@ -125,24 +134,34 @@ def log_epoch_metrics(
         "validation_duration": format_seconds(validation_duration_seconds),
         "patience_state": f"{epochs_without_improvement}/{early_stopping_patience}",
     }
-    if train_exact_match is not None and validation_exact_match is not None:
-        values["train_exact_match"] = f"{train_exact_match:.4f}"
+    if validation_exact_match is not None:
         values["validation_exact_match"] = f"{validation_exact_match:.4f}"
+    if train_exact_match is not None:
+        values["train_exact_match"] = f"{train_exact_match:.4f}"
+    if exact_match_duration_seconds is not None:
         values["exact_match_duration"] = format_seconds(
-            exact_match_duration_seconds or 0.0
+            exact_match_duration_seconds
         )
 
     _print_block("epoch.complete", values)
 
-
-def log_checkpoint_saved(*, epoch: int, save_dir: Path, validation_loss: float) -> None:
+def log_checkpoint_saved(
+    *,
+    epoch: int,
+    save_dir: Path,
+    validation_loss: float,
+    validation_exact_match: float | None,
+) -> None:
+    values = {
+        "epoch": epoch,
+        "validation_loss": f"{validation_loss:.6f}",
+        "save_dir": str(save_dir),
+    }
+    if validation_exact_match is not None:
+        values["validation_exact_match"] = f"{validation_exact_match:.4f}"
     _print_block(
         "checkpoint.saved",
-        {
-            "epoch": epoch,
-            "validation_loss": f"{validation_loss:.6f}",
-            "save_dir": str(save_dir),
-        },
+        values,
     )
 
 

@@ -13,6 +13,7 @@ from Seq2SeqTransformer.constructor import Seq2SeqTransformer
 from TokenizedJsonlDataset.constructor import TokenizedJsonlDataset
 from args.parse import parse_args
 from artifacts.save import save_artifacts
+from checkpoint.load import build_model_signature, load_checkpoint
 from config.build import build_training_config
 from device.build import build_device
 from device.capabilities import get_device_capabilities
@@ -32,6 +33,7 @@ from reporting.log import (
     log_training_complete,
 )
 from seed.set import set_seed
+from selection.rank import build_checkpoint_score, is_better_checkpoint
 from sequence.get_effective_lenght import get_effective_sequence_lengths
 from stats.parse import parse_stats
 from vocab.read_size import read_vocab_size
@@ -132,6 +134,50 @@ def build_loader(
         batch_size=batch_size,
     )
     return loader
+
+
+def should_run_validation_exact_match(
+    *,
+    epoch: int,
+    total_epochs: int,
+    frequency: int,
+) -> bool:
+    if frequency <= 0:
+        return epoch == total_epochs
+    return (
+        epoch == 1
+        or epoch == total_epochs
+        or epoch % frequency == 0
+    )
+
+
+def checkpoint_score_from_metrics(metrics: dict | None):
+    if not isinstance(metrics, dict):
+        return None
+
+    epoch = metrics.get("epoch")
+    validation_loss = metrics.get("validation_loss")
+    validation_exact_match = metrics.get("validation_exact_match")
+
+    if not isinstance(epoch, int):
+        return None
+    if not isinstance(validation_loss, (int, float)):
+        return None
+    if validation_exact_match is not None and not isinstance(
+        validation_exact_match,
+        (int, float),
+    ):
+        validation_exact_match = None
+
+    return build_checkpoint_score(
+        epoch=epoch,
+        validation_loss=float(validation_loss),
+        validation_exact_match=(
+            float(validation_exact_match)
+            if validation_exact_match is not None
+            else None
+        ),
+    )
 
 
 def main() -> None:
@@ -288,8 +334,29 @@ def main() -> None:
         weight_decay=f"{training_config.weight_decay:.6f}",
     )
 
+    model_signature = build_model_signature(
+        language=run_paths.language,
+        vocab_size=vocab_size,
+        pad_id=pad_id,
+        bos_id=BOS_ID,
+        eos_id=EOS_ID,
+        label_pad_id=LABEL_PAD_ID,
+        training_config=training_config,
+        sequence_lengths=sequence_lengths,
+    )
+    checkpoint_path = run_paths.save_dir / "best.pt"
+    checkpoint_result = load_checkpoint(
+        checkpoint_mode=args.checkpoint_mode,
+        checkpoint_path=checkpoint_path,
+        model=model,
+        optimizer=optimizer,
+        model_signature=model_signature,
+    )
+
     log_run_overview(
         language=run_paths.language,
+        checkpoint_mode=args.checkpoint_mode,
+        checkpoint_applied_mode=checkpoint_result.applied_mode,
         run_paths=run_paths.to_dict(),
         dataset_stats=dataset_stats.to_dict(),
         device_capabilities=device_capabilities.to_dict(),
@@ -302,11 +369,18 @@ def main() -> None:
         "static_config": {
             "seed": SEED,
             "log_frequency": LOG_FREQUENCY,
+            "pad_id": pad_id,
             "bos_id": BOS_ID,
             "eos_id": EOS_ID,
             "label_pad_id": LABEL_PAD_ID,
             "grad_clip": GRAD_CLIP,
         },
+        "checkpoint_policy": {
+            "requested_mode": args.checkpoint_mode,
+            "applied_mode": checkpoint_result.applied_mode,
+            "checkpoint_path": str(checkpoint_path),
+        },
+        "model_signature": model_signature,
         "run_paths": run_paths.to_dict(),
         "dataset_stats": dataset_stats.to_dict(),
         "device_capabilities": device_capabilities.to_dict(),
@@ -315,13 +389,20 @@ def main() -> None:
         "parameter_count": parameter_count,
     }
 
-    max_generation_length = sequence_lengths.max_target_positions
-    best_metrics: dict | None = None
-    best_validation_loss: float | None = None
-    epochs_without_improvement = 0
-    history: list[dict] = []
+    best_metrics: dict | None = checkpoint_result.best_metrics
+    best_validation_loss: float | None = checkpoint_result.best_validation_loss
+    best_checkpoint_score = checkpoint_score_from_metrics(best_metrics)
+    epochs_without_improvement = checkpoint_result.epochs_without_improvement
+    history: list[dict] = list(checkpoint_result.history)
+    latest_epoch_metrics = history[-1] if history else None
+    last_completed_epoch = (
+        latest_epoch_metrics["epoch"]
+        if isinstance(latest_epoch_metrics, dict)
+        and isinstance(latest_epoch_metrics.get("epoch"), int)
+        else 0
+    )
 
-    for epoch in range(1, training_config.epochs + 1):
+    for epoch in range(checkpoint_result.start_epoch, training_config.epochs + 1):
         log_event(
             "epoch.start",
             language=run_paths.language,
@@ -344,26 +425,14 @@ def main() -> None:
             label_pad_id=LABEL_PAD_ID,
         )
 
-        should_run_exact_match = (
-            training_config.exact_match_frequency > 0
-            and (
-                epoch % training_config.exact_match_frequency == 0
-                or epoch == training_config.epochs
-            )
+        should_run_validation_exact = should_run_validation_exact_match(
+            epoch=epoch,
+            total_epochs=training_config.epochs,
+            frequency=training_config.validation_exact_match_frequency,
         )
 
-        train_exact_match_result = None
         validation_exact_match_result = None
-        if should_run_exact_match:
-            train_exact_match_result = compute_exact_match(
-                model,
-                evaluation_train_loader,
-                split_name="train",
-                device=device,
-                bos_id=BOS_ID,
-                eos_id=EOS_ID,
-                max_generation_length=max_generation_length,
-            )
+        if should_run_validation_exact:
             validation_exact_match_result = compute_exact_match(
                 model,
                 validation_loader,
@@ -371,24 +440,20 @@ def main() -> None:
                 device=device,
                 bos_id=BOS_ID,
                 eos_id=EOS_ID,
-                max_generation_length=max_generation_length,
             )
         else:
             log_event(
                 "validation.exact_match.skipped",
                 epoch=epoch,
-                exact_match_frequency=training_config.exact_match_frequency,
+                validation_exact_match_frequency=(
+                    training_config.validation_exact_match_frequency
+                ),
             )
 
         epoch_metrics = {
             "epoch": epoch,
             "train_loss": training_result.average_loss,
             "validation_loss": validation_result.average_loss,
-            "train_exact_match": (
-                train_exact_match_result.exact_match
-                if train_exact_match_result is not None
-                else None
-            ),
             "validation_exact_match": (
                 validation_exact_match_result.exact_match
                 if validation_exact_match_result is not None
@@ -397,32 +462,43 @@ def main() -> None:
             "train_duration_seconds": training_result.duration_seconds,
             "validation_duration_seconds": validation_result.duration_seconds,
             "exact_match_duration_seconds": (
-                (
-                    train_exact_match_result.duration_seconds
-                    + validation_exact_match_result.duration_seconds
-                )
-                if train_exact_match_result is not None
-                and validation_exact_match_result is not None
+                validation_exact_match_result.duration_seconds
+                if validation_exact_match_result is not None
                 else None
             ),
+            "validation_exact_match_ran": validation_exact_match_result is not None,
+            "checkpoint_mode": checkpoint_result.applied_mode,
             "optimizer_steps": training_result.optimizer_steps,
             "train_token_count": training_result.token_count,
             "validation_token_count": validation_result.token_count,
         }
         history.append(epoch_metrics)
+        latest_epoch_metrics = epoch_metrics
+        last_completed_epoch = epoch
 
-        improved_validation = (
+        improved_validation_loss = (
             best_validation_loss is None
             or validation_result.average_loss
             < best_validation_loss - training_config.early_stopping_min_delta
         )
 
-        if improved_validation:
+        if improved_validation_loss:
             best_validation_loss = validation_result.average_loss
-            best_metrics = epoch_metrics
             epochs_without_improvement = 0
         else:
             epochs_without_improvement += 1
+
+        candidate_checkpoint_score = checkpoint_score_from_metrics(epoch_metrics)
+        improved_checkpoint = False
+        if candidate_checkpoint_score is not None:
+            improved_checkpoint = is_better_checkpoint(
+                candidate_checkpoint_score,
+                best_checkpoint_score,
+            )
+
+        if improved_checkpoint:
+            best_checkpoint_score = candidate_checkpoint_score
+            best_metrics = epoch_metrics
 
         epoch_run_metadata = {
             **run_metadata,
@@ -441,16 +517,21 @@ def main() -> None:
             metadata=epoch_run_metadata,
             model=model,
             optimizer=optimizer,
-            save_checkpoint=improved_validation,
+            save_checkpoint=improved_checkpoint,
         )
-        if improved_validation:
+        if improved_checkpoint:
             log_checkpoint_saved(
                 epoch=epoch,
                 save_dir=run_paths.save_dir,
                 validation_loss=validation_result.average_loss,
+                validation_exact_match=(
+                    validation_exact_match_result.exact_match
+                    if validation_exact_match_result is not None
+                    else None
+                ),
             )
 
-        if epoch == 1 or epoch % LOG_FREQUENCY == 0 or epoch == training_config.epochs:
+        if epoch == checkpoint_result.start_epoch or epoch % LOG_FREQUENCY == 0 or epoch == training_config.epochs:
             log_epoch_metrics(
                 epoch=epoch,
                 total_epochs=training_config.epochs,
@@ -466,32 +547,13 @@ def main() -> None:
                 ),
                 epochs_without_improvement=epochs_without_improvement,
                 early_stopping_patience=training_config.early_stopping_patience,
-                train_exact_match=(
-                    train_exact_match_result.exact_match
-                    if train_exact_match_result is not None
-                    else None
-                ),
+                train_exact_match=None,
                 validation_exact_match=(
                     validation_exact_match_result.exact_match
                     if validation_exact_match_result is not None
                     else None
                 ),
                 exact_match_duration_seconds=epoch_metrics["exact_match_duration_seconds"],
-            )
-
-        if (
-            train_exact_match_result is not None
-            and train_exact_match_result.exact_match >= 1.0
-        ):
-            log_event(
-                "training.memorization_signal",
-                epoch=epoch,
-                train_exact_match=f"{train_exact_match_result.exact_match:.4f}",
-                validation_exact_match=(
-                    f"{validation_exact_match_result.exact_match:.4f}"
-                    if validation_exact_match_result is not None
-                    else "<not_run>"
-                ),
             )
 
         if epochs_without_improvement >= training_config.early_stopping_patience:
@@ -503,6 +565,69 @@ def main() -> None:
                 epoch=epoch,
             )
             break
+
+    final_train_exact_match_result = None
+    if (
+        training_config.run_train_exact_match_at_end
+        and checkpoint_path.exists()
+        and best_metrics is not None
+    ):
+        audit_checkpoint = torch.load(checkpoint_path, map_location="cpu")
+        model.load_state_dict(audit_checkpoint["model_state_dict"], strict=True)
+        final_train_exact_match_result = compute_exact_match(
+            model,
+            evaluation_train_loader,
+            split_name="train_final_audit",
+            device=device,
+            bos_id=BOS_ID,
+            eos_id=EOS_ID,
+        )
+
+        if (
+            final_train_exact_match_result.exact_match >= 1.0
+            and isinstance(best_metrics.get("validation_exact_match"), (int, float))
+            and float(best_metrics["validation_exact_match"]) < 1.0
+        ):
+            log_event(
+                "training.memorization_signal",
+                epoch=best_metrics.get("epoch"),
+                train_exact_match=f"{final_train_exact_match_result.exact_match:.4f}",
+                validation_exact_match=(
+                    f"{float(best_metrics['validation_exact_match']):.4f}"
+                ),
+            )
+
+    final_run_metadata = {
+        **run_metadata,
+        "runtime_state": {
+            "latest_epoch_completed": last_completed_epoch,
+            "best_validation_loss": best_validation_loss,
+            "epochs_without_improvement": epochs_without_improvement,
+            "latest_metrics": latest_epoch_metrics,
+            "best_metrics": best_metrics,
+        },
+        "final_audit": {
+            "train_exact_match": (
+                final_train_exact_match_result.exact_match
+                if final_train_exact_match_result is not None
+                else None
+            ),
+            "train_exact_match_duration_seconds": (
+                final_train_exact_match_result.duration_seconds
+                if final_train_exact_match_result is not None
+                else None
+            ),
+        },
+    }
+    save_artifacts(
+        save_dir=run_paths.save_dir,
+        best_metrics=best_metrics,
+        history=history,
+        metadata=final_run_metadata,
+        model=model,
+        optimizer=optimizer,
+        save_checkpoint=False,
+    )
 
     log_training_complete(
         best_metrics=best_metrics,

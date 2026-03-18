@@ -89,7 +89,8 @@ class TrainingConfig:
     epochs: int
     early_stopping_patience: int
     early_stopping_min_delta: float
-    exact_match_frequency: int
+    validation_exact_match_frequency: int
+    run_train_exact_match_at_end: bool
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -126,7 +127,8 @@ class TrainingConfig:
                 "epochs": self.epochs,
                 "early_stopping_patience": self.early_stopping_patience,
                 "early_stopping_min_delta": self.early_stopping_min_delta,
-                "exact_match_frequency": self.exact_match_frequency,
+                "validation_exact_match_frequency": self.validation_exact_match_frequency,
+                "run_train_exact_match_at_end": self.run_train_exact_match_at_end,
             },
         }
 
@@ -182,7 +184,7 @@ def build_training_config(
     epochs = _clamp_int(round(30 / (data_scale**2)), 10, 100)
     early_stopping_patience = _clamp_int(round(8 / data_scale), 3, 20)
     early_stopping_min_delta = _clamp_float(1e-4 * data_scale, 1e-5, 1e-3)
-    exact_match_frequency = _clamp_int(round(2 * data_scale), 1, 3)
+    validation_exact_match_frequency = _clamp_int(round(2 * data_scale), 1, 3)
 
     num_workers = _resolve_num_workers(
         dataset_stats=dataset_stats,
@@ -211,7 +213,8 @@ def build_training_config(
         epochs=epochs,
         early_stopping_patience=early_stopping_patience,
         early_stopping_min_delta=early_stopping_min_delta,
-        exact_match_frequency=exact_match_frequency,
+        validation_exact_match_frequency=validation_exact_match_frequency,
+        run_train_exact_match_at_end=True,
     )
 
     log_stage_complete(
@@ -229,5 +232,6 @@ def build_training_config(
         effective_batch_size=config.achieved_effective_batch_size,
         learning_rate=f"{config.learning_rate:.6f}",
         epochs=config.epochs,
+        validation_exact_match_frequency=config.validation_exact_match_frequency,
     )
     return config
