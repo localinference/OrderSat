@@ -1,11 +1,23 @@
-import TokenizedJsonlDataset
-from dataclasses import dataclass
+from __future__ import annotations
+
+from dataclasses import asdict, dataclass
+
+from TokenizedJsonlDataset.constructor import TokenizedJsonlDataset
+
+
 @dataclass(frozen=True)
 class EffectiveSequenceLengths:
     max_input_length: int
     max_label_length: int
     max_source_positions: int
     max_target_positions: int
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+def _get_observed_max(dataset: TokenizedJsonlDataset, field_name: str) -> int:
+    return max(len(record[field_name]) for record in dataset.records)
 
 
 def get_effective_sequence_lengths(
@@ -16,20 +28,29 @@ def get_effective_sequence_lengths(
     max_label_length: int,
 ) -> EffectiveSequenceLengths:
     observed_max_input_length = max(
-        max(len(record["input_ids"]) for record in train_dataset.records),
-        max(len(record["input_ids"]) for record in validation_dataset.records),
+        _get_observed_max(train_dataset, "input_ids"),
+        _get_observed_max(validation_dataset, "input_ids"),
     )
     observed_max_label_length = max(
-        max(len(record["labels"]) for record in train_dataset.records),
-        max(len(record["labels"]) for record in validation_dataset.records),
+        _get_observed_max(train_dataset, "labels"),
+        _get_observed_max(validation_dataset, "labels"),
     )
 
-    effective_input_length = min(observed_max_input_length, max_input_length)
-    effective_label_length = min(observed_max_label_length, max_label_length)
+    if observed_max_input_length > max_input_length:
+        raise SystemExit(
+            "Observed input length exceeds dataset stats max. "
+            "Regenerate the dataset stats before training."
+        )
+
+    if observed_max_label_length > max_label_length:
+        raise SystemExit(
+            "Observed label length exceeds dataset stats max. "
+            "Regenerate the dataset stats before training."
+        )
 
     return EffectiveSequenceLengths(
-        max_input_length=effective_input_length,
-        max_label_length=effective_label_length,
-        max_source_positions=effective_input_length,
-        max_target_positions=effective_label_length + 1,
+        max_input_length=observed_max_input_length,
+        max_label_length=observed_max_label_length,
+        max_source_positions=observed_max_input_length,
+        max_target_positions=observed_max_label_length + 1,
     )

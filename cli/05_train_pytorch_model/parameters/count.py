@@ -1,3 +1,7 @@
-import Seq2SeqTransformer
-def count_parameters(model: Seq2SeqTransformer) -> int:
+from __future__ import annotations
+
+import torch
+
+
+def count_parameters(model: torch.nn.Module) -> int:
     return sum(parameter.numel() for parameter in model.parameters())

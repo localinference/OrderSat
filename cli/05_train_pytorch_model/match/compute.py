@@ -1,21 +1,36 @@
+from __future__ import annotations
+
+import time
+from dataclasses import dataclass
+
 import torch
-import Seq2SeqTransformer
 from torch.utils.data import DataLoader
+
 from greedy.generate import greedy_generate
 
+
+@dataclass(frozen=True)
+class ExactMatchEvaluation:
+    exact_match: float
+    match_count: int
+    sample_count: int
+    duration_seconds: float
+
+
 def compute_exact_match(
-    model: Seq2SeqTransformer,
+    model: torch.nn.Module,
     loader: DataLoader,
     *,
-    device: str,
+    device: torch.device,
     bos_id: int,
     eos_id: int,
     max_generation_length: int,
-) -> float:
-    matches = 0
-    total = 0
+) -> ExactMatchEvaluation:
+    started_at = time.perf_counter()
+    match_count = 0
+    sample_count = 0
 
-    with torch.no_grad():
+    with torch.inference_mode():
         for batch in loader:
             predictions = greedy_generate(
                 model,
@@ -26,12 +41,19 @@ def compute_exact_match(
                 max_generation_length=max_generation_length,
             )
             targets = batch["target_token_ids"]
+
             for predicted, target in zip(predictions, targets):
-                total += 1
+                sample_count += 1
                 if predicted == target:
-                    matches += 1
+                    match_count += 1
 
-    if total == 0:
-        return 0.0
+    exact_match = 0.0
+    if sample_count > 0:
+        exact_match = match_count / sample_count
 
-    return matches / total
+    return ExactMatchEvaluation(
+        exact_match=exact_match,
+        match_count=match_count,
+        sample_count=sample_count,
+        duration_seconds=time.perf_counter() - started_at,
+    )
