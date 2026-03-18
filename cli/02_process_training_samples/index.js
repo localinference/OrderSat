@@ -51,11 +51,11 @@ try {
       languageTokenizerCorpusPath,
       jsonlLines.length ? `${jsonlLines.join('\n')}\n` : '',
       {
-      encoding: 'utf-8',
+        encoding: 'utf-8',
       }
     )
     console.log(
-      `Created tokenizer corpus for language "${language}" in ${Math.round(performance.now() - t0)} milliseconds`
+      `Created tokenizer corpus from ${jsonlLines.length} (input|ouput) samples for language "${language}" in ${Math.round(performance.now() - t0)} milliseconds`
     )
   }
 } catch (err) {
