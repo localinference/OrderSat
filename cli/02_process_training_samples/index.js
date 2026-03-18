@@ -12,29 +12,48 @@ try {
   const { languages } = getArgs()
 
   for (const language of languages) {
-    let jsonl = ''
+    const jsonlLines = []
     const languageOutputPath = `${outputSamplePath}/${language}`
+    const languageTokenizerPath = `${tokenizerPath}/${language}`
     const languageTokenizerCorpusPath = `${tokenizerPath}/${language}/corpus.jsonl`
 
-    const outputFileNames = await FastGlob(`${languageOutputPath}/*.jsonld`)
+    const outputFileNames = (
+      await FastGlob(`${languageOutputPath}/*.jsonld`)
+    ).sort((a, b) => a.localeCompare(b))
+
+    if (outputFileNames.length === 0) {
+      throw new Error(
+        `No output samples found for language "${language}" at ${languageOutputPath}`
+      )
+    }
+
+    await fs.stat(languageTokenizerPath)
 
     for (const outputPath of outputFileNames) {
       const inputPath = getInputPathFromOutputPath(outputPath)
 
-      let input = await fs.readFile(inputPath, { encoding: 'utf-8' })
-      let output = await fs.readFile(outputPath, { encoding: 'utf-8' })
+      let [input, output] = await Promise.all([
+        fs.readFile(inputPath, { encoding: 'utf-8' }),
+        fs.readFile(outputPath, { encoding: 'utf-8' }),
+      ])
 
       if (!input || !output) continue
 
       input = cleanWhitespace(input)
-      output = cleanWhitespace(output)
+      if (!input) continue
 
-      jsonl += `${JSON.stringify({ input, output })}\n`
+      output = JSON.stringify(JSON.parse(output))
+
+      jsonlLines.push(JSON.stringify({ input, output }))
     }
 
-    await fs.writeFile(languageTokenizerCorpusPath, jsonl, {
+    await fs.writeFile(
+      languageTokenizerCorpusPath,
+      jsonlLines.length ? `${jsonlLines.join('\n')}\n` : '',
+      {
       encoding: 'utf-8',
-    })
+      }
+    )
     console.log(
       `Created tokenizer corpus for language "${language}" in ${Math.round(performance.now() - t0)} milliseconds`
     )
