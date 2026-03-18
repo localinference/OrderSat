@@ -4,7 +4,6 @@ from __future__ import annotations
 import argparse
 import json
 import pathlib
-import random
 from dataclasses import dataclass
 
 try:
@@ -19,33 +18,60 @@ except ImportError:
     DataLoader = None
     Dataset = object
 
-DEFAULT_TOKENIZERS_ROOT = pathlib.Path("src/03_tokenizers")
-DEFAULT_DATASETS_ROOT = pathlib.Path("src/04_training_datasets")
-DEFAULT_BEST_MODELS_ROOT = pathlib.Path("src/05_pytorch_models")
-DEFAULT_TRAIN_FILE = "train.jsonl"
-DEFAULT_VALIDATION_FILE = "validation.jsonl"
-DEFAULT_VOCAB_FILE = "tokenizer.vocab"
-DEFAULT_BATCH_SIZE = 1
-DEFAULT_EPOCHS = 40
-DEFAULT_LEARNING_RATE = 3e-4
-DEFAULT_WEIGHT_DECAY = 1e-4
-DEFAULT_D_MODEL = 128
-DEFAULT_NUM_HEADS = 4
-DEFAULT_NUM_ENCODER_LAYERS = 2
-DEFAULT_NUM_DECODER_LAYERS = 2
-DEFAULT_FFN_DIM = 256
-DEFAULT_DROPOUT = 0.1
-DEFAULT_LABEL_PAD_ID = -100
-DEFAULT_BOS_ID = 1
-DEFAULT_EOS_ID = 2
-DEFAULT_LOG_EVERY = 10
-DEFAULT_EXACT_MATCH_EVERY = 0
-DEFAULT_SEED = 7
-DEFAULT_GRAD_CLIP = 1.0
-DEFAULT_MAX_INPUT_LENGTH = 256
-DEFAULT_MAX_LABEL_LENGTH = 512
-DEFAULT_EARLY_STOPPING_PATIENCE = 8
-DEFAULT_EARLY_STOPPING_MIN_DELTA = 1e-4
+    from Seq2SeqCollator.constructor import Seq2SeqCollator
+
+    from TokenizedJsonlDataset.constructor import TokenizedJsonlDataset
+
+    from TinySeq2SeqTransformer.constructor import TinySeq2SeqTransformer
+
+    from args.parse import parse_args
+
+
+TOKENIZERS_ROOT = pathlib.Path("src/03_tokenizers")
+DATASETS_ROOT = pathlib.Path("src/04_training_datasets")
+PYTORCH_MODELS_ROOT = pathlib.Path("src/05_pytorch_models")
+
+DATASET_STATS_FILE = "stats.json"
+TRAINING_DATA_FILE = "train.jsonl"
+VALIDATION_DATA_FILE = "validation.jsonl"
+TOKENIZER_VOCAB_FILE = "tokenizer.vocab"
+
+#BATCHING
+BATCH_SIZE = 1
+ACCUMULATION_STEPS = 16
+
+#EPOCHING
+EPOCHS = 100
+EPOCHS_PATIENCE = 20
+EPOCH_MIN_DELTA = 1e-5
+
+#LENGHTS
+INPUT_LENGTH = 256
+LABEL_LENGTH = 512
+
+#LEARNING
+LEARNING_RATE = 3e-4
+WEIGHT_DECAY = 1e-4
+GRAD_CLIP = 1.0
+
+# MODEL ARCHITECTURE
+D_MODEL = 128
+NUM_HEADS = 4
+NUM_ENCODER_LAYERS = 2
+NUM_DECODER_LAYERS = 2
+FFN_DIM = 256
+DROPOUT = 0.1
+LABEL_PAD_ID = -100
+BOS_ID = 1
+EOS_ID = 2
+
+# DEV
+SEED = 7
+LOG_EVERY = 10
+EXACT_MATCH_EVERY = 0
+
+
+
 
 
 @dataclass(frozen=True)
@@ -62,297 +88,6 @@ class EffectiveSequenceLengths:
     max_source_positions: int
     max_target_positions: int
 
-
-
-class Seq2SeqCollator:
-    def __init__(
-        self,
-        *,
-        pad_id: int,
-        bos_id: int,
-        eos_id: int,
-        label_pad_id: int,
-        max_input_length: int | None = None,
-        max_label_length: int | None = None,
-    ) -> None:
-        self.pad_id = pad_id
-        self.bos_id = bos_id
-        self.eos_id = eos_id
-        self.label_pad_id = label_pad_id
-        self.max_input_length = max_input_length
-        self.max_label_length = max_label_length
-
-    def __call__(self, items: list[dict]) -> dict:
-        if torch is None:
-            raise SystemExit(
-                "PyTorch is required to collate batches. Install torch first."
-            )
-
-        truncated_inputs = [
-            self._truncate_input(item["input_ids"]) for item in items
-        ]
-        truncated_labels = [
-            self._truncate_labels(item["labels"]) for item in items
-        ]
-
-        decoder_inputs = [[self.bos_id, *labels] for labels in truncated_labels]
-        decoder_targets = [[*labels, self.eos_id] for labels in truncated_labels]
-
-        input_ids = self._pad_tokens(truncated_inputs, pad_value=self.pad_id)
-        attention_mask = input_ids.ne(self.pad_id).to(dtype=torch.long)
-        decoder_input_ids = self._pad_tokens(
-            decoder_inputs,
-            pad_value=self.pad_id,
-        )
-        decoder_attention_mask = decoder_input_ids.ne(self.pad_id).to(
-            dtype=torch.long
-        )
-        labels = self._pad_tokens(
-            decoder_targets,
-            pad_value=self.label_pad_id,
-        )
-
-        return {
-            "sample_ids": [item["sample_id"] for item in items],
-            "input_ids": input_ids,
-            "attention_mask": attention_mask,
-            "decoder_input_ids": decoder_input_ids,
-            "decoder_attention_mask": decoder_attention_mask,
-            "labels": labels,
-            "target_token_ids": [list(tokens) for tokens in truncated_labels],
-            "input_lengths": torch.tensor(
-                [len(tokens) for tokens in truncated_inputs],
-                dtype=torch.long,
-            ),
-            "label_lengths": torch.tensor(
-                [len(tokens) for tokens in decoder_targets],
-                dtype=torch.long,
-            ),
-        }
-
-    def _truncate_input(self, token_ids: list[int]) -> list[int]:
-        if self.max_input_length is None:
-            return list(token_ids)
-        return list(token_ids[: self.max_input_length])
-
-    def _truncate_labels(self, token_ids: list[int]) -> list[int]:
-        if self.max_label_length is None:
-            return list(token_ids)
-        if self.max_label_length < 1:
-            raise SystemExit("--max-label-length must be at least 1")
-        return list(token_ids[: self.max_label_length])
-
-    @staticmethod
-    def _pad_tokens(sequences: list[list[int]], pad_value: int) -> torch.Tensor:
-        max_length = max(len(sequence) for sequence in sequences)
-        padded = [
-            sequence + [pad_value] * (max_length - len(sequence))
-            for sequence in sequences
-        ]
-        return torch.tensor(padded, dtype=torch.long)
-
-
-class TinySeq2SeqTransformer(nn.Module if nn is not None else object):
-    def __init__(
-        self,
-        *,
-        vocab_size: int,
-        pad_id: int,
-        d_model: int,
-        num_heads: int,
-        num_encoder_layers: int,
-        num_decoder_layers: int,
-        ffn_dim: int,
-        dropout: float,
-        max_source_positions: int,
-        max_target_positions: int,
-    ) -> None:
-        super().__init__()
-        if nn is None:
-            raise SystemExit("PyTorch is required to build the model.")
-
-        embedding_vocab_size = vocab_size + 1
-        self.pad_id = pad_id
-        self.d_model = d_model
-        self.token_embedding = nn.Embedding(
-            embedding_vocab_size,
-            d_model,
-            padding_idx=pad_id,
-        )
-        self.source_position_embedding = nn.Embedding(
-            max_source_positions,
-            d_model,
-        )
-        self.target_position_embedding = nn.Embedding(
-            max_target_positions,
-            d_model,
-        )
-        encoder_layer = nn.TransformerEncoderLayer(
-            d_model=d_model,
-            nhead=num_heads,
-            dim_feedforward=ffn_dim,
-            dropout=dropout,
-            batch_first=True,
-        )
-        self.encoder = nn.TransformerEncoder(
-            encoder_layer,
-            num_layers=num_encoder_layers,
-            enable_nested_tensor=False,
-        )
-        decoder_layer = nn.TransformerDecoderLayer(
-            d_model=d_model,
-            nhead=num_heads,
-            dim_feedforward=ffn_dim,
-            dropout=dropout,
-            batch_first=True,
-        )
-        self.decoder = nn.TransformerDecoder(
-            decoder_layer,
-            num_layers=num_decoder_layers,
-        )
-        self.dropout = nn.Dropout(dropout)
-        self.output_projection = nn.Linear(d_model, vocab_size)
-
-    def forward(
-        self,
-        *,
-        input_ids: torch.Tensor,
-        attention_mask: torch.Tensor,
-        decoder_input_ids: torch.Tensor,
-    ) -> torch.Tensor:
-        source_padding_mask = attention_mask.eq(0)
-        target_padding_mask = decoder_input_ids.eq(self.pad_id)
-
-        source_embeddings = self._embed_source(input_ids)
-        target_embeddings = self._embed_target(decoder_input_ids)
-        target_mask = self._causal_mask(
-            length=decoder_input_ids.size(1),
-            device=decoder_input_ids.device,
-        )
-        memory = self.encoder(
-            source_embeddings,
-            src_key_padding_mask=source_padding_mask,
-        )
-        hidden = self.decoder(
-            tgt=target_embeddings,
-            memory=memory,
-            tgt_mask=target_mask,
-            tgt_is_causal=True,
-            tgt_key_padding_mask=target_padding_mask,
-            memory_key_padding_mask=source_padding_mask,
-        )
-
-        return self.output_projection(hidden)
-
-    def encode(
-        self,
-        input_ids: torch.Tensor,
-        attention_mask: torch.Tensor,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        source_padding_mask = attention_mask.eq(0)
-        source_embeddings = self._embed_source(input_ids)
-        memory = self.encoder(
-            source_embeddings,
-            src_key_padding_mask=source_padding_mask,
-        )
-        return memory, source_padding_mask
-
-    def decode_step(
-        self,
-        *,
-        decoder_input_ids: torch.Tensor,
-        memory: torch.Tensor,
-        source_padding_mask: torch.Tensor,
-    ) -> torch.Tensor:
-        target_embeddings = self._embed_target(decoder_input_ids)
-        target_mask = self._causal_mask(
-            length=decoder_input_ids.size(1),
-            device=decoder_input_ids.device,
-        )
-        hidden = self.decoder(
-            tgt=target_embeddings,
-            memory=memory,
-            tgt_mask=target_mask,
-            tgt_is_causal=True,
-            tgt_key_padding_mask=decoder_input_ids.eq(self.pad_id),
-            memory_key_padding_mask=source_padding_mask,
-        )
-        return self.output_projection(hidden)
-
-    def _embed_source(self, token_ids: torch.Tensor) -> torch.Tensor:
-        positions = torch.arange(
-            token_ids.size(1),
-            device=token_ids.device,
-        ).unsqueeze(0)
-        token_embeddings = self.token_embedding(token_ids) * (self.d_model**0.5)
-        embeddings = token_embeddings + self.source_position_embedding(positions)
-        return self.dropout(embeddings)
-
-    def _embed_target(self, token_ids: torch.Tensor) -> torch.Tensor:
-        positions = torch.arange(
-            token_ids.size(1),
-            device=token_ids.device,
-        ).unsqueeze(0)
-        token_embeddings = self.token_embedding(token_ids) * (self.d_model**0.5)
-        embeddings = token_embeddings + self.target_position_embedding(positions)
-        return self.dropout(embeddings)
-
-    @staticmethod
-    def _causal_mask(length: int, device: torch.device) -> torch.Tensor:
-        return torch.triu(
-            torch.ones((length, length), device=device, dtype=torch.bool),
-            diagonal=1,
-        )
-
-
-
-def require_torch() -> None:
-    if torch is None or nn is None or F is None or DataLoader is None:
-        raise SystemExit(
-            "PyTorch is required for overfit training. Install torch in this "
-            "Python environment first."
-        )
-
-
-def validate_args(args: argparse.Namespace) -> None:
-    if args.batch_size < 1:
-        raise SystemExit("--batch-size must be a positive integer")
-    if args.epochs < 1:
-        raise SystemExit("--epochs must be a positive integer")
-    if args.learning_rate <= 0:
-        raise SystemExit("--learning-rate must be greater than zero")
-    if args.weight_decay < 0:
-        raise SystemExit("--weight-decay must be zero or greater")
-    if args.d_model < 1:
-        raise SystemExit("--d-model must be a positive integer")
-    if args.num_heads < 1:
-        raise SystemExit("--num-heads must be a positive integer")
-    if args.d_model % args.num_heads != 0:
-        raise SystemExit("--d-model must be divisible by --num-heads")
-    if args.num_encoder_layers < 1:
-        raise SystemExit("--num-encoder-layers must be a positive integer")
-    if args.num_decoder_layers < 1:
-        raise SystemExit("--num-decoder-layers must be a positive integer")
-    if args.ffn_dim < args.d_model:
-        raise SystemExit("--ffn-dim must be at least --d-model")
-    if not 0 <= args.dropout < 1:
-        raise SystemExit("--dropout must be in the range [0, 1)")
-    if args.max_input_length is not None and args.max_input_length < 1:
-        raise SystemExit("--max-input-length must be at least 1")
-    if args.max_label_length is not None and args.max_label_length < 1:
-        raise SystemExit("--max-label-length must be at least 1")
-    if args.max_generation_length is not None and args.max_generation_length < 1:
-        raise SystemExit("--max-generation-length must be at least 1")
-    if args.log_every < 1:
-        raise SystemExit("--log-every must be a positive integer")
-    if args.exact_match_every < 0:
-        raise SystemExit("--exact-match-every must be zero or greater")
-    if args.grad_clip <= 0:
-        raise SystemExit("--grad-clip must be greater than zero")
-    if args.early_stopping_patience < 1:
-        raise SystemExit("--early-stopping-patience must be a positive integer")
-    if args.early_stopping_min_delta < 0:
-        raise SystemExit("--early-stopping-min-delta must be zero or greater")
 
 
 def resolve_paths(args: argparse.Namespace) -> SplitPaths:
@@ -392,7 +127,6 @@ def read_vocab_size(vocab_path: pathlib.Path) -> int:
 
 
 def build_device(device_name: str) -> str:
-    require_torch()
     if device_name == "auto":
         if torch.cuda.is_available():
             return "cuda"
@@ -402,13 +136,7 @@ def build_device(device_name: str) -> str:
     return device_name
 
 
-def set_seed(seed: int) -> None:
-    random.seed(seed)
-    if torch is None:
-        return
-    torch.manual_seed(seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed_all(seed)
+
 
 
 def resolve_effective_sequence_lengths(
@@ -631,8 +359,7 @@ def save_artifacts(
 
 def main() -> None:
     args = parse_args()
-    validate_args(args)
-    require_torch()
+
 
     split_paths = resolve_paths(args)
     save_dir = resolve_save_dir(args)

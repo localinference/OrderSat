@@ -1,3 +1,7 @@
+import pathlib
+import json
+from torch.utils.data import Dataset
+
 
 class TokenizedJsonlDataset(Dataset):
     def __init__(self, file_path: pathlib.Path, vocab_size: int) -> None:
