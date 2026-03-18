@@ -27,8 +27,8 @@ def parse_args() -> argparse.Namespace:
         "-V",
         "--vocab-size",
         type=int,
-        default=8000,
-        help="SentencePiece vocab size (default: 8000)",
+        default=32000,
+        help="SentencePiece vocab size (default: 32000)",
     )
     parser.add_argument(
         "-C",

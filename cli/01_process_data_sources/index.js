@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { getArgs } from './utils/getArgs/index.js'
 import FastGlob from 'fast-glob'
 import { tmpdir } from 'os'

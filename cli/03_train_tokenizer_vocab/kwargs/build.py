@@ -11,5 +11,6 @@ def build_kwargs(
         "vocab_size": args.vocab_size,
         "character_coverage": args.character_coverage,
         "max_sentence_length": args.max_sentence_length,
+        "hard_vocab_limit": False,
     }
 
