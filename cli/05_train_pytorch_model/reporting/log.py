@@ -17,6 +17,7 @@ def _print_block(title: str, values: dict) -> None:
     print(f"[{_timestamp()}] {title}", flush=True)
     for key, value in values.items():
         print(f"  {key}: {value}", flush=True)
+    print(flush=True)
 
 
 def log_event(event: str, **values) -> None:
@@ -36,6 +37,7 @@ def log_stage_complete(stage: str, duration_seconds: float | None = None, **valu
 def log_json_block(title: str, payload: dict) -> None:
     print(f"[{_timestamp()}] {title}", flush=True)
     print(json.dumps(payload, indent=2), flush=True)
+    print(flush=True)
 
 
 def log_adjusted_options(*, adjusted_options: dict) -> None:
