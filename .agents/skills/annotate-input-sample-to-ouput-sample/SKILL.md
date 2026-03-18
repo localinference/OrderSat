@@ -1,6 +1,6 @@
 ## Purpose
 
-For each input at `./src/02_training_samples/inputs/${requestedLanguage}/*.txt` file, read the OCR-extracted receipt or order-related text and convert it into a corrected, normalized **JSON-LD** document using **Schema.org**.
+For each input at `./src/02_training_samples/inputs/{requestedLanguage}/*.txt` file, read the OCR-extracted receipt or order-related text and convert it into a corrected, normalized **JSON-LD** document using **Schema.org** to `./src/02_training_samples/outputs/${requestedLanguage}/{inputSampleFileName}.jsonld`
 
 The output must represent the document primarily as a `schema:Order` whenever the text is fundamentally a confirmation or record of a transaction. This matches the Schema.org definition of `Order`, which is a confirmation of a transaction (a receipt) and can contain multiple accepted offers. JSON-LD is a JSON-based format for linked data and supports either a single top-level object or linked entities via `@graph`. ([Schema.org][1])
 
@@ -55,6 +55,16 @@ The model must learn all of the following behaviors:
 - ambiguous facts must be omitted or marked unresolved rather than hallucinated
 
 ---
+
+## Ensure input language
+
+Ensure that input sample language is what the directory implies, if there is a language mismatch ignore the input sample
+
+## Validate structure with
+
+node cli/validateStructure `./src/02_training_samples/outputs/${requestedLanguage}/{inputSampleFileName}.jsonld`
+
+this returns true if it is ok and an array of issue objects if it is bad. !!Issues are desired in case we can get them to be produced by the error codes, if we cant then no issues.
 
 ## Primary type rule
 
@@ -289,80 +299,9 @@ Prefer the first pattern unless there is a strong reason to preserve the native 
 
 ## Standard error code vocabulary
 
-Use uppercase snake case.
-
-Use the narrowest correct error code you can justify.
-
-### Merchant / company / identity errors
-
-- `BROKEN_COMPANY_NAME`
-- `BROKEN_MERCHANT_NAME`
-- `BROKEN_BRANCH_NAME`
-- `BROKEN_COMPANY_NUMBER`
-- `BROKEN_VAT_ID`
-- `BROKEN_TAX_ID`
-- `BROKEN_BUSINESS_ID`
-
-### Contact errors
-
-- `BROKEN_PHONE_NUMBER`
-- `BROKEN_EMAIL`
-- `BROKEN_URL`
-
-### Person-related errors
-
-- `BROKEN_PERSON_NAME`
-- `BROKEN_CUSTOMER_NAME`
-- `BROKEN_CASHIER_NAME`
-- `BROKEN_MEMBER_NAME`
-
-### Identifier errors
-
-- `BROKEN_ORDER_NUMBER`
-- `BROKEN_RECEIPT_NUMBER`
-- `BROKEN_DOCUMENT_NUMBER`
-- `BROKEN_TRANSACTION_ID`
-- `BROKEN_MEMBER_ID`
-- `BROKEN_LOYALTY_ID`
-- `BROKEN_ACCOUNT_ID`
-- `BROKEN_CARD_LAST4`
-- `BROKEN_BARCODE`
-- `BROKEN_GTIN`
-
-### Address errors
-
-- `BROKEN_STREET_ADDRESS`
-- `BROKEN_POSTAL_CODE`
-- `BROKEN_LOCALITY`
-- `BROKEN_REGION`
-- `BROKEN_COUNTRY`
-- `BROKEN_FULL_ADDRESS`
-
-### Date / time / monetary errors
-
-Use these more carefully. General fields may often be normalized instead of error-coded.
-
-- `BROKEN_ORDER_DATE`
-- `BROKEN_ORDER_TIME`
-- `BROKEN_CURRENCY`
-- `BROKEN_TOTAL`
-- `BROKEN_SUBTOTAL`
-- `BROKEN_TAX_AMOUNT`
-
-### Product / line-item specificity errors
-
-Use these only when the value is uniquely identifying or would otherwise require guessing.
-
-- `BROKEN_PRODUCT_NAME`
-- `BROKEN_SERVICE_NAME`
-- `BROKEN_ITEM_CODE`
-- `BROKEN_SKU`
-
-### Fallback only when truly necessary
-
 - `BROKEN_UNIQUE_VALUE`
 
-Do not use broad fallback codes when a more precise code is justified.
+Even when there is an error, the strucuted data must be there correctly only prefix the data with an error like `[BROKEN_UNIQUE_VALUE] 040xu75134,`
 
 ---
 
