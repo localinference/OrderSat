@@ -7,6 +7,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from loss.compute import compute_loss
+from reporting.log import log_stage_complete, log_stage_start
 
 
 @dataclass(frozen=True)
@@ -25,6 +26,11 @@ def evaluate_loss(
     device: torch.device,
     label_pad_id: int,
 ) -> LossEvaluationResult:
+    log_stage_start(
+        "validation.loss",
+        device=str(device),
+        batch_count=len(loader),
+    )
     model.eval()
     started_at = time.perf_counter()
     total_loss_sum = 0.0
@@ -49,10 +55,19 @@ def evaluate_loss(
     if total_token_count > 0:
         average_loss = total_loss_sum / total_token_count
 
-    return LossEvaluationResult(
+    result = LossEvaluationResult(
         average_loss=average_loss,
         token_count=total_token_count,
         sample_count=total_sample_count,
         batch_count=batch_count,
         duration_seconds=time.perf_counter() - started_at,
     )
+    log_stage_complete(
+        "validation.loss",
+        duration_seconds=result.duration_seconds,
+        average_loss=f"{result.average_loss:.6f}",
+        token_count=result.token_count,
+        sample_count=result.sample_count,
+        batch_count=result.batch_count,
+    )
+    return result

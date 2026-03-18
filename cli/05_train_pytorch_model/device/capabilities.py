@@ -3,9 +3,12 @@ from __future__ import annotations
 import ctypes
 import math
 import os
+import time
 from dataclasses import asdict, dataclass
 
 import torch
+
+from reporting.log import log_stage_complete, log_stage_start
 
 
 def _clamp(value: float, minimum: float, maximum: float) -> float:
@@ -81,6 +84,9 @@ class DeviceCapabilities:
 
 
 def get_device_capabilities(device_name: str = "auto") -> DeviceCapabilities:
+    started_at = time.perf_counter()
+    log_stage_start("device.capabilities", requested_device=device_name)
+
     resolved_device = _resolve_device(device_name)
     system_memory_bytes = _get_system_memory_bytes()
     system_memory_gb = _bytes_to_gb(system_memory_bytes)
@@ -128,7 +134,7 @@ def get_device_capabilities(device_name: str = "auto") -> DeviceCapabilities:
     else:
         recommended_num_workers = min(8, cpu_count - 1)
 
-    return DeviceCapabilities(
+    capabilities = DeviceCapabilities(
         requested_device=device_name,
         resolved_device=resolved_device,
         accelerator_name=accelerator_name,
@@ -145,3 +151,16 @@ def get_device_capabilities(device_name: str = "auto") -> DeviceCapabilities:
         device_scale=device_scale,
         recommended_num_workers=recommended_num_workers,
     )
+
+    log_stage_complete(
+        "device.capabilities",
+        duration_seconds=time.perf_counter() - started_at,
+        requested_device=device_name,
+        resolved_device=capabilities.resolved_device,
+        accelerator_name=capabilities.accelerator_name,
+        accelerator_memory_gb=capabilities.accelerator_memory_gb,
+        system_memory_gb=capabilities.system_memory_gb,
+        cpu_count=capabilities.cpu_count,
+        device_scale=f"{capabilities.device_scale:.4f}",
+    )
+    return capabilities

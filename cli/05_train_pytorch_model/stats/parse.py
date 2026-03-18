@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import json
 import pathlib
+import time
 from dataclasses import asdict, dataclass
+
+from reporting.log import log_stage_complete, log_stage_start
 
 
 @dataclass(frozen=True)
@@ -91,6 +94,9 @@ def _parse_length_stats(
 
 
 def parse_stats(path: pathlib.Path) -> DatasetStats:
+    started_at = time.perf_counter()
+    log_stage_start("stats.parse", path=str(path))
+
     if not path.exists():
         raise SystemExit(f"Stats file does not exist: {path}")
     if not path.is_file():
@@ -146,7 +152,7 @@ def parse_stats(path: pathlib.Path) -> DatasetStats:
         field_name="labelLengths",
     )
 
-    return DatasetStats(
+    stats = DatasetStats(
         language=parsed.get("language"),
         corpus_path=parsed.get("corpusPath"),
         model_path=parsed.get("modelPath"),
@@ -156,3 +162,15 @@ def parse_stats(path: pathlib.Path) -> DatasetStats:
         input_lengths=input_lengths,
         label_lengths=label_lengths,
     )
+
+    log_stage_complete(
+        "stats.parse",
+        duration_seconds=time.perf_counter() - started_at,
+        path=str(path),
+        sample_count=stats.sample_count,
+        train_count=stats.train_count,
+        validation_count=stats.validation_count,
+        max_input_length=stats.input_lengths.max,
+        max_label_length=stats.label_lengths.max,
+    )
+    return stats

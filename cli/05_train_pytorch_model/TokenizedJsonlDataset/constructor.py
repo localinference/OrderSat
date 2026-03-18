@@ -1,6 +1,12 @@
-import pathlib
+from __future__ import annotations
+
 import json
+import pathlib
+import time
+
 from torch.utils.data import Dataset
+
+from reporting.log import log_stage_complete, log_stage_start
 
 
 class TokenizedJsonlDataset(Dataset):
@@ -10,6 +16,13 @@ class TokenizedJsonlDataset(Dataset):
 
     @staticmethod
     def _load_records(file_path: pathlib.Path, vocab_size: int) -> list[dict]:
+        started_at = time.perf_counter()
+        log_stage_start(
+            "dataset.load",
+            path=str(file_path),
+            vocab_size=vocab_size,
+        )
+
         if not file_path.exists():
             raise SystemExit(f"Dataset file does not exist: {file_path}")
         if not file_path.is_file():
@@ -40,6 +53,17 @@ class TokenizedJsonlDataset(Dataset):
 
         if not records:
             raise SystemExit(f"Dataset file is empty: {file_path}")
+
+        input_token_count = sum(len(record["input_ids"]) for record in records)
+        label_token_count = sum(len(record["labels"]) for record in records)
+        log_stage_complete(
+            "dataset.load",
+            duration_seconds=time.perf_counter() - started_at,
+            path=str(file_path),
+            sample_count=len(records),
+            input_token_count=input_token_count,
+            label_token_count=label_token_count,
+        )
 
         return records
 

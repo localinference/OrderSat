@@ -9,10 +9,28 @@ def _timestamp() -> str:
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
+def format_seconds(duration_seconds: float) -> str:
+    return f"{duration_seconds:.2f}s"
+
+
 def _print_block(title: str, values: dict) -> None:
     print(f"[{_timestamp()}] {title}")
     for key, value in values.items():
         print(f"  {key}: {value}")
+
+
+def log_event(event: str, **values) -> None:
+    _print_block(event, values)
+
+
+def log_stage_start(stage: str, **values) -> None:
+    _print_block(f"{stage}.start", values)
+
+
+def log_stage_complete(stage: str, duration_seconds: float | None = None, **values) -> None:
+    if duration_seconds is not None:
+        values["duration"] = format_seconds(duration_seconds)
+    _print_block(f"{stage}.complete", values)
 
 
 def log_run_overview(
@@ -92,14 +110,16 @@ def log_epoch_metrics(
         "validation_loss": f"{validation_loss:.6f}",
         "best_validation_loss": f"{best_validation_loss:.6f}",
         "optimizer_steps": optimizer_steps,
-        "train_seconds": f"{train_duration_seconds:.2f}",
-        "validation_seconds": f"{validation_duration_seconds:.2f}",
+        "train_duration": format_seconds(train_duration_seconds),
+        "validation_duration": format_seconds(validation_duration_seconds),
         "patience_state": f"{epochs_without_improvement}/{early_stopping_patience}",
     }
     if train_exact_match is not None and validation_exact_match is not None:
         values["train_exact_match"] = f"{train_exact_match:.4f}"
         values["validation_exact_match"] = f"{validation_exact_match:.4f}"
-        values["exact_match_seconds"] = f"{(exact_match_duration_seconds or 0.0):.2f}"
+        values["exact_match_duration"] = format_seconds(
+            exact_match_duration_seconds or 0.0
+        )
 
     _print_block("epoch.complete", values)
 
@@ -125,8 +145,14 @@ def log_early_stop(*, reason: str, epoch: int) -> None:
     )
 
 
-def log_training_complete(*, best_metrics: dict | None, save_dir: Path) -> None:
+def log_training_complete(
+    *,
+    best_metrics: dict | None,
+    save_dir: Path,
+    duration_seconds: float,
+) -> None:
     values = {
+        "duration": format_seconds(duration_seconds),
         "save_dir": str(save_dir),
         "best_metrics": json.dumps(best_metrics, indent=2) if best_metrics else "null",
     }

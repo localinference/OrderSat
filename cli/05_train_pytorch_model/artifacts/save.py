@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import json
 import pathlib
+import time
 
 import torch
+
+from reporting.log import log_stage_complete, log_stage_start
 
 
 def _write_json(path: pathlib.Path, payload: object) -> None:
@@ -19,6 +22,13 @@ def save_artifacts(
     model: torch.nn.Module,
     optimizer: torch.optim.Optimizer,
 ) -> None:
+    started_at = time.perf_counter()
+    log_stage_start(
+        "artifacts.save",
+        save_dir=str(save_dir),
+        history_length=len(history),
+    )
+
     save_dir.mkdir(parents=True, exist_ok=True)
 
     best_metrics_path = save_dir / "best_metrics.json"
@@ -39,4 +49,14 @@ def save_artifacts(
             "metadata": metadata,
         },
         checkpoint_path,
+    )
+
+    log_stage_complete(
+        "artifacts.save",
+        duration_seconds=time.perf_counter() - started_at,
+        save_dir=str(save_dir),
+        checkpoint_path=str(checkpoint_path),
+        best_metrics_path=str(best_metrics_path),
+        history_path=str(history_path),
+        metadata_path=str(metadata_path),
     )

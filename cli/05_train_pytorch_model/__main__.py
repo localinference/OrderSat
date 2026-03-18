@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import pathlib
+import time
 from dataclasses import dataclass
 
 import torch
@@ -23,7 +24,10 @@ from reporting.log import (
     log_checkpoint_saved,
     log_early_stop,
     log_epoch_metrics,
+    log_event,
     log_run_overview,
+    log_stage_complete,
+    log_stage_start,
     log_training_complete,
 )
 from seed.set import set_seed
@@ -82,6 +86,7 @@ def build_run_paths(language: str) -> RunPaths:
 
 def build_loader(
     *,
+    loader_name: str,
     dataset,
     batch_size: int,
     shuffle: bool,
@@ -91,6 +96,18 @@ def build_loader(
     persistent_workers: bool,
     generator: torch.Generator | None = None,
 ) -> DataLoader:
+    started_at = time.perf_counter()
+    dataset_path = getattr(dataset, "file_path", None)
+    log_stage_start(
+        "loader.build",
+        loader_name=loader_name,
+        dataset_path=str(dataset_path) if dataset_path is not None else "<unknown>",
+        batch_size=batch_size,
+        shuffle=shuffle,
+        num_workers=num_workers,
+        pin_memory=pin_memory,
+    )
+
     loader_kwargs = {
         "dataset": dataset,
         "batch_size": batch_size,
@@ -103,14 +120,35 @@ def build_loader(
         loader_kwargs["generator"] = generator
     if num_workers > 0:
         loader_kwargs["persistent_workers"] = persistent_workers
-    return DataLoader(**loader_kwargs)
+
+    loader = DataLoader(**loader_kwargs)
+    log_stage_complete(
+        "loader.build",
+        duration_seconds=time.perf_counter() - started_at,
+        loader_name=loader_name,
+        dataset_path=str(dataset_path) if dataset_path is not None else "<unknown>",
+        batch_count=len(loader),
+        batch_size=batch_size,
+    )
+    return loader
 
 
 def main() -> None:
+    run_started_at = time.perf_counter()
     args = parse_args()
     set_seed(SEED)
 
     run_paths = build_run_paths(args.language)
+    log_event(
+        "run.paths.resolved",
+        language=run_paths.language,
+        vocab_path=str(run_paths.vocab_path),
+        training_dataset_path=str(run_paths.training_dataset_path),
+        validation_dataset_path=str(run_paths.validation_dataset_path),
+        dataset_stats_path=str(run_paths.dataset_stats_path),
+        save_dir=str(run_paths.save_dir),
+    )
+
     dataset_stats = parse_stats(run_paths.dataset_stats_path)
     device_capabilities = get_device_capabilities(args.device)
     training_config = build_training_config(
@@ -138,6 +176,13 @@ def main() -> None:
         max_label_length=dataset_stats.label_lengths.max,
     )
 
+    log_stage_start(
+        "collator.build",
+        max_input_length=sequence_lengths.max_input_length,
+        max_label_length=sequence_lengths.max_label_length,
+        pad_id=pad_id,
+    )
+    collator_started_at = time.perf_counter()
     collator = Seq2SeqCollator(
         pad_id=pad_id,
         bos_id=BOS_ID,
@@ -146,11 +191,20 @@ def main() -> None:
         max_input_length=sequence_lengths.max_input_length,
         max_label_length=sequence_lengths.max_label_length,
     )
+    log_stage_complete(
+        "collator.build",
+        duration_seconds=time.perf_counter() - collator_started_at,
+        pad_id=pad_id,
+        bos_id=BOS_ID,
+        eos_id=EOS_ID,
+        label_pad_id=LABEL_PAD_ID,
+    )
 
     train_generator = torch.Generator()
     train_generator.manual_seed(SEED)
 
     train_loader = build_loader(
+        loader_name="train",
         dataset=training_dataset,
         batch_size=training_config.batch_size,
         shuffle=True,
@@ -161,6 +215,7 @@ def main() -> None:
         generator=train_generator,
     )
     evaluation_train_loader = build_loader(
+        loader_name="train_eval",
         dataset=training_dataset,
         batch_size=training_config.batch_size,
         shuffle=False,
@@ -170,6 +225,7 @@ def main() -> None:
         persistent_workers=training_config.persistent_workers,
     )
     validation_loader = build_loader(
+        loader_name="validation",
         dataset=validation_dataset,
         batch_size=training_config.batch_size,
         shuffle=False,
@@ -179,6 +235,15 @@ def main() -> None:
         persistent_workers=training_config.persistent_workers,
     )
 
+    log_stage_start(
+        "model.build",
+        language=run_paths.language,
+        d_model=training_config.d_model,
+        attention_heads=training_config.attention_heads,
+        encoder_layers=training_config.encoder_layers,
+        decoder_layers=training_config.decoder_layers,
+    )
+    model_started_at = time.perf_counter()
     model = Seq2SeqTransformer(
         vocab_size=vocab_size,
         pad_id=pad_id,
@@ -191,14 +256,34 @@ def main() -> None:
         max_source_positions=sequence_lengths.max_source_positions,
         max_target_positions=sequence_lengths.max_target_positions,
     ).to(device)
+    parameter_count = count_parameters(model)
+    log_stage_complete(
+        "model.build",
+        duration_seconds=time.perf_counter() - model_started_at,
+        language=run_paths.language,
+        parameter_count=parameter_count,
+        device=str(device),
+    )
 
+    log_stage_start(
+        "optimizer.build",
+        learning_rate=f"{training_config.learning_rate:.6f}",
+        weight_decay=f"{training_config.weight_decay:.6f}",
+    )
+    optimizer_started_at = time.perf_counter()
     optimizer = torch.optim.AdamW(
         model.parameters(),
         lr=training_config.learning_rate,
         weight_decay=training_config.weight_decay,
     )
+    log_stage_complete(
+        "optimizer.build",
+        duration_seconds=time.perf_counter() - optimizer_started_at,
+        optimizer="AdamW",
+        learning_rate=f"{training_config.learning_rate:.6f}",
+        weight_decay=f"{training_config.weight_decay:.6f}",
+    )
 
-    parameter_count = count_parameters(model)
     log_run_overview(
         language=run_paths.language,
         run_paths=run_paths.to_dict(),
@@ -233,6 +318,12 @@ def main() -> None:
     history: list[dict] = []
 
     for epoch in range(1, training_config.epochs + 1):
+        log_event(
+            "epoch.start",
+            language=run_paths.language,
+            epoch=epoch,
+            total_epochs=training_config.epochs,
+        )
         training_result = train_epoch(
             model,
             train_loader,
@@ -275,6 +366,12 @@ def main() -> None:
                 bos_id=BOS_ID,
                 eos_id=EOS_ID,
                 max_generation_length=max_generation_length,
+            )
+        else:
+            log_event(
+                "validation.exact_match.skipped",
+                epoch=epoch,
+                exact_match_frequency=training_config.exact_match_frequency,
             )
 
         epoch_metrics = {
@@ -386,6 +483,7 @@ def main() -> None:
     log_training_complete(
         best_metrics=best_metrics,
         save_dir=run_paths.save_dir,
+        duration_seconds=time.perf_counter() - run_started_at,
     )
 
 

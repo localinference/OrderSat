@@ -1,5 +1,7 @@
 import argparse
 
+from reporting.log import log_event
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -23,4 +25,10 @@ def parse_args() -> argparse.Namespace:
         default="auto",
         help="Device to use: auto, cpu, cuda, or mps.",
     )
-    return parser.parse_args()
+    args = parser.parse_args()
+    log_event(
+        "args.parsed",
+        language=args.language,
+        requested_device=args.device,
+    )
+    return args

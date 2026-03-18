@@ -7,6 +7,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from greedy.generate import greedy_generate
+from reporting.log import log_stage_complete, log_stage_start
 
 
 @dataclass(frozen=True)
@@ -26,6 +27,12 @@ def compute_exact_match(
     eos_id: int,
     max_generation_length: int,
 ) -> ExactMatchEvaluation:
+    log_stage_start(
+        "validation.exact_match",
+        device=str(device),
+        batch_count=len(loader),
+        max_generation_length=max_generation_length,
+    )
     started_at = time.perf_counter()
     match_count = 0
     sample_count = 0
@@ -51,9 +58,17 @@ def compute_exact_match(
     if sample_count > 0:
         exact_match = match_count / sample_count
 
-    return ExactMatchEvaluation(
+    result = ExactMatchEvaluation(
         exact_match=exact_match,
         match_count=match_count,
         sample_count=sample_count,
         duration_seconds=time.perf_counter() - started_at,
     )
+    log_stage_complete(
+        "validation.exact_match",
+        duration_seconds=result.duration_seconds,
+        sample_count=result.sample_count,
+        match_count=result.match_count,
+        exact_match=f"{result.exact_match:.4f}",
+    )
+    return result

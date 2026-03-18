@@ -7,6 +7,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from loss.compute import compute_loss
+from reporting.log import log_stage_complete, log_stage_start
 
 
 @dataclass(frozen=True)
@@ -29,6 +30,12 @@ def train_epoch(
     grad_clip: float,
     accumulation_steps: int,
 ) -> TrainEpochResult:
+    log_stage_start(
+        "train.epoch",
+        device=str(device),
+        batch_count=len(loader),
+        accumulation_steps=accumulation_steps,
+    )
     model.train()
     started_at = time.perf_counter()
     total_loss_sum = 0.0
@@ -70,7 +77,7 @@ def train_epoch(
     if total_token_count > 0:
         average_loss = total_loss_sum / total_token_count
 
-    return TrainEpochResult(
+    result = TrainEpochResult(
         average_loss=average_loss,
         token_count=total_token_count,
         sample_count=total_sample_count,
@@ -78,3 +85,13 @@ def train_epoch(
         optimizer_steps=optimizer_steps,
         duration_seconds=time.perf_counter() - started_at,
     )
+    log_stage_complete(
+        "train.epoch",
+        duration_seconds=result.duration_seconds,
+        average_loss=f"{result.average_loss:.6f}",
+        token_count=result.token_count,
+        sample_count=result.sample_count,
+        batch_count=result.batch_count,
+        optimizer_steps=result.optimizer_steps,
+    )
+    return result

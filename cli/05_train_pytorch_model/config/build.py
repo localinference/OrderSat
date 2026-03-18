@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import math
+import time
 from dataclasses import asdict, dataclass
 
 from device.capabilities import DeviceCapabilities
+from reporting.log import log_stage_complete, log_stage_start
 from stats.parse import DatasetStats
 
 
@@ -39,7 +41,10 @@ def _resolve_batch_size(
     )
 
     if device_capabilities.resolved_device == "mps":
-        if (device_capabilities.system_memory_gb or 0.0) >= 24 and memory_budget >= 1.2:
+        if (
+            (device_capabilities.system_memory_gb or 0.0) >= 24
+            and memory_budget >= 1.2
+        ):
             return 2
         return 1
 
@@ -95,6 +100,15 @@ def build_training_config(
     dataset_stats: DatasetStats,
     device_capabilities: DeviceCapabilities,
 ) -> TrainingConfig:
+    started_at = time.perf_counter()
+    log_stage_start(
+        "config.build",
+        language=dataset_stats.language or "unknown",
+        train_count=dataset_stats.train_count,
+        requested_device=device_capabilities.requested_device,
+        resolved_device=device_capabilities.resolved_device,
+    )
+
     raw_data_scale = (dataset_stats.train_count / 10_000) ** 0.25
     data_scale = _clamp_float(raw_data_scale, 0.5, 2.0)
     device_scale = device_capabilities.device_scale
@@ -139,7 +153,7 @@ def build_training_config(
         device_capabilities=device_capabilities,
     )
 
-    return TrainingConfig(
+    config = TrainingConfig(
         data_scale=data_scale,
         device_scale=device_scale,
         capacity_scale=capacity_scale,
@@ -163,3 +177,21 @@ def build_training_config(
         early_stopping_min_delta=early_stopping_min_delta,
         exact_match_frequency=exact_match_frequency,
     )
+
+    log_stage_complete(
+        "config.build",
+        duration_seconds=time.perf_counter() - started_at,
+        language=dataset_stats.language or "unknown",
+        data_scale=f"{config.data_scale:.4f}",
+        device_scale=f"{config.device_scale:.4f}",
+        capacity_scale=f"{config.capacity_scale:.4f}",
+        d_model=config.d_model,
+        encoder_layers=config.encoder_layers,
+        decoder_layers=config.decoder_layers,
+        batch_size=config.batch_size,
+        accumulation_steps=config.accumulation_steps,
+        effective_batch_size=config.achieved_effective_batch_size,
+        learning_rate=f"{config.learning_rate:.6f}",
+        epochs=config.epochs,
+    )
+    return config
