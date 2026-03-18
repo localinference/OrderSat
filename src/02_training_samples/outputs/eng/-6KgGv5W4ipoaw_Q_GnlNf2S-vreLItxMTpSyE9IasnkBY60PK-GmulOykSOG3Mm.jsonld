@@ -1,0 +1,130 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "name": "galeria del gastronomo",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "galed"
+      }
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Speedy Express",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Shipper ID",
+        "value": "1"
+      }
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "streetAddress": "[ERROR:UNCERTAIN] rambla de catalufia, 23",
+        "postalCode": "8022",
+        "addressLocality": "Barcelona",
+        "addressRegion": "Southern Europe",
+        "addressCountry": "Spain"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "orderNumber": "10426",
+      "orderDate": "2017-01-27",
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "338.20000000000005"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Employee Name",
+          "value": "Margaret Peacock"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2017-02-06"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "152.0",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 5,
+        "unitText": "item"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "30.4",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "gnocchi di nonna alice"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "186.20000000000002",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 7,
+        "unitText": "item"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "26.6",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      },
+      "itemOffered": {
+        "@id": "#product-2"
+      }
+    },
+    {
+      "@id": "#product-2",
+      "@type": "Product",
+      "name": "wimmers gute semmelknédel"
+    }
+  ]
+}

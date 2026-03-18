@@ -1,0 +1,130 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "name": "reggiani caseifici",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "reggc"
+      }
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Speedy Express",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Shipper ID",
+        "value": "1"
+      }
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "streetAddress": "Strada Provinciale 124",
+        "postalCode": "42100",
+        "addressLocality": "Reggio Emilia",
+        "addressRegion": "Southern Europe",
+        "addressCountry": "Italy"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "orderNumber": "10443",
+      "orderDate": "2017-02-12",
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "537.5999999999999"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Employee Name",
+          "value": "Laura Callahan"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2017-02-14"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "100.80000000000001",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 6,
+        "unitText": "item"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "16.8",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "queso cabrales"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "436.79999999999995",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 12,
+        "unitText": "item"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "36.4",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      },
+      "itemOffered": {
+        "@id": "#product-2"
+      }
+    },
+    {
+      "@id": "#product-2",
+      "@type": "Product",
+      "name": "rossle sauerkraut"
+    }
+  ]
+}

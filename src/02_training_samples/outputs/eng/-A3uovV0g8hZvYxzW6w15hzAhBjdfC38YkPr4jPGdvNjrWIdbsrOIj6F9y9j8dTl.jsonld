@@ -1,0 +1,65 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "priceCurrency": "IDR",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "priceCurrency": "IDR",
+        "price": "58000.00"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "58000.00",
+          "unitText": "IDR"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Paid Via",
+          "value": "BCA debit"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tendered Amount",
+          "value": "58000.00",
+          "unitText": "IDR"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Change",
+          "value": "0.00",
+          "unitText": "IDR"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "58000.00",
+      "priceCurrency": "IDR",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 1,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "cheese tart"
+    }
+  ]
+}
