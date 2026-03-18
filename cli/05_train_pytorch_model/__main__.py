@@ -1,42 +1,27 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-
-import argparse
 import json
 import pathlib
 from dataclasses import dataclass
-
-try:
-    import torch
-    import torch.nn.functional as F
-    from torch import nn
-    from torch.utils.data import DataLoader, Dataset
-except ImportError:
-    torch = None
-    F = None
-    nn = None
-    DataLoader = None
-    Dataset = object
-
-    from Seq2SeqCollator.constructor import Seq2SeqCollator
-
-    from TokenizedJsonlDataset.constructor import TokenizedJsonlDataset
-
-    from TinySeq2SeqTransformer.constructor import TinySeq2SeqTransformer
-
-    from args.parse import parse_args
-
-    from vocab.read_size import read_vocab_size
+import torch
+import Seq2SeqCollator
+import Seq2SeqTransformer
+import TokenizedJsonlDataset
+from args.parse import parse_args
+from vocab.read_size import read_vocab_size
+from stats.parse import parse_stats
 
 
 TOKENIZERS_ROOT = pathlib.Path("src/03_tokenizers")
 DATASETS_ROOT = pathlib.Path("src/04_training_datasets")
 PYTORCH_MODELS_ROOT = pathlib.Path("src/05_pytorch_models")
 
-DATASET_STATS_FILE = "stats.json"
+TOKENIZER_VOCAB_FILE = "tokenizer.vocab"
 TRAINING_DATA_FILE = "train.jsonl"
 VALIDATION_DATA_FILE = "validation.jsonl"
-TOKENIZER_VOCAB_FILE = "tokenizer.vocab"
+
+STATS_FILE = "stats.json"
+
 
 # STATIC CONFIG
 SEED = 7
@@ -67,289 +52,47 @@ CONFIG = {
 }
 
 
-
-
-
-@dataclass(frozen=True)
-class SplitPaths:
-    train_path: pathlib.Path
-    validation_path: pathlib.Path
-    vocab_path: pathlib.Path
-
-
-@dataclass(frozen=True)
-class EffectiveSequenceLengths:
-    max_input_length: int
-    max_label_length: int
-    max_source_positions: int
-    max_target_positions: int
-
-
-
-
-
-
-
-def build_device(device_name: str) -> str:
-    if device_name == "auto":
-        if torch.cuda.is_available():
-            return "cuda"
-        if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
-            return "mps"
-        return "cpu"
-    return device_name
-
-
-
-
-
-def resolve_effective_sequence_lengths(
-    *,
-    train_dataset: TokenizedJsonlDataset,
-    validation_dataset: TokenizedJsonlDataset,
-    max_input_length: int,
-    max_label_length: int,
-) -> EffectiveSequenceLengths:
-    observed_max_input_length = max(
-        max(len(record["input_ids"]) for record in train_dataset.records),
-        max(len(record["input_ids"]) for record in validation_dataset.records),
-    )
-    observed_max_label_length = max(
-        max(len(record["labels"]) for record in train_dataset.records),
-        max(len(record["labels"]) for record in validation_dataset.records),
-    )
-
-    effective_input_length = min(observed_max_input_length, max_input_length)
-    effective_label_length = min(observed_max_label_length, max_label_length)
-
-    return EffectiveSequenceLengths(
-        max_input_length=effective_input_length,
-        max_label_length=effective_label_length,
-        max_source_positions=effective_input_length,
-        max_target_positions=effective_label_length + 1,
-    )
-
-
-def count_parameters(model: TinySeq2SeqTransformer) -> int:
-    return sum(parameter.numel() for parameter in model.parameters())
-
-
-def greedy_generate(
-    model: TinySeq2SeqTransformer,
-    *,
-    input_ids: torch.Tensor,
-    attention_mask: torch.Tensor,
-    bos_id: int,
-    eos_id: int,
-    max_generation_length: int,
-) -> list[list[int]]:
-    model.eval()
-    memory, source_padding_mask = model.encode(
-        input_ids=input_ids,
-        attention_mask=attention_mask,
-    )
-
-    batch_size = input_ids.size(0)
-    generated = torch.full(
-        (batch_size, 1),
-        fill_value=bos_id,
-        dtype=torch.long,
-        device=input_ids.device,
-    )
-    finished = torch.zeros(batch_size, dtype=torch.bool, device=input_ids.device)
-
-    for _ in range(max_generation_length):
-        logits = model.decode_step(
-            decoder_input_ids=generated,
-            memory=memory,
-            source_padding_mask=source_padding_mask,
-        )
-        next_token = logits[:, -1, :].argmax(dim=-1)
-        next_token = torch.where(
-            finished,
-            torch.full_like(next_token, eos_id),
-            next_token,
-        )
-        generated = torch.cat([generated, next_token.unsqueeze(1)], dim=1)
-        finished = finished | next_token.eq(eos_id)
-        if bool(finished.all()):
-            break
-
-    outputs: list[list[int]] = []
-    for sequence in generated[:, 1:].tolist():
-        trimmed: list[int] = []
-        for token_id in sequence:
-            if token_id == eos_id:
-                break
-            trimmed.append(token_id)
-        outputs.append(trimmed)
-
-    return outputs
-
-
-def compute_exact_match(
-    model: TinySeq2SeqTransformer,
-    loader: DataLoader,
-    *,
-    device: str,
-    bos_id: int,
-    eos_id: int,
-    max_generation_length: int,
-) -> float:
-    matches = 0
-    total = 0
-
-    with torch.no_grad():
-        for batch in loader:
-            predictions = greedy_generate(
-                model,
-                input_ids=batch["input_ids"].to(device),
-                attention_mask=batch["attention_mask"].to(device),
-                bos_id=bos_id,
-                eos_id=eos_id,
-                max_generation_length=max_generation_length,
-            )
-            targets = batch["target_token_ids"]
-            for predicted, target in zip(predictions, targets):
-                total += 1
-                if predicted == target:
-                    matches += 1
-
-    if total == 0:
-        return 0.0
-
-    return matches / total
-
-
-def compute_loss(
-    model: TinySeq2SeqTransformer,
-    batch: dict,
-    *,
-    device: str,
-    label_pad_id: int,
-) -> torch.Tensor:
-    logits = model(
-        input_ids=batch["input_ids"].to(device),
-        attention_mask=batch["attention_mask"].to(device),
-        decoder_input_ids=batch["decoder_input_ids"].to(device),
-    )
-    labels = batch["labels"].to(device)
-    return F.cross_entropy(
-        logits.reshape(-1, logits.size(-1)),
-        labels.reshape(-1),
-        ignore_index=label_pad_id,
-    )
-
-
-def evaluate_loss(
-    model: TinySeq2SeqTransformer,
-    loader: DataLoader,
-    *,
-    device: str,
-    label_pad_id: int,
-) -> float:
-    model.eval()
-    total_loss = 0.0
-    batch_count = 0
-
-    with torch.no_grad():
-        for batch in loader:
-            loss = compute_loss(
-                model,
-                batch,
-                device=device,
-                label_pad_id=label_pad_id,
-            )
-            total_loss += float(loss.item())
-            batch_count += 1
-
-    if batch_count == 0:
-        return 0.0
-
-    return total_loss / batch_count
-
-
-def train_epoch(
-    model: TinySeq2SeqTransformer,
-    loader: DataLoader,
-    optimizer: torch.optim.Optimizer,
-    *,
-    device: str,
-    label_pad_id: int,
-    grad_clip: float,
-) -> float:
-    model.train()
-    total_loss = 0.0
-    batch_count = 0
-
-    for batch in loader:
-        optimizer.zero_grad(set_to_none=True)
-        loss = compute_loss(
-            model,
-            batch,
-            device=device,
-            label_pad_id=label_pad_id,
-        )
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
-        optimizer.step()
-        total_loss += float(loss.item())
-        batch_count += 1
-
-    return total_loss / batch_count
-
-
-def save_artifacts(
-    *,
-    save_dir: pathlib.Path,
-    metrics: dict,
-    model: TinySeq2SeqTransformer,
-    optimizer: torch.optim.Optimizer,
-) -> None:
-    save_dir.mkdir(parents=True, exist_ok=True)
-    metrics_path = save_dir / "metrics.json"
-    checkpoint_path = save_dir / "best.pt"
-
-    metrics_path.write_text(f"{json.dumps(metrics, indent=2)}\n", encoding="utf8")
-    torch.save(
-        {
-            "model_state_dict": model.state_dict(),
-            "optimizer_state_dict": optimizer.state_dict(),
-            "metrics": metrics,
-        },
-        checkpoint_path,
-    )
-
-
 def main() -> None:
     args = parse_args()
+    language = args["language"]
 
+    vocab_path = TOKENIZERS_ROOT / language / TOKENIZER_VOCAB_FILE
+    training_dataset_path = DATASETS_ROOT / language / TRAINING_DATA_FILE
+    validation_dataset_path = DATASETS_ROOT / language / VALIDATION_DATA_FILE
+    vocab_size = read_vocab_size(vocab_path)
 
-    split_paths = resolve_paths(args)
-    save_dir = resolve_save_dir(args)
-    vocab_size = read_vocab_size(split_paths.vocab_path)
-    pad_id = vocab_size
+    input_pad_id = vocab_size
+    label_pad_id = LABEL_PAD_ID
+    bos_id = BOS_ID
+    eos_id = EOS_ID
 
-    train_dataset = TokenizedJsonlDataset(split_paths.train_path, vocab_size=vocab_size)
+    train_dataset = TokenizedJsonlDataset(training_dataset_path, vocab_size)
     validation_dataset = TokenizedJsonlDataset(
-        split_paths.validation_path,
-        vocab_size=vocab_size,
+        validation_dataset_path,
+        vocab_size,
     )
 
+    dataset_stats_path = DATASETS_ROOT / language /STATS_FILE
+    stats = parse_stats(dataset_stats_path)
+
+    max_input_length = stats["max_input_length"]
+    max_label_length = stats["max_label_length"]
+
+
     sequence_lengths = resolve_effective_sequence_lengths(
-        train_dataset=train_dataset,
-        validation_dataset=validation_dataset,
-        max_input_length=args.max_input_length,
-        max_label_length=args.max_label_length,
+        train_dataset,
+        validation_dataset,
+        max_input_length,
+        max_label_length
     )
 
     collator = Seq2SeqCollator(
-        pad_id=pad_id,
-        bos_id=args.bos_id,
-        eos_id=args.eos_id,
-        label_pad_id=args.label_pad_id,
-        max_input_length=sequence_lengths.max_input_length,
-        max_label_length=sequence_lengths.max_label_length,
+        input_pad_id,
+        label_pad_id,
+        bos_id,
+        eos_id,
+        max_input_length,
+        max_label_length
     )
 
     train_loader = DataLoader(
@@ -374,7 +117,7 @@ def main() -> None:
     device = build_device(args.device)
     set_seed(args.seed)
 
-    model = TinySeq2SeqTransformer(
+    model = Seq2SeqTransformer(
         vocab_size=vocab_size,
         pad_id=pad_id,
         d_model=args.d_model,

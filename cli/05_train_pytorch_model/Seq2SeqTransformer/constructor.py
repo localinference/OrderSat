@@ -2,7 +2,7 @@ import torch
 from torch import nn
 
 
-class TinySeq2SeqTransformer(torch.nn.Module if nn is not None else object):
+class Seq2SeqTransformer(torch.nn.Module if nn is not None else object):
     def __init__(
         self,
         *,

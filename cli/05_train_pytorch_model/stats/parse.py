@@ -8,14 +8,14 @@ def parse_stats(path: pathlib.Path) -> dict:
 
         sample_count = parsed["sampleCount"]
         if sample_count < 10_000:
-            sample_scale = "s"
+            dataset_scale = "s"
         elif sample_count < 100_000:
-            sample_scale = "m"
+            dataset_scale = "m"
         else:
-            sample_scale = "l"
+            dataset_scale = "l"
 
         return {
-            "sample_scale": sample_scale,
-            "max_input_length": parsed["inputLengths"]["p95"],
-            "max_label_length": parsed["labelLengths"]["p95"]
+            "dataset_scale": dataset_scale,
+            "max_input_length": parsed["inputLengths"]["max"],
+            "max_label_length": parsed["labelLengths"]["max"]
         }
