@@ -1,6 +1,9 @@
+#!/usr/bin/env python3
 import pathlib
 
 from args.parse import parse_args
+
+from kwargs.build import build_kwargs
 
 try:
     import sentencepiece as spm
@@ -14,7 +17,6 @@ except ImportError as error:
 TOKENIZERS_DIR = pathlib.Path("src/03_tokenizers")
 CORPUS_NAME = "corpus.jsonl"
 MODEL_PREFIX = "tokenizer"
-MAX_SENTENCE_LENGTH = 16384
 
 
 def main() -> None:
@@ -23,8 +25,18 @@ def main() -> None:
     input_path = language_dir / CORPUS_NAME
     output_path = language_dir / MODEL_PREFIX
 
+    trainer_kwargs = build_kwargs(input_path, output_path, args)
 
+    spm.SentencePieceTrainer.train(**trainer_kwargs)
+
+    model_prefix_path = language_dir / args.model_prefix
+    print(f"Trained tokenizer for language: {args.language}")
+    print(f"Corpus: {corpus_path}")
+    print(f"Model: {model_prefix_path}.model")
+    print(f"Vocab: {model_prefix_path}.vocab")
 
 
 if __name__ == "__main__":
     main()
+
+

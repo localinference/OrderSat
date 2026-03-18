@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import argparse
 
 def parse_args() -> argparse.Namespace:
@@ -16,19 +15,20 @@ def parse_args() -> argparse.Namespace:
         help="Language directory name under src/03_tokenizers, for example: eng",
     )
     parser.add_argument(
-        "-V",
-        "--vocab-size",
-        type=int,
-        default=8000,
-        help="SentencePiece vocab size (default: 8000)",
-    )
-    parser.add_argument(
         "-M",
         "--model-type",
         type=str,
         default="unigram",
         choices=["unigram", "bpe", "char", "word"],
         help="SentencePiece model type (default: unigram)",
+    )
+
+    parser.add_argument(
+        "-V",
+        "--vocab-size",
+        type=int,
+        default=8000,
+        help="SentencePiece vocab size (default: 8000)",
     )
     parser.add_argument(
         "-C",
@@ -38,10 +38,10 @@ def parse_args() -> argparse.Namespace:
         help="SentencePiece character coverage (default: 1.0)",
     )
     parser.add_argument(
-        "-L",
+        "-S",
         "max-sentence-length",
         type=int,
         default=16384,
-        help="SentencePiece character coverage (default: 1.0)",
+        help="SentencePiece max input sentence/string lenght(default: 16384)",
     )
     return parser.parse_args()
