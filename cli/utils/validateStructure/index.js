@@ -5,8 +5,8 @@ const schemaOrgJson = await (
 ).json()
 // Create a validator instance singleton
 const validator = new Validator(schemaOrgJson)
-//
-export async function validateModelOuput(output) {
+
+export async function validateStructure(output) {
   // Validate the model produced structured data
   return await validator.validate(output)
 }
