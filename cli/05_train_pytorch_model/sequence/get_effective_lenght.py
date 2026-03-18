@@ -8,7 +8,7 @@ class EffectiveSequenceLengths:
     max_target_positions: int
 
 
-def resolve_effective_sequence_lengths(
+def get_effective_sequence_lengths(
     *,
     train_dataset: TokenizedJsonlDataset,
     validation_dataset: TokenizedJsonlDataset,
