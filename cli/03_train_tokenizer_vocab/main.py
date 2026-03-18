@@ -1,6 +1,6 @@
 import pathlib
 
-from arguments.parse import parse_args
+from args.parse import parse_args
 
 try:
     import sentencepiece as spm
@@ -11,9 +11,20 @@ except ImportError as error:
     ) from error
 
 
-DEFAULT_TOKENIZERS_ROOT = pathlib.Path("src/03_tokenizers")
-DEFAULT_CORPUS_NAME = "corpus.jsonl"
-DEFAULT_MODEL_PREFIX = "tokenizer"
-DEFAULT_MAX_SENTENCE_LENGTH = 16384
+TOKENIZERS_DIR = pathlib.Path("src/03_tokenizers")
+CORPUS_NAME = "corpus.jsonl"
+MODEL_PREFIX = "tokenizer"
+MAX_SENTENCE_LENGTH = 16384
 
-args = parse_args()
+
+def main() -> None:
+    args = parse_args()
+    language_dir = TOKENIZERS_DIR / args.language
+    input_path = language_dir / CORPUS_NAME
+    output_path = language_dir / MODEL_PREFIX
+
+
+
+
+if __name__ == "__main__":
+    main()

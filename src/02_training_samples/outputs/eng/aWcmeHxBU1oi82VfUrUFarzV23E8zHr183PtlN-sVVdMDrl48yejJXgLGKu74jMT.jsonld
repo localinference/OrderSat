@@ -1,0 +1,126 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Restoran Wan Sheng",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "No. 2, Jalan Temenggung 19/9, Seksyen 9, Bandar Mahkota Cheras",
+        "postalCode": "43200",
+        "addressLocality": "Cheras",
+        "addressRegion": "Selangor",
+        "addressCountry": "Malaysia"
+      },
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "GST Registration Number",
+        "value": "001335787520"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": {
+        "@id": "#merchant"
+      },
+      "orderNumber": "1159923",
+      "orderDate": "2018-05-26T16:16:13",
+      "priceCurrency": "MYR",
+      "paymentMethod": "https://schema.org/Cash",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "4.80",
+        "priceCurrency": "MYR"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier",
+          "value": "Thana"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Total Quantity",
+          "value": "4"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Total Excluding GST",
+          "value": "4.54",
+          "unitText": "MYR"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "GST Payable",
+          "value": "0.26",
+          "unitText": "MYR"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "4.40",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 2,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "priceCurrency": "MYR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "2.20",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        },
+        "priceCurrency": "MYR"
+      },
+      "seller": {
+        "@id": "#merchant"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "teh (b)"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "0.40",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 1,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-2"
+      },
+      "priceCurrency": "MYR",
+      "seller": {
+        "@id": "#merchant"
+      }
+    },
+    {
+      "@id": "#product-2",
+      "@type": "Product",
+      "name": "take away"
+    }
+  ]
+}

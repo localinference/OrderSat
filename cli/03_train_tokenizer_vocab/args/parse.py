@@ -13,7 +13,6 @@ def parse_args() -> argparse.Namespace:
         "--language",
         type=str,
         default="eng",
-        dest="language_flag",
         help="Language directory name under src/03_tokenizers, for example: eng",
     )
     parser.add_argument(
@@ -36,6 +35,13 @@ def parse_args() -> argparse.Namespace:
         "--character-coverage",
         type=float,
         default=1.0,
+        help="SentencePiece character coverage (default: 1.0)",
+    )
+    parser.add_argument(
+        "-L",
+        "max-sentence-length",
+        type=int,
+        default=16384,
         help="SentencePiece character coverage (default: 1.0)",
     )
     return parser.parse_args()
