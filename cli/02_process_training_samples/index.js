@@ -1,12 +1,10 @@
 import { getArgs } from '../utils/getArgs/index.js'
 import FastGlob from 'fast-glob'
+import { getOutputPathsFromInputPaths } from './getOutputPathsFromInputPaths/index.js'
 const t0 = performance.now()
 
 const sampleBase = './src/02_training_samples'
-
-const inputSamplePath = sampleBase + '/inputs'
 const outputSamplePath = sampleBase + '/outputs'
-
 const tokenizerBase = './src/03_tokenizers'
 
 try {
@@ -14,13 +12,13 @@ try {
   const { languages } = getArgs()
   for (const language of languages) {
     const languageOutputPath = `${outputSamplePath}/${language}`
-    console.log(languageOutputPath)
-    const outputFileNames = await FastGlob.async('/*.jsonld', {
-      cwd: languageOutputPath,
-      dot: true,
-      onlyFiles: true,
-    })
-    console.log(outputFileNames)
+
+    const outputFileNames = await FastGlob.async(
+      `${languageOutputPath}/*.jsonld`
+    )
+    const inputFileNames = getOutputPathsFromInputPaths(outputFileNames)
+    console.log('[OUTPUTS]', outputFileNames)
+    console.log('[INPUTS]', inputFileNames)
   }
   /*************************************************/
 } catch (err) {
