@@ -17,11 +17,6 @@ class EffectiveSequenceLengths:
     def to_dict(self) -> dict:
         return asdict(self)
 
-
-def _get_observed_max(dataset: TokenizedJsonlDataset, field_name: str) -> int:
-    return max(len(record[field_name]) for record in dataset.records)
-
-
 def get_effective_sequence_lengths(
     *,
     train_dataset: TokenizedJsonlDataset,
@@ -37,12 +32,12 @@ def get_effective_sequence_lengths(
     )
 
     observed_max_input_length = max(
-        _get_observed_max(train_dataset, "input_ids"),
-        _get_observed_max(validation_dataset, "input_ids"),
+        train_dataset.get_max_input_length(),
+        validation_dataset.get_max_input_length(),
     )
     observed_max_label_length = max(
-        _get_observed_max(train_dataset, "labels"),
-        _get_observed_max(validation_dataset, "labels"),
+        train_dataset.get_max_label_length(),
+        validation_dataset.get_max_label_length(),
     )
 
     if observed_max_input_length > max_input_length:

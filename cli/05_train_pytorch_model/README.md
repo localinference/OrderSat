@@ -28,7 +28,7 @@ The trainer does this, in this order:
 5. Detect environment and device capability in [capabilities.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/device/capabilities.py).
 6. Build the adaptive training config in [build.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/config/build.py).
 7. Read tokenizer vocab size from [read_size.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/vocab/read_size.py).
-8. Load tokenized train and validation datasets from [constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/TokenizedJsonlDataset/constructor.py).
+8. Index tokenized train and validation datasets from [constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/TokenizedJsonlDataset/constructor.py).
 9. Resolve effective sequence lengths in [get_effective_lenght.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/sequence/get_effective_lenght.py).
 10. Build the collator in [constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/Seq2SeqCollator/constructor.py).
 11. Build token-budgeted, length-bucketed train, train-audit, and validation loaders in [__main__.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
@@ -127,6 +127,23 @@ derives:
 
 The adjusted options are always logged as a JSON block so the scaling decision
 is visible in the terminal.
+
+### Indexed Lazy Dataset
+
+The dataset layer no longer keeps the full JSONL payload resident in memory.
+
+Instead [constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/TokenizedJsonlDataset/constructor.py) now:
+
+- scans the file once
+- validates each record
+- stores byte offsets and length metadata
+- reads records lazily by offset during `__getitem__`
+
+Why:
+
+- scaling to larger datasets should not require keeping every parsed record in memory
+- the batcher still needs cheap length access
+- one scan at startup is acceptable, but a fully resident dataset stops scaling
 
 ### Token-Budgeted Batching
 
