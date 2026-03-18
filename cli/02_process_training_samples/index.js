@@ -1,6 +1,6 @@
 import { getArgs } from '../utils/getArgs/index.js'
 import FastGlob from 'fast-glob'
-import { getOutputPathsFromInputPaths } from './getOutputPathsFromInputPaths/index.js'
+import { getInputPathsFromOutputPaths } from './getInputPathsFromOutputPaths/index.js'
 const t0 = performance.now()
 
 const sampleBase = './src/02_training_samples'
@@ -16,7 +16,7 @@ try {
     const outputFileNames = await FastGlob.async(
       `${languageOutputPath}/*.jsonld`
     )
-    const inputFileNames = getOutputPathsFromInputPaths(outputFileNames)
+    const inputFileNames = getInputPathsFromOutputPaths(outputFileNames)
     console.log('[OUTPUTS]', outputFileNames)
     console.log('[INPUTS]', inputFileNames)
   }
