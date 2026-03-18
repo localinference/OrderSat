@@ -1,5 +1,6 @@
 import torch
 
+
 def build_device(device_name: str) -> str:
     if device_name == "auto":
         if torch.cuda.is_available():

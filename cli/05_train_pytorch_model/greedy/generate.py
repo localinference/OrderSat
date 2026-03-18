@@ -1,8 +1,8 @@
 import torch
-import Seq2SeqTransformer
+
 
 def greedy_generate(
-    model: Seq2SeqTransformer,
+    model,
     *,
     input_ids: torch.Tensor,
     attention_mask: torch.Tensor,
@@ -52,5 +52,3 @@ def greedy_generate(
         outputs.append(trimmed)
 
     return outputs
-
-

@@ -1,8 +1,9 @@
-import Seq2SeqTransformer
 import torch
-from torch import F
+import torch.nn.functional as F
+
+
 def compute_loss(
-    model: Seq2SeqTransformer,
+    model,
     batch: dict,
     *,
     device: str,

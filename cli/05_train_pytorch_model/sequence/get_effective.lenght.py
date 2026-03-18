@@ -1,7 +1,14 @@
 import TokenizedJsonlDataset
-import EffectiveSequenceLengths
+from dataclasses import dataclass
+@dataclass(frozen=True)
+class EffectiveSequenceLengths:
+    max_input_length: int
+    max_label_length: int
+    max_source_positions: int
+    max_target_positions: int
 
-def get_effective_sequence_lengths(
+
+def resolve_effective_sequence_lengths(
     *,
     train_dataset: TokenizedJsonlDataset,
     validation_dataset: TokenizedJsonlDataset,

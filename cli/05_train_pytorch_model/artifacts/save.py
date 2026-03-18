@@ -1,14 +1,14 @@
-import Seq2SeqTransformer
-import torch
-import pathlib
 import json
+
+import torch
+
 
 def save_artifacts(
     *,
-    save_dir: pathlib.Path,
+    save_dir,
     metrics: dict,
-    model: Seq2SeqTransformer,
-    optimizer: torch.optim.Optimizer,
+    model,
+    optimizer,
 ) -> None:
     save_dir.mkdir(parents=True, exist_ok=True)
     metrics_path = save_dir / "metrics.json"
