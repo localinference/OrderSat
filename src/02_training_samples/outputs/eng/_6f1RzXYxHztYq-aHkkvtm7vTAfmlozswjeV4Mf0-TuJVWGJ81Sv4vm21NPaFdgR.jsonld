@@ -1,0 +1,61 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "priceCurrency": "IDR",
+      "paymentMethod": "https://schema.org/Cash",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "priceCurrency": "IDR",
+        "price": "33000"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "30000",
+          "unitText": "IDR"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax",
+          "value": "3000",
+          "unitText": "IDR"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cash Tendered",
+          "value": "33000",
+          "unitText": "IDR"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "30000",
+      "priceCurrency": "IDR",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 1,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "[ERROR:UNCERTAIN] sbl gr udang sfc"
+    }
+  ]
+}
