@@ -1,8 +1,9 @@
-# Model Architecture Guidelines
+# Model Architecture Practices
 
-Only capacity knobs should scale with dataset size.
+Only capacity knobs should scale with data.
 
-Use one multiplier for what the data can justify, and a separate multiplier for what the current machine can realistically carry.
+Use one multiplier for what the training set can justify, and another for what
+the current machine can realistically carry.
 
 ## Data-scale rule
 
@@ -14,8 +15,9 @@ Set:
 
 Why:
 
-- useful model capacity should grow sublinearly, not linearly
-- fake small or medium or large buckets throw away information
+- useful capacity grows sublinearly, not linearly
+- hard small or medium or large buckets throw away information
+- low-data regimes usually generalize better with smaller models
 
 ## Device-scale rule
 
@@ -25,7 +27,8 @@ Set:
 
 - `DEVICE_SCALE = capabilities.device_scale`
 
-This value is a bounded hardware and environment multiplier derived from available memory and host-side throughput.
+This is a bounded hardware and environment multiplier derived from available
+memory and host-side throughput.
 
 ## Final capacity rule
 
@@ -35,9 +38,9 @@ Set:
 
 Why:
 
-- data may justify a larger model than the machine can train
-- hardware may allow a larger model than the dataset can support
-- the final architecture should respect both constraints
+- the data may justify a larger model than the machine can train
+- the machine may allow a larger model than the data can support
+- the final architecture must respect both constraints
 
 ## Base architecture
 
@@ -60,9 +63,10 @@ Set:
 - `FF_DIMENSION = FF_RATIO * D_MODEL`
 - `DROPOUT = clamp(DROPOUT_BASE / CAPACITY_SCALE, 0.10, 0.20)`
 
-## Rules
+## Generalization rules
 
-- Keep `D_MODEL % ATTENTION_HEADS == 0`.
+- Prefer the smallest model that achieves the needed validation exact match.
 - Prefer increasing width before increasing depth.
-- Do not increase heads without increasing width enough to justify them.
+- Do not increase heads without enough width to justify them.
+- Keep `D_MODEL % ATTENTION_HEADS == 0`.
 - Do not use `trainCount` or `DEVICE_SCALE` to set sequence lengths.
