@@ -61,6 +61,14 @@ def _bytes_to_gb(value: int | None) -> float | None:
     return value / (1024 ** 3)
 
 
+def _is_cuda_device(device_name: str) -> bool:
+    return device_name == "cuda" or device_name.startswith("cuda:")
+
+
+def _is_mps_device(device_name: str) -> bool:
+    return device_name == "mps"
+
+
 @dataclass(frozen=True)
 class DeviceCapabilities:
     requested_device: str
@@ -102,9 +110,11 @@ def get_device_capabilities(device_name: str = "auto") -> DeviceCapabilities:
         getattr(torch.backends, "mps", None) and torch.backends.mps.is_available()
     )
 
-    if resolved_device == "cuda" and cuda_available:
-        current_index = torch.cuda.current_device()
-        properties = torch.cuda.get_device_properties(current_index)
+    if _is_cuda_device(resolved_device) and cuda_available:
+        accelerator_index = torch.device(resolved_device).index
+        if accelerator_index is None:
+            accelerator_index = torch.cuda.current_device()
+        properties = torch.cuda.get_device_properties(accelerator_index)
         accelerator_name = properties.name
         accelerator_memory_bytes = int(properties.total_memory)
         supports_fp16 = True
@@ -112,12 +122,12 @@ def get_device_capabilities(device_name: str = "auto") -> DeviceCapabilities:
             hasattr(torch.cuda, "is_bf16_supported")
             and torch.cuda.is_bf16_supported()
         )
-    elif resolved_device == "mps" and mps_available:
+    elif _is_mps_device(resolved_device) and mps_available:
         accelerator_name = "Apple Silicon GPU"
         supports_fp16 = True
-    elif resolved_device == "cuda":
+    elif _is_cuda_device(resolved_device):
         accelerator_name = "CUDA (unavailable)"
-    elif resolved_device == "mps":
+    elif _is_mps_device(resolved_device):
         accelerator_name = "MPS (unavailable)"
     else:
         accelerator_name = "CPU"
@@ -145,7 +155,7 @@ def get_device_capabilities(device_name: str = "auto") -> DeviceCapabilities:
         cpu_count=cpu_count,
         supports_fp16=supports_fp16,
         supports_bf16=supports_bf16,
-        pin_memory=resolved_device == "cuda",
+        pin_memory=_is_cuda_device(resolved_device),
         memory_scale=memory_scale,
         throughput_scale=throughput_scale,
         device_scale=device_scale,

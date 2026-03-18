@@ -94,6 +94,42 @@ class TrainingConfig:
     def to_dict(self) -> dict:
         return asdict(self)
 
+    def to_adjusted_options_dict(self) -> dict:
+        return {
+            "scale_inputs": {
+                "data_scale": self.data_scale,
+                "device_scale": self.device_scale,
+                "capacity_scale": self.capacity_scale,
+            },
+            "model": {
+                "d_model": self.d_model,
+                "attention_heads": self.attention_heads,
+                "encoder_layers": self.encoder_layers,
+                "decoder_layers": self.decoder_layers,
+                "ff_dimension": self.ff_dimension,
+                "dropout": self.dropout,
+            },
+            "batching": {
+                "target_effective_batch_size": self.target_effective_batch_size,
+                "batch_size": self.batch_size,
+                "accumulation_steps": self.accumulation_steps,
+                "achieved_effective_batch_size": self.achieved_effective_batch_size,
+                "num_workers": self.num_workers,
+                "pin_memory": self.pin_memory,
+                "persistent_workers": self.persistent_workers,
+            },
+            "optimization": {
+                "learning_rate": self.learning_rate,
+                "weight_decay": self.weight_decay,
+            },
+            "schedule": {
+                "epochs": self.epochs,
+                "early_stopping_patience": self.early_stopping_patience,
+                "early_stopping_min_delta": self.early_stopping_min_delta,
+                "exact_match_frequency": self.exact_match_frequency,
+            },
+        }
+
 
 def build_training_config(
     *,

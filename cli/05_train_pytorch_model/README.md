@@ -35,7 +35,7 @@ The trainer does this, in this order:
 15. Train epoch-by-epoch with [epoch/train.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/epoch/train.py).
 16. Evaluate validation loss with [loss/evaluate.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/loss/evaluate.py).
 17. Periodically run exact-match generation with [match/compute.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/match/compute.py) and [greedy/generate.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/greedy/generate.py).
-18. Save best artifacts through [artifacts/save.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/artifacts/save.py).
+18. Persist current run state every epoch and refresh the best checkpoint only on validation improvement through [artifacts/save.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/artifacts/save.py).
 19. Print a final run summary through [reporting/log.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/reporting/log.py).
 
 ## What It Reads
@@ -166,11 +166,14 @@ Exact match tells you whether the model is producing fully correct structured ou
 
 ### Saving
 
-When validation loss improves, `save_artifacts()` writes:
+Every epoch, `save_artifacts()` updates:
 
-- `best_metrics.json`
 - `history.json`
 - `run.json`
+- `best_metrics.json`
+
+When validation loss improves, it also refreshes:
+
 - `best.pt`
 
 into `src/05_pytorch_models/{language}`.
@@ -189,14 +192,18 @@ You now get stage-level messages such as:
 - `device.capabilities.start` / `device.capabilities.complete`
 - `config.build.start` / `config.build.complete`
 - `dataset.load.start` / `dataset.load.complete`
+- `config.adjusted_options`
 - `loader.build.start` / `loader.build.complete`
 - `model.build.start` / `model.build.complete`
 - `optimizer.build.start` / `optimizer.build.complete`
 - `train.epoch.start` / `train.epoch.complete`
 - `validation.loss.start` / `validation.loss.complete`
+- `train.exact_match.start` / `train.exact_match.complete`
 - `validation.exact_match.start` / `validation.exact_match.complete`
+- `validation.exact_match.skipped`
 - `artifacts.save.start` / `artifacts.save.complete`
 - `checkpoint.saved`
+- `training.memorization_signal`
 - `epoch.complete`
 - `training.stop`
 - `training.complete`
@@ -206,6 +213,7 @@ The logs intentionally include:
 - language
 - file paths
 - resolved device
+- adjusted options derived from data scale and compute scale
 - parameter counts
 - batch counts
 - batch size and accumulation

@@ -14,9 +14,9 @@ def format_seconds(duration_seconds: float) -> str:
 
 
 def _print_block(title: str, values: dict) -> None:
-    print(f"[{_timestamp()}] {title}")
+    print(f"[{_timestamp()}] {title}", flush=True)
     for key, value in values.items():
-        print(f"  {key}: {value}")
+        print(f"  {key}: {value}", flush=True)
 
 
 def log_event(event: str, **values) -> None:
@@ -31,6 +31,15 @@ def log_stage_complete(stage: str, duration_seconds: float | None = None, **valu
     if duration_seconds is not None:
         values["duration"] = format_seconds(duration_seconds)
     _print_block(f"{stage}.complete", values)
+
+
+def log_json_block(title: str, payload: dict) -> None:
+    print(f"[{_timestamp()}] {title}", flush=True)
+    print(json.dumps(payload, indent=2), flush=True)
+
+
+def log_adjusted_options(*, adjusted_options: dict) -> None:
+    log_json_block("config.adjusted_options", adjusted_options)
 
 
 def log_run_overview(

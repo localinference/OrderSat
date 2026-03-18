@@ -22,13 +22,15 @@ def compute_exact_match(
     model: torch.nn.Module,
     loader: DataLoader,
     *,
+    split_name: str,
     device: torch.device,
     bos_id: int,
     eos_id: int,
     max_generation_length: int,
 ) -> ExactMatchEvaluation:
+    stage_name = f"{split_name}.exact_match"
     log_stage_start(
-        "validation.exact_match",
+        stage_name,
         device=str(device),
         batch_count=len(loader),
         max_generation_length=max_generation_length,
@@ -65,7 +67,7 @@ def compute_exact_match(
         duration_seconds=time.perf_counter() - started_at,
     )
     log_stage_complete(
-        "validation.exact_match",
+        stage_name,
         duration_seconds=result.duration_seconds,
         sample_count=result.sample_count,
         match_count=result.match_count,

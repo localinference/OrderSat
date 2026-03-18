@@ -21,6 +21,7 @@ from loss.evaluate import evaluate_loss
 from match.compute import compute_exact_match
 from parameters.count import count_parameters
 from reporting.log import (
+    log_adjusted_options,
     log_checkpoint_saved,
     log_early_stop,
     log_epoch_metrics,
@@ -154,6 +155,9 @@ def main() -> None:
     training_config = build_training_config(
         dataset_stats=dataset_stats,
         device_capabilities=device_capabilities,
+    )
+    log_adjusted_options(
+        adjusted_options=training_config.to_adjusted_options_dict(),
     )
     device = build_device(device_capabilities.resolved_device)
 
@@ -354,6 +358,7 @@ def main() -> None:
             train_exact_match_result = compute_exact_match(
                 model,
                 evaluation_train_loader,
+                split_name="train",
                 device=device,
                 bos_id=BOS_ID,
                 eos_id=EOS_ID,
@@ -362,6 +367,7 @@ def main() -> None:
             validation_exact_match_result = compute_exact_match(
                 model,
                 validation_loader,
+                split_name="validation",
                 device=device,
                 bos_id=BOS_ID,
                 eos_id=EOS_ID,
@@ -415,21 +421,34 @@ def main() -> None:
             best_validation_loss = validation_result.average_loss
             best_metrics = epoch_metrics
             epochs_without_improvement = 0
-            save_artifacts(
-                save_dir=run_paths.save_dir,
-                metrics=epoch_metrics,
-                history=history,
-                metadata=run_metadata,
-                model=model,
-                optimizer=optimizer,
-            )
+        else:
+            epochs_without_improvement += 1
+
+        epoch_run_metadata = {
+            **run_metadata,
+            "runtime_state": {
+                "latest_epoch_completed": epoch,
+                "best_validation_loss": best_validation_loss,
+                "epochs_without_improvement": epochs_without_improvement,
+                "latest_metrics": epoch_metrics,
+                "best_metrics": best_metrics,
+            },
+        }
+        save_artifacts(
+            save_dir=run_paths.save_dir,
+            best_metrics=best_metrics,
+            history=history,
+            metadata=epoch_run_metadata,
+            model=model,
+            optimizer=optimizer,
+            save_checkpoint=improved_validation,
+        )
+        if improved_validation:
             log_checkpoint_saved(
                 epoch=epoch,
                 save_dir=run_paths.save_dir,
                 validation_loss=validation_result.average_loss,
             )
-        else:
-            epochs_without_improvement += 1
 
         if epoch == 1 or epoch % LOG_FREQUENCY == 0 or epoch == training_config.epochs:
             log_epoch_metrics(
@@ -464,11 +483,16 @@ def main() -> None:
             train_exact_match_result is not None
             and train_exact_match_result.exact_match >= 1.0
         ):
-            log_early_stop(
-                reason="train_exact_match reached 1.0000",
+            log_event(
+                "training.memorization_signal",
                 epoch=epoch,
+                train_exact_match=f"{train_exact_match_result.exact_match:.4f}",
+                validation_exact_match=(
+                    f"{validation_exact_match_result.exact_match:.4f}"
+                    if validation_exact_match_result is not None
+                    else "<not_run>"
+                ),
             )
-            break
 
         if epochs_without_improvement >= training_config.early_stopping_patience:
             log_early_stop(
