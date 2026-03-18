@@ -1,63 +1,42 @@
-1. BATCH_SIZE
+# Sample Batching Guidelines
 
-Mikä se on: Kuinka monta samplea syötetään mallille kerralla ennen weight updatea.
+Batching is driven mainly by memory and sequence lengths, not by sample count.
 
-Suositeltu alue:
+## Physical batch size
 
-Pienet datasetit / rajoitettu VRAM: 1–4
+Use the largest `BATCH_SIZE` that fits reliably after sequence lengths are finalized.
 
-Keskikokoiset datasetit: 8–16
+For this repo's current seq2seq setup, the safe default is:
 
-Suuret datasetit / riittävästi muistia: 32–64+
+- `BATCH_SIZE = 1`
 
-Miksi:
+Why: decoder-side memory grows quickly when labels are long, and long labels are normal in this task.
 
-Pieni batch → gradientti kohinainen → voi auttaa generalizationissa (flat minima)
+## Gradient accumulation
 
-Liian pieni batch → oppiminen epävakaata, training hidas
+Use gradient accumulation to reach a stable effective batch instead of forcing a larger physical batch.
 
-Iso batch → stabiilinen gradientti, nopeampi training, mutta riski huonommasta yleistymisestä
+Best default:
 
-Milloin käyttää:
+- `ACCUMULATION_STEPS = 16`
 
-Käytä pientä batchia, kun VRAM rajoittaa ja haluat parantaa yleistymistä pienillä dataseteillä.
+This gives:
 
-2. ACCUMULATION_STEPS
+- effective batch = `BATCH_SIZE * ACCUMULATION_STEPS`
 
-Mikä se on: Kuinka monta batchia lasketaan ennen painojen päivitystä. Efektiivinen batch size = BATCH_SIZE \* ACCUMULATION_STEPS.
+## Practical rule
 
-Suositeltu alue:
+Use this pattern:
 
-Pieni BATCH_SIZE → accumulation 8–32, riippuen VRAMista
+- if `BATCH_SIZE = 1`, use `ACCUMULATION_STEPS = 16`
+- if `BATCH_SIZE = 2`, use `ACCUMULATION_STEPS = 8`
+- if `BATCH_SIZE = 4`, use `ACCUMULATION_STEPS = 4`
+- if `BATCH_SIZE = 8`, use `ACCUMULATION_STEPS = 2`
 
-Suuri BATCH_SIZE → accumulation usein 1
+The target is an effective batch close to `16`.
 
-Miksi:
+## Rules
 
-Säästää VRAMia, mutta antaa efektiivisen suuren batchin hyödyt: stabiilinen gradientti, parempi throughput
-
-Pienentää gradientin kohinaa ilman että tarvitsee kasvattaa fyysistä batchia
-
-🔧 Käytännön esimerkki
-
-# Pieni dataset, vähän VRAM
-
-BATCH_SIZE = 1
-ACCUMULATION_STEPS = 16 # Efektiivinen batch = 16
-
-# Keskikokoinen dataset
-
-BATCH_SIZE = 8
-ACCUMULATION_STEPS = 4 # Efektiivinen batch = 32
-
-# Iso dataset, riittävästi muistia
-
-BATCH_SIZE = 32
-ACCUMULATION_STEPS = 1 # Efektiivinen batch = 32
-💡 Yhteenveto
-
-BATCH_SIZE määrää kuinka monta samplea nähdään kerralla
-
-ACCUMULATION_STEPS kompensoi pienen batchin pienemmän muistin vuoksi, mutta mahdollistaa stabiilin oppimisen
-
-Yhdessä ne määrittävät efektiivisen batchin, joka vaikuttaa learning rateen, gradientin vakauteen ja trainingin nopeuteen
+- Set sequence lengths first, then tune batch size.
+- Do not pretend batching is data-size driven when the real limit is VRAM.
+- If accumulation is not implemented in the trainer yet, keep the physical batch small and do not write fake recommendations around it.

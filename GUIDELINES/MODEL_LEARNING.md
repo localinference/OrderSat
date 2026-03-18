@@ -1,24 +1,32 @@
 # Model Learning Guidelines
 
-Use the same sample-count buckets across all guideline files:
+Learning settings should scale with data size, but only for the knobs that actually change learning dynamics.
 
-- `small`: fewer than `1,000` training pairs
-- `medium`: `1,000` to `50,000` training pairs
-- `large`: more than `50,000` training pairs
+## Learning rate
 
-These defaults assume the current trainer shape in this repo: AdamW, no warmup scheduler, no LR decay scheduler, and clipped gradients.
+- if `sampleCount < 10_000`, use `LEARNING_RATE = 3e-4`
+- if `10_000 <= sampleCount <= 100_000`, use `LEARNING_RATE = 2e-4`
+- if `sampleCount > 100_000`, use `LEARNING_RATE = 1e-4`
 
-## Recommended defaults
+Why: this trainer does not use warmup or a decay scheduler, so the safest default is to lower the peak rate as model and dataset scale up.
 
-| Setting | Small | Medium | Large | Why |
-| --- | ---: | ---: | ---: | --- |
-| `LEARNING_RATE` | `3e-4` | `2e-4` | `1e-4` | Without warmup or decay, the safest default is to lower peak LR as model size and data size grow. |
-| `WEIGHT_DECAY` | `5e-4` | `1e-4` | `1e-4` | Small data needs stronger regularization. Once data grows, keep decay mild rather than forcing underfit. |
-| `GRAD_CLIP` | `1.0` | `1.0` | `1.0` | `1.0` is still the most reliable default for small Transformers with long decoder targets. |
+## Weight decay
 
-## Notes
+- if `sampleCount < 10_000`, use `WEIGHT_DECAY = 5e-4`
+- if `10_000 <= sampleCount <= 100_000`, use `WEIGHT_DECAY = 1e-4`
+- if `sampleCount > 100_000`, use `WEIGHT_DECAY = 1e-4`
 
-- Keep using AdamW, not Adam with L2 treated as fake weight decay. Decoupled weight decay is the right default for adaptive optimizers.
-- If training becomes unstable, lower `LEARNING_RATE` before touching `GRAD_CLIP`.
-- If the model clearly memorizes training data but validation stalls, raise regularization before increasing model size.
-- If you later add LR warmup and decay, treat the values above as peak learning rates.
+Why: small supervised datasets benefit from stronger regularization. Once data grows, mild decay is usually enough.
+
+## Gradient clipping
+
+Use `GRAD_CLIP = 1.0`.
+
+Why: for this model family, `1.0` is still the safest default and should not be tuned before learning rate and sequence lengths are sane.
+
+## Rules
+
+- Use AdamW, not Adam with fake L2 weight decay.
+- If training is unstable, lower learning rate before changing gradient clipping.
+- If the model memorizes training data early, raise regularization before making the model bigger.
+- If a scheduler is added later, treat the values above as peak learning rates.

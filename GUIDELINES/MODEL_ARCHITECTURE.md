@@ -1,30 +1,49 @@
 # Model Architecture Guidelines
 
-Use the same sample-count buckets across all guideline files:
+Architecture size should scale with the amount of supervised training data. For this repo's random-init seq2seq model, use one default per sample-count regime.
 
-- `small`: fewer than `1,000` training pairs
-- `medium`: `1,000` to `50,000` training pairs
-- `large`: more than `50,000` training pairs
+## Small data
 
-These recommendations are for a random-init encoder-decoder Transformer trained from scratch on this repo's seq2seq task. They are intentionally conservative for small data.
+If `sampleCount < 10_000`, use:
 
-## Recommended defaults
+- `D_MODEL = 128`
+- `ATTENTION_HEADS = 4`
+- `ENCODER_LAYERS = 2`
+- `DECODER_LAYERS = 2`
+- `FF_DIMENSION = 512`
+- `DROPOUT = 0.20`
 
-| Setting | Small | Medium | Large | Why |
-| --- | ---: | ---: | ---: | --- |
-| `D_MODEL` | `128` | `256` | `512` | Width should grow with data. Small data does not justify a wide model. |
-| `NUM_HEADS` | `4` | `4` | `8` | Keep `D_MODEL % NUM_HEADS == 0` and avoid wasting capacity on too many heads too early. |
-| `NUM_ENCODER_LAYERS` | `2` | `4` | `6` | Scale depth only after the model has enough data to use it. |
-| `NUM_DECODER_LAYERS` | `2` | `4` | `6` | Keep encoder and decoder depth balanced for this task. |
-| `FFN_DIM` | `512` | `1024` | `2048` | `4 x D_MODEL` remains the cleanest default ratio. |
-| `DROPOUT` | `0.20` | `0.10` | `0.10` | Small data needs more regularization. Larger datasets usually do not. |
-| `LABEL_PAD_ID` | `-100` | `-100` | `-100` | This matches PyTorch's default ignore index for cross-entropy loss. |
-| `BOS_ID` | `1` | `1` | `1` | Keep the decoder start token fixed and explicit. |
-| `EOS_ID` | `2` | `2` | `2` | Keep the decoder stop token fixed and explicit. |
+Why: with small supervised datasets, the main risk is over-capacity and memorization, not lack of width.
 
-## Notes
+## Medium data
 
-- The large-bucket defaults match the classic reference Transformer shape closely: `d_model=512`, `nhead=8`, `num_encoder_layers=6`, `num_decoder_layers=6`, `dim_feedforward=2048`, `dropout=0.1`.
-- For this repo's current English dataset, the `small` bucket applies.
-- If the model is underfitting, grow width before depth. If it is overfitting, raise dropout before growing anything.
-- Do not increase `NUM_HEADS` unless `D_MODEL` grows with it. Tiny heads are usually wasted capacity on this task.
+If `10_000 <= sampleCount <= 100_000`, use:
+
+- `D_MODEL = 256`
+- `ATTENTION_HEADS = 4`
+- `ENCODER_LAYERS = 4`
+- `DECODER_LAYERS = 4`
+- `FF_DIMENSION = 1024`
+- `DROPOUT = 0.10`
+
+Why: this is the point where a wider and deeper model usually starts paying for itself without becoming needlessly brittle.
+
+## Large data
+
+If `sampleCount > 100_000`, use:
+
+- `D_MODEL = 512`
+- `ATTENTION_HEADS = 8`
+- `ENCODER_LAYERS = 6`
+- `DECODER_LAYERS = 6`
+- `FF_DIMENSION = 2048`
+- `DROPOUT = 0.10`
+
+Why: above this scale, the standard Transformer shape becomes a reasonable default from scratch.
+
+## Rules
+
+- Keep `D_MODEL % ATTENTION_HEADS == 0`.
+- Prefer increasing width before increasing depth.
+- Do not increase heads on a narrow model just because more heads sound better.
+- Treat dropout as regularization, not as a substitute for sane model size.

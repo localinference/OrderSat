@@ -1,56 +1,39 @@
-📘 Guideline: epochs, early stopping ja min_delta datasetin koon mukaan
+# Training Epoch Guidelines
 
-Huom: DELTA tarkoittaa pienintä validointitappion parannusta, joka lasketaan oikeaksi edistykseksi.
+Epoch policy should scale with sample count because each epoch means something different at different dataset sizes.
 
-Dataset < 1 000 samplea (pieni dataset)
+## Small data
 
-Epochs: 80–120
+If `sampleCount < 10_000`, use:
 
-Early stopping patience: 15–25
+- `EPOCHS = 100`
+- `EARLY_STOPPING_PATIENCE = 20`
+- `EARLY_STOPPING_MIN_DELTA = 1e-5`
 
-Min_delta: 1e-5 – 1e-4
+Why: with small data, the model needs repeated exposure and validation loss is noisy.
 
-Perustelu: malli tarvitsee monta kierrosta nähdäkseen data-varianssin; validation loss epävakaa → pieni delta, jotta pienet parannukset tunnistetaan
+## Medium data
 
-Dataset 10 000 – 1 000 000 samplea (keskikokoinen dataset)
+If `10_000 <= sampleCount <= 100_000`, use:
 
-Epochs: 15–30
+- `EPOCHS = 30`
+- `EARLY_STOPPING_PATIENCE = 8`
+- `EARLY_STOPPING_MIN_DELTA = 1e-4`
 
-Early stopping patience: 5–10
+Why: at this size, one epoch already covers meaningful variation, so training should stop earlier and ignore tiny validation noise.
 
-Min_delta: 1e-4 – 1e-3
+## Large data
 
-Perustelu: yksi epoch kattaa jo paljon variaatiota; delta hieman suurempi, jotta satunnaisheilahtelut eivät laukaise turhaa early stoppingia
+If `sampleCount > 100_000`, use:
 
-Dataset > 1 000 000 samplea (iso dataset)
+- `EPOCHS = 10`
+- `EARLY_STOPPING_PATIENCE = 3`
+- `EARLY_STOPPING_MIN_DELTA = 1e-3`
 
-Epochs: 3–5
+Why: large datasets make each epoch expensive and small validation changes less meaningful.
 
-Early stopping patience: 0.5–2
+## Rules
 
-Min_delta: 1e-3 – 1e-2
-
-Perustelu: dataset on niin suuri, että pienet muutokset validoinnissa eivät ole merkityksellisiä; early stopping voi olla step-pohjainen
-
-🔧 Käytännön sovellus
-if sample_count < 1000:
-epochs = 100
-patience = 20
-min_delta = 1e-5
-elif sample_count < 1_000_000:
-epochs = 20
-patience = 5
-min_delta = 1e-4
-else:
-epochs = 5
-patience = 1
-min_delta = 1e-3
-💡 Huomioita
-
-Nämä ovat default-arvoja, aina tarkista validointilossin käyttäytyminen.
-
-Pienillä dataseteillä kannattaa käyttää pientä batch sizea + gradient accumulationia.
-
-Isoilla dataseteillä early stopping kannattaa yhdistää step-pohjaiseen seurantaan.
-
-Min_delta yhdessä patience:n kanssa ohjaa, milloin training lopetetaan — ei pelkkä epoch-luku riitä.
+- Patience is epoch-based in this trainer.
+- Keep early stopping enabled.
+- If train exact match reaches `1.0` very early while validation remains weak, that is memorization, not success.

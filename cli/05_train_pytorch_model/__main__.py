@@ -26,6 +26,8 @@ except ImportError:
 
     from args.parse import parse_args
 
+    from vocab.read_size import read_vocab_size
+
 
 TOKENIZERS_ROOT = pathlib.Path("src/03_tokenizers")
 DATASETS_ROOT = pathlib.Path("src/04_training_datasets")
@@ -36,39 +38,33 @@ TRAINING_DATA_FILE = "train.jsonl"
 VALIDATION_DATA_FILE = "validation.jsonl"
 TOKENIZER_VOCAB_FILE = "tokenizer.vocab"
 
-#BATCHING
-BATCH_SIZE = 1
-ACCUMULATION_STEPS = 16
-
-#EPOCHING
-EPOCHS = 100
-EPOCHS_PATIENCE = 20
-EPOCH_MIN_DELTA = 1e-5
-
-#LENGHTS
-INPUT_LENGTH = 256
-LABEL_LENGTH = 512
-
-#LEARNING
-LEARNING_RATE = 3e-4
-WEIGHT_DECAY = 1e-4
-GRAD_CLIP = 1.0
-
-# MODEL ARCHITECTURE
-D_MODEL = 128
-NUM_HEADS = 4
-NUM_ENCODER_LAYERS = 2
-NUM_DECODER_LAYERS = 2
-FFN_DIM = 256
-DROPOUT = 0.1
-LABEL_PAD_ID = -100
+# STATIC CONFIG
+SEED = 7
+LOG_FREQUENCY = 1
 BOS_ID = 1
 EOS_ID = 2
+LABEL_PAD_ID = -100
+GRAD_CLIP = 1.0
+ACCUMULATION_STEPS = 16
 
-# DEV
-SEED = 7
-LOG_EVERY = 10
-EXACT_MATCH_EVERY = 0
+
+# DYNAMIC CONFIG
+CONFIG = {
+    "exact_match_frequency": {"s": 1, "m": 2, "l": 3},
+    "batch_size": {"s": 1, "m": 2, "l": 4},
+    "effective_batch_size": {"s": 16, "m": 32, "l": 64},
+    "epochs": {"s": 100, "m": 30, "l": 10},
+    "early_stopping_patience": {"s": 20, "m": 8, "l": 3},
+    "early_stopping_min_delta": {"s": 1e-5, "m": 1e-4, "l": 1e-3},
+    "d_model": {"s": 128, "m": 256, "l": 512},
+    "attention_heads": {"s": 4, "m": 4, "l": 8},
+    "encoder_layers": {"s": 2, "m": 4, "l": 6},
+    "decoder_layers": {"s": 2, "m": 4, "l": 6},
+    "ff_dimension": {"s": 512, "m": 1024, "l": 2048},
+    "dropout": {"s": 0.20, "m": 0.10, "l": 0.10},
+    "learning_rate": {"s": 3e-4, "m": 2e-4, "l": 1e-4},
+    "weight_decay": {"s": 5e-4, "m": 1e-4, "l": 1e-4},
+}
 
 
 
@@ -90,40 +86,8 @@ class EffectiveSequenceLengths:
 
 
 
-def resolve_paths(args: argparse.Namespace) -> SplitPaths:
-    datasets_root = pathlib.Path(args.datasets_root).resolve()
-    tokenizers_root = pathlib.Path(args.tokenizers_root).resolve()
-    language_dataset_dir = datasets_root / args.language
-    language_tokenizer_dir = tokenizers_root / args.language
-
-    return SplitPaths(
-        train_path=language_dataset_dir / args.train_file,
-        validation_path=language_dataset_dir / args.validation_file,
-        vocab_path=language_tokenizer_dir / args.vocab_file,
-    )
 
 
-def resolve_save_dir(args: argparse.Namespace) -> pathlib.Path:
-    if args.save_dir:
-        return pathlib.Path(args.save_dir).resolve()
-    return (DEFAULT_BEST_MODELS_ROOT / args.language).resolve()
-
-
-def read_vocab_size(vocab_path: pathlib.Path) -> int:
-    if not vocab_path.exists():
-        raise SystemExit(f"Tokenizer vocab does not exist: {vocab_path}")
-    if not vocab_path.is_file():
-        raise SystemExit(f"Tokenizer vocab path is not a file: {vocab_path}")
-
-    with vocab_path.open("r", encoding="utf8") as handle:
-        size = sum(1 for line in handle if line.strip())
-
-    if size < 3:
-        raise SystemExit(
-            f"Tokenizer vocab looks invalid or too small: {vocab_path}"
-        )
-
-    return size
 
 
 def build_device(device_name: str) -> str:

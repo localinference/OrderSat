@@ -1,24 +1,30 @@
 # Development Guidelines
 
-Use the same sample-count buckets across all guideline files:
-
-- `small`: fewer than `1,000` training pairs
-- `medium`: `1,000` to `50,000` training pairs
-- `large`: more than `50,000` training pairs
-
-Here `sampleCount` means the number of training pairs in the training split, not raw source files and not tokenizer tokens.
+This file is for defaults that should stay stable across runs and are not mainly driven by sample count.
 
 ## Recommended defaults
 
-| Setting | Small | Medium | Large | Why |
-| --- | ---: | ---: | ---: | --- |
-| `SEED` | `7` | `7` | `7` | Use one fixed seed so runs stay comparable while the pipeline is still changing. |
-| `LOG_EVERY` | `1` | `1` | `1` | In this repo it is an epoch interval, so logging every epoch is cheap and keeps regressions visible. |
-| `EXACT_MATCH_EVERY` | `1` | `2` | `5` | Run exact match more often when every epoch is highly informative, and less often when decode cost grows with dataset size. |
+- `SEED = 7`
+  Use one fixed seed while the pipeline is still changing so runs stay comparable.
 
-## Notes
+- `LOG_FREQUENCY = 1`
+  In this trainer logging is epoch-based, so logging every epoch is the correct default.
 
-- In this trainer, `LOG_EVERY` is measured in epochs, not steps.
-- In this trainer, `EXACT_MATCH_EVERY` is also measured in epochs, not steps.
-- Keep exact match enabled for real training. Disable it only for smoke tests or very fast debugging loops.
-- Change one debugging variable at a time. If you change the seed and the training settings together, the comparison is much less useful.
+- `BOS_ID = 1`
+  Keep one explicit decoder start token and do not change it between runs.
+
+- `EOS_ID = 2`
+  Keep one explicit decoder stop token and do not change it between runs.
+
+- `LABEL_PAD_ID = -100`
+  This matches the PyTorch cross-entropy ignore index convention and keeps padded labels out of the loss.
+
+## Exact-match evaluation
+
+`EXACT_MATCH_FREQUENCY` is one of the few monitoring settings that should scale with data size:
+
+- if `sampleCount < 10_000`, use `EXACT_MATCH_FREQUENCY = 1`
+- if `10_000 <= sampleCount <= 100_000`, use `EXACT_MATCH_FREQUENCY = 2`
+- if `sampleCount > 100_000`, use `EXACT_MATCH_FREQUENCY = 3`
+
+Use exact match in real training. Disable it only for smoke tests and very short debug runs.
