@@ -21,6 +21,7 @@ from parameters.count import count_parameters
 from seed.set import set_seed
 from stats.parse import parse_stats
 from vocab.read_size import read_vocab_size
+from sequence.get_effective_lenght import get_effective_sequence_lenght
 
 
 TOKENIZERS_ROOT = pathlib.Path("src/03_tokenizers")
@@ -82,7 +83,7 @@ def main() -> None:
         for key, values in CONFIG.items()
     }
 
-    sequence_lengths = resolve_effective_sequence_lengths(
+    sequence_lengths = get_effective_sequence_lenght(
         train_dataset=train_dataset,
         validation_dataset=validation_dataset,
         max_input_length=stats["max_input_length"],
