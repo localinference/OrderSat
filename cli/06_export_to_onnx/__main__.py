@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+from args.parse import parse_args
+from artifacts.write import write_export_bundle
+from checkpoint.load import load_export_checkpoint
+from ExportPaths.consturctor import build_export_paths
+from onnx_model.export import export_onnx_model, validate_exported_onnx_model
+from pytorch_model.build import build_pytorch_model
+
+
+def main() -> None:
+    args = parse_args()
+    paths = build_export_paths(args.language)
+
+    checkpoint, model_config = load_export_checkpoint(paths.checkpoint_path)
+    model = build_pytorch_model(
+        checkpoint=checkpoint,
+        model_config=model_config,
+    )
+
+    export_onnx_model(
+        model=model,
+        model_config=model_config,
+        onnx_model_path=paths.onnx_model_path,
+        opset_version=args.opset_version,
+    )
+    validation = validate_exported_onnx_model(
+        model=model,
+        model_config=model_config,
+        onnx_model_path=paths.onnx_model_path,
+    )
+
+    write_export_bundle(
+        paths=paths,
+        checkpoint=checkpoint,
+        model_config=model_config,
+        opset_version=args.opset_version,
+        validation=validation,
+    )
+
+    print(f"language: {paths.language}")
+    print(f"checkpoint: {paths.checkpoint_path}")
+    print(f"onnx_model: {paths.onnx_model_path}")
+    print(f"tokenizer_model: {paths.exported_tokenizer_model_path}")
+    print(f"tokenizer_vocab: {paths.exported_tokenizer_vocab_path}")
+    print(f"config: {paths.config_path}")
+    print(
+        "validation: "
+        f"shape={validation['logits_shape']} "
+        f"max_abs_diff={validation['max_abs_diff']:.8f}"
+    )
+
+
+if __name__ == "__main__":
+    main()
