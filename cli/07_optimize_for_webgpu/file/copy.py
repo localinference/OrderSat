@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import shutil
 
-from QuantizationPaths.consturctor import QuantizationPaths
+from MixedPaths.consturctor import MixedPaths
 
 
-def copy_support_artifacts(*, paths: QuantizationPaths) -> None:
+def copy_support_artifacts(*, paths: MixedPaths) -> None:
     shutil.copy2(
         paths.source_tokenizer_model_path,
-        paths.quantized_tokenizer_model_path,
+        paths.mixed_tokenizer_model_path,
     )

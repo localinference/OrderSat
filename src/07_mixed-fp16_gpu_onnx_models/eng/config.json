@@ -1,0 +1,103 @@
+{
+  "language": "eng",
+  "format": "onnx-webgpu-mixed-fp16",
+  "precision": "mixed-fp16",
+  "onnx_model_filename": "model.mixed-fp16.onnx",
+  "tokenizer_model_filename": "tokenizer.model",
+  "source_checkpoint_path": "src\\05_pytorch_models\\eng\\best.pt",
+  "source_metrics": {
+    "epoch": 100,
+    "train_loss": 1.2771646472440181,
+    "validation_loss": 1.4571526938758823,
+    "validation_exact_match": 0.0,
+    "train_duration_seconds": 21.183802399988053,
+    "validation_duration_seconds": 1.5900407000153791,
+    "exact_match_duration_seconds": 2.8157502000103705,
+    "validation_exact_match_ran": true,
+    "checkpoint_mode": "warm_start",
+    "optimizer_steps": 5,
+    "train_token_count": 40887,
+    "validation_token_count": 15412
+  },
+  "model_config": {
+    "language": "eng",
+    "vocab_size": 3971,
+    "pad_id": 3971,
+    "bos_id": 1,
+    "eos_id": 2,
+    "d_model": 128,
+    "attention_heads": 4,
+    "encoder_layers": 2,
+    "decoder_layers": 2,
+    "ff_dimension": 512,
+    "dropout": 0.2,
+    "max_source_positions": 336,
+    "max_target_positions": 1215
+  },
+  "validation": {
+    "inputs": [
+      "input_ids",
+      "attention_mask",
+      "decoder_input_ids"
+    ],
+    "outputs": [
+      "logits"
+    ],
+    "providers": [
+      "CPUExecutionProvider"
+    ],
+    "external_initializer_count": 0,
+    "source_model_bytes": 8810266,
+    "mixed_model_bytes": 4520571,
+    "size_reduction_bytes": 4289695,
+    "size_reduction_ratio": 0.48689733090919163,
+    "max_abs_diff": 0.00439453125,
+    "argmax_match_rate": 1.0,
+    "cases": [
+      {
+        "name": "reference",
+        "input_shape": {
+          "input_ids": [
+            1,
+            8
+          ],
+          "attention_mask": [
+            1,
+            8
+          ],
+          "decoder_input_ids": [
+            1,
+            8
+          ]
+        },
+        "output_shape": [
+          1,
+          8,
+          3971
+        ],
+        "max_abs_diff": 0.00439453125,
+        "argmax_match_rate": 1.0
+      }
+    ]
+  },
+  "export": {
+    "opset_version": 18,
+    "input_names": [
+      "input_ids",
+      "attention_mask",
+      "decoder_input_ids"
+    ],
+    "output_names": [
+      "logits"
+    ]
+  },
+  "runtime_target": "webgpu",
+  "source_onnx_model_filename": "model.onnx",
+  "mixed_precision": {
+    "backend": "webgpu",
+    "algorithm": "mixed-fp16",
+    "keep_io_types": true,
+    "disable_shape_infer": true,
+    "external_data": false
+  }
+}
