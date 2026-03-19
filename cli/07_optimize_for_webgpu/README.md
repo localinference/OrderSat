@@ -20,7 +20,7 @@ Run:
 python cli/07_optimize_for_webgpu/__main__.py --language eng
 ```
 
-The entrypoint is [__main__.py](C:/Users/jorts/OrderSaT/cli/07_optimize_for_webgpu/__main__.py).
+The entrypoint is [**main**.py](C:/Users/jorts/OrderSaT/cli/07_optimize_for_webgpu/__main__.py).
 
 ## High-Level Flow
 
