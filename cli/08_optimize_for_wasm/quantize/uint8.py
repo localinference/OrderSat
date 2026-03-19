@@ -1,52 +1,43 @@
-import pathlib
-from dataclasses import dataclass
+from __future__ import annotations
 
-def quantize_with_uint8(args: argparse.Namespace, paths: QuantizationPaths) -> dict[str, Any]:
-    quant_module = importlib.import_module("onnxruntime.quantization.matmul_nbits_quantizer")
-    quant_utils = importlib.import_module("onnxruntime.quantization.quant_utils")
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
-    model = onnx.load(str(paths.source_model_path))
-    quant_config = quant_module.DefaultWeightOnlyQuantConfig(
-        block_size=args.block_size,
-        is_symmetric=True,
-        accuracy_level=args.int4_accuracy_level,
-        quant_format=quant_utils.QuantFormat.QOperator,
-        op_types_to_quantize=("MatMul",),
-        bits=4,
-    )
-    quantizer = quant_module.MatMulNBitsQuantizer(
-        model=model,
-        bits=4,
-        accuracy_level=args.int4_accuracy_level,
-        nodes_to_exclude=args.nodes_to_exclude,
-        nodes_to_include=args.nodes_to_include or None,
-        algo_config=quant_config,
-    )
-    quantizer.process()
-    quantizer.model.save_model_to_file(str(paths.quantized_model_path), True)
+from onnxruntime.quantization import QuantType, quant_pre_process, quantize_dynamic
+
+from QuantizationPaths.consturctor import QuantizationPaths
+
+OP_TYPES_TO_QUANTIZE = ("MatMul", "Gemm")
+
+
+def quantize_with_uint8(*, paths: QuantizationPaths) -> dict[str, object]:
+    if paths.quantized_model_external_data_path.exists():
+        paths.quantized_model_external_data_path.unlink()
+
+    with TemporaryDirectory() as temporary_directory:
+        preprocessed_model_path = Path(temporary_directory) / "model.preprocessed.onnx"
+        quant_pre_process(
+            input_model=str(paths.source_model_path),
+            output_model_path=str(preprocessed_model_path),
+            skip_symbolic_shape=True,
+            save_as_external_data=False,
+        )
+        quantize_dynamic(
+            model_input=str(preprocessed_model_path),
+            model_output=str(paths.quantized_model_path),
+            op_types_to_quantize=list(OP_TYPES_TO_QUANTIZE),
+            per_channel=False,
+            reduce_range=False,
+            weight_type=QuantType.QUInt8,
+            use_external_data_format=False,
+        )
 
     return {
-        "backend": "int4",
-        "algorithm": "MatMulNBits",
-        "bits": 4,
-        "blockSize": args.block_size,
-        "accuracyLevel": args.int4_accuracy_level,
-        "nodesExcluded": list(args.nodes_to_exclude),
-        "nodesIncluded": list(args.nodes_to_include),
+        "backend": "wasm",
+        "algorithm": "dynamic",
+        "weight_type": "QUInt8",
+        "op_types_to_quantize": list(OP_TYPES_TO_QUANTIZE),
+        "preprocessed": True,
+        "skip_symbolic_shape": True,
+        "external_data": False,
     }
-
-
-
-@dataclass(frozen=True)
-class QuantizationPaths:
-    source_model_path: pathlib.Path
-    source_config_path: pathlib.Path
-    source_metrics_path: pathlib.Path
-    source_tokenizer_model_path: pathlib.Path
-    source_tokenizer_vocab_path: pathlib.Path
-    quantized_dir: pathlib.Path
-    quantized_model_path: pathlib.Path
-    quantized_config_path: pathlib.Path
-    quantized_metrics_path: pathlib.Path
-    quantized_tokenizer_model_path: pathlib.Path
-    quantized_tokenizer_vocab_path: pathlib.Path

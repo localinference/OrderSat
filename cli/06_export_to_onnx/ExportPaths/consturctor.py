@@ -10,7 +10,7 @@ CONFIG_NAME = "config.json"
 
 TOKENIZERS_ROOT = pathlib.Path("src/03_tokenizers")
 PYTORCH_MODELS_ROOT = pathlib.Path("src/05_pytorch_models")
-ONNX_EXPORT_ROOT = pathlib.Path("src/06_FP32_export_onnx_models")
+ONNX_EXPORT_ROOT = pathlib.Path("src/06_fp32_export_onnx_models")
 
 
 @dataclass(frozen=True)

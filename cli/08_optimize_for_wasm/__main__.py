@@ -1,82 +1,68 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+
 import json
-import pathlib
-
-
-
-
 
 from args.parse import parse_args
+from file.copy import copy_support_artifacts
 from file.require import require_file
-from file.copy import copy_file
+from QuantizationPaths.consturctor import build_quantization_paths
 from quantize.uint8 import quantize_with_uint8
 from quantize.validate import validate_quantized_model
 from quantize.write import write_quantized_config
 
 
-
-ONNX_EXPORTS_ROOT = pathlib.Path("src/06_FP32_export_onnx_models")
-ONNX_MODEL_NAME = "model.onnx"
-
-WASM_MODELS_ROOT = pathlib.Path("src/08_INT8_cpu_onnx_models")
-WASM_MODEL_NAME = "model.uint8.onnx"
-
-BACKEND = "uint8"
-BLOCK_SIZE = 256
-UINT8_ACCURACY_LEVEL = None
-CONFIG_FILE_NAME = "config.json"
-TOKENIZER_MODEL_NAME = "tokenizer.model"
-
 def main() -> None:
     args = parse_args()
-    language = args.langauge
-    
-    source_model_path=ONNX_EXPORTS_ROOT / language / ONNX_MODEL_NAME
-    source_config_path=ONNX_EXPORTS_ROOT / language / CONFIG_FILE_NAME
-    source_tokenizer_path=ONNX_EXPORTS_ROOT / language / TOKENIZER_MODEL_NAME
+    paths = build_quantization_paths(args.language)
 
-    quantized_model_path=WASM_MODELS_ROOT / language / WASM_MODEL_NAME
-    quantized_config_path=WASM_MODELS_ROOT / CONFIG_FILE_NAME
-    quantized_tokenizer_path=WASM_MODELS_ROOT / language / TOKENIZER_MODEL_NAME
+    require_file(paths.source_model_path, "Source fp32 ONNX model")
+    require_file(paths.source_config_path, "Source fp32 ONNX config")
+    require_file(paths.source_tokenizer_model_path, "Source tokenizer model")
 
-    require_file(source_model_path, "Source ONNX model")
-    require_file(source_config_path, "Source config")
-    require_file(source_tokenizer_path, "Tokenizer model")
+    paths.quantized_dir.mkdir(parents=True, exist_ok=True)
+    for stale_path in (
+        paths.quantized_model_path,
+        paths.quantized_model_external_data_path,
+        paths.quantized_config_path,
+        paths.quantized_tokenizer_model_path,
+        paths.quantized_dir / "tokenizer.vocab",
+        paths.quantized_dir / "metrics.json",
+    ):
+        if stale_path.exists():
+            stale_path.unlink()
 
-    targets = [
-        quantized_model_path,
-        quantized_config_path,
-        quantized_tokenizer_path,
-    ]
-    for target in targets:
-        if target.exists():
-            if target.is_file():
-                target.unlink()
+    source_config = json.loads(paths.source_config_path.read_text(encoding="utf8"))
 
-    source_config = json.loads(source_config_path.read_text(encoding="utf8"))
-
-
-    quantize_with_uint8(args, paths)
-
-
-    validation = validate_quantized_model(paths.quantized_model_path, source_config)
-    copy_file(source_tokenizer_model_path)
+    quantization = quantize_with_uint8(paths=paths)
+    validation = validate_quantized_model(
+        source_model_path=paths.source_model_path,
+        quantized_model_path=paths.quantized_model_path,
+        source_config=source_config,
+    )
+    copy_support_artifacts(paths=paths)
     write_quantized_config(
         paths=paths,
+        source_config=source_config,
         quantization=quantization,
         validation=validation,
     )
 
-    print(f"Language: {args.language}")
-    print(f"Source model: {paths.source_model_path}")
-    print(f"Quantized model: {paths.quantized_model_path}")
-    print(f"Quantized config: {paths.quantized_config_path}")
-    print(f"Backend: {quantization['backend']}")
-    print(f"Inputs: {', '.join(validation['inputs'])}")
-    print(f"Outputs: {', '.join(validation['outputs'])}")
-    for case in validation["cases"]:
-        print(f"Validation case {case['name']}: output_shape={case['outputShape']}")
+    print(f"language: {paths.language}")
+    print(f"source_model: {paths.source_model_path}")
+    print(f"quantized_model: {paths.quantized_model_path}")
+    print(f"tokenizer_model: {paths.quantized_tokenizer_model_path}")
+    print(f"config: {paths.quantized_config_path}")
+    print(
+        "quantization: "
+        f"algorithm={quantization['algorithm']} "
+        f"weight_type={quantization['weight_type']}"
+    )
+    print(
+        "validation: "
+        f"max_abs_diff={validation['max_abs_diff']:.8f} "
+        f"argmax_match_rate={validation['argmax_match_rate']:.6f}"
+    )
 
 
 if __name__ == "__main__":
