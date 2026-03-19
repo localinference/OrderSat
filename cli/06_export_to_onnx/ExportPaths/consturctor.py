@@ -5,7 +5,6 @@ from dataclasses import dataclass
 
 CHECKPOINT_NAME = "best.pt"
 TOKENIZER_MODEL_NAME = "tokenizer.model"
-TOKENIZER_VOCAB_NAME = "tokenizer.vocab"
 ONNX_MODEL_NAME = "model.onnx"
 CONFIG_NAME = "config.json"
 
@@ -19,12 +18,10 @@ class ExportPaths:
     language: str
     checkpoint_path: pathlib.Path
     tokenizer_model_path: pathlib.Path
-    tokenizer_vocab_path: pathlib.Path
     export_dir: pathlib.Path
     onnx_model_path: pathlib.Path
     config_path: pathlib.Path
     exported_tokenizer_model_path: pathlib.Path
-    exported_tokenizer_vocab_path: pathlib.Path
 
 
 def build_export_paths(language: str) -> ExportPaths:
@@ -33,10 +30,8 @@ def build_export_paths(language: str) -> ExportPaths:
         language=language,
         checkpoint_path=PYTORCH_MODELS_ROOT / language / CHECKPOINT_NAME,
         tokenizer_model_path=TOKENIZERS_ROOT / language / TOKENIZER_MODEL_NAME,
-        tokenizer_vocab_path=TOKENIZERS_ROOT / language / TOKENIZER_VOCAB_NAME,
         export_dir=export_dir,
         onnx_model_path=export_dir / ONNX_MODEL_NAME,
         config_path=export_dir / CONFIG_NAME,
         exported_tokenizer_model_path=export_dir / TOKENIZER_MODEL_NAME,
-        exported_tokenizer_vocab_path=export_dir / TOKENIZER_VOCAB_NAME,
     )

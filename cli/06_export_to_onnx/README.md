@@ -9,7 +9,7 @@ It is intentionally minimal in this phase:
 - load the current `best.pt`
 - rebuild the exact trained model shape
 - export one `FP32` `model.onnx`
-- validate ONNX Runtime parity against PyTorchs
+- validate ONNX Runtime parity against PyTorch
 - copy the tokenizer artifacts needed by downstream inference
 
 It does not quantize. That belongs in later modules.
@@ -22,7 +22,7 @@ Run:
 python cli/06_export_to_onnx/__main__.py --language eng --opset-version 18
 ```
 
-The entrypoint is [**main**.py](C:/Users/jorts/OrderSaT/cli/06_export_to_onnx/__main__.py).
+The entrypoint is [__main__.py](C:/Users/jorts/OrderSaT/cli/06_export_to_onnx/__main__.py).
 
 ## High-Level Flow
 
@@ -43,7 +43,6 @@ For `--language eng`, the exporter reads:
 
 - checkpoint from `src/05_pytorch_models/eng/best.pt`
 - tokenizer model from `src/03_tokenizers/eng/tokenizer.model`
-- tokenizer vocab from `src/03_tokenizers/eng/tokenizer.vocab`
 
 Those paths are resolved by `build_export_paths()`.
 
@@ -53,7 +52,6 @@ For `--language eng`, the exporter writes:
 
 - ONNX model to `src/06_FP32_export_onnx_models/eng/model.onnx`
 - tokenizer model to `src/06_FP32_export_onnx_models/eng/tokenizer.model`
-- tokenizer vocab to `src/06_FP32_export_onnx_models/eng/tokenizer.vocab`
 - export metadata to `src/06_FP32_export_onnx_models/eng/config.json`
 
 It does not intentionally produce `model.onnx.data`. This module’s rule is
@@ -67,7 +65,7 @@ single-file ONNX only.
 keeps the export contract explicit:
 
 - one source checkpoint per language
-- one tokenizer pair per language
+- one tokenizer model per language
 - one canonical ONNX export directory per language
 
 That keeps downstream modules on stable paths.

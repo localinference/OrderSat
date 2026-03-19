@@ -20,19 +20,17 @@ def write_export_bundle(
         raise SystemExit(
             f"Tokenizer model does not exist: {paths.tokenizer_model_path}"
         )
-    if not paths.tokenizer_vocab_path.exists():
-        raise SystemExit(
-            f"Tokenizer vocab does not exist: {paths.tokenizer_vocab_path}"
-        )
 
     paths.export_dir.mkdir(parents=True, exist_ok=True)
 
     legacy_metrics_path = paths.export_dir / "metrics.json"
     if legacy_metrics_path.exists():
         legacy_metrics_path.unlink()
+    legacy_tokenizer_vocab_path = paths.export_dir / "tokenizer.vocab"
+    if legacy_tokenizer_vocab_path.exists():
+        legacy_tokenizer_vocab_path.unlink()
 
     shutil.copy2(paths.tokenizer_model_path, paths.exported_tokenizer_model_path)
-    shutil.copy2(paths.tokenizer_vocab_path, paths.exported_tokenizer_vocab_path)
 
     config_payload = {
         "language": paths.language,
@@ -40,7 +38,6 @@ def write_export_bundle(
         "precision": "fp32",
         "onnx_model_filename": paths.onnx_model_path.name,
         "tokenizer_model_filename": paths.exported_tokenizer_model_path.name,
-        "tokenizer_vocab_filename": paths.exported_tokenizer_vocab_path.name,
         "source_checkpoint_path": str(paths.checkpoint_path),
         "source_metrics": checkpoint.get("metrics"),
         "model_config": asdict(model_config),

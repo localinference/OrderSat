@@ -43,7 +43,6 @@ def main() -> None:
     print(f"checkpoint: {paths.checkpoint_path}")
     print(f"onnx_model: {paths.onnx_model_path}")
     print(f"tokenizer_model: {paths.exported_tokenizer_model_path}")
-    print(f"tokenizer_vocab: {paths.exported_tokenizer_vocab_path}")
     print(f"config: {paths.config_path}")
     print(
         "validation: "
