@@ -2,7 +2,7 @@
 
 This module converts the canonical `FP32` ONNX export from
 `src/06_FP32_export_onnx_models/{language}` into a WASM-targeted `uint8`
-quantized ONNX build under `src/08_INT8_cpu_onnx_models/{language}`.
+quantized ONNX build under `src/08_uint8_cpu_onnx_models/{language}`.
 
 It is intentionally focused on the browser CPU/WASM deployment case:
 
@@ -46,9 +46,9 @@ For `--language eng`, the optimizer reads:
 
 For `--language eng`, the optimizer writes:
 
-- quantized ONNX model to `src/08_INT8_cpu_onnx_models/eng/model.uint8.onnx`
-- tokenizer model to `src/08_INT8_cpu_onnx_models/eng/tokenizer.model`
-- quantized build config to `src/08_INT8_cpu_onnx_models/eng/config.json`
+- quantized ONNX model to `src/08_uint8_cpu_onnx_models/eng/model.uint8.onnx`
+- tokenizer model to `src/08_uint8_cpu_onnx_models/eng/tokenizer.model`
+- quantized build config to `src/08_uint8_cpu_onnx_models/eng/config.json`
 
 It does not intentionally produce `model.uint8.onnx.data`. This module’s rule
 is single-file ONNX only.

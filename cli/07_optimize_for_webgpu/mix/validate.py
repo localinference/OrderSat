@@ -113,14 +113,39 @@ def validate_quantized_model(
 
 
 def build_validation_cases(source_config: dict) -> list[dict[str, int | str]]:
+    model_config = source_config.get("model_config") or {}
     reference_validation = source_config.get("validation") or {}
-    return [
+
+    max_source_positions = int(model_config.get("max_source_positions", 8))
+    max_target_positions = int(model_config.get("max_target_positions", 8))
+
+    candidates = [
+        {
+            "name": "tiny",
+            "source_length": min(2, max_source_positions),
+            "target_length": min(2, max_target_positions),
+        },
         {
             "name": "reference",
             "source_length": int(reference_validation.get("source_length", 8)),
             "target_length": int(reference_validation.get("target_length", 8)),
-        }
+        },
+        {
+            "name": "medium",
+            "source_length": min(32, max_source_positions),
+            "target_length": min(32, max_target_positions),
+        },
     ]
+
+    unique_cases: list[dict[str, int | str]] = []
+    seen_shapes: set[tuple[int, int]] = set()
+    for case in candidates:
+        shape = (int(case["source_length"]), int(case["target_length"]))
+        if shape in seen_shapes:
+            continue
+        seen_shapes.add(shape)
+        unique_cases.append(case)
+    return unique_cases
 
 
 def build_validation_inputs(
