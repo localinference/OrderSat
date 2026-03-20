@@ -1,56 +1,42 @@
 {
-  "name": "@z-base/package-name",
+  "name": "@localinference/order-sat",
+  "type": "module",
   "version": "0.0.0",
   "description": "",
   "keywords": [
     "typescript",
-    "z-base"
+    "localinference"
   ],
   "license": "Apache-2.0",
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
     },
     "./package.json": "./package.json"
   },
+  "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/<entity>/<package-name>.git"
+    "url": "git+https://github.com/localinference/OrderSaT.git"
   },
   "bugs": {
-    "url": "https://github.com/<entity>/<package-name>/issues"
+    "url": "https://github.com/localinference/OrderSaT/issues"
   },
-  "homepage": "https://z-base.github.io/<package-name>",
+  "homepage": "https://localinference.org",
   "files": [
     "dist",
     "LICENSE",
     "README.md"
   ],
   "scripts": {
-    "countSamples": "node models/scripts/.helpers/get-outputs-sample-count.mjs",
-    "download:receipt-images": "node models/scripts/data/download-receipt-images.mjs",
-    "download:receipt-pdfs": "node models/scripts/data/download-receipt-pdfs.mjs",
-    "download:receipt-texts": "node models/scripts/data/download-receipt-texts.mjs",
-    "download:receipts": "npm run download:receipt-images && npm run download:receipt-pdfs && npm run download:receipt-texts",
-    "extract:receipt-images": "node models/scripts/data/extract-inputs-from-receipt-images.mjs",
-    "extract:receipt-pdfs": "node models/scripts/data/extract-inputs-from-receipt-pdfs.mjs",
-    "extract:receipt-texts": "node models/scripts/data/extract-inputs-from-receipt-texts.mjs",
-    "extract:inputs": "node models/scripts/data/extract-inputs.mjs",
-    "corpus:build": "node models/scripts/data/transform-samples-to-corpus.mjs",
-    "tokenizer:train": "python models/scripts/data/train_tokenizer_vocabs.py",
-    "dataset:build": "node models/scripts/data/transform-corpus-to-tokenized-dataset.mjs",
-    "train:overfit": "python models/scripts/overfit/train_seq2seq_overfit.py",
-    "export:onnx": "python models/scripts/production/export_best_model_to_onnx.py",
-    "quantize:onnx": "python models/scripts/production/quantize_onnx_models_to_4bit.py",
-    "pipeline:data": "node models/scripts/data/run-pipeline.mjs",
-    "pipeline:overfit": "python models/scripts/overfit/train_seq2seq_overfit.py",
-    "pipeline:production": "node models/scripts/production/run-pipeline.mjs",
     "format": "prettier . --write",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsup",
     "test": "npm run build && node test/run-coverage.mjs && node test/e2e/run.mjs",
     "bench": "npm run build && node benchmark/bench.js",
     "prepare": "husky",
@@ -68,9 +54,8 @@
       "playwright.config.ts"
     ]
   },
-  "sideEffects": false,
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
