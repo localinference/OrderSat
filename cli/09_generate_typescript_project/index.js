@@ -20,17 +20,19 @@ async function getLanguages() {
 }
 
 async function writeEntrypoint(outRoot, languages) {
-  let file = ``
-  const t0 = performance.now()
   const outPath = `${outRoot}/${'index.ts'}`
-  for (const language of languages) {
-    file += `export { tokenizer${language.toUpperCase()}, gpuModel${language.toUpperCase()}, cpuModel${language.toUpperCase()}, modelInfo${language.toUpperCase()} } from './models/${language}/index.js'`
-  }
-  await mkdir(dirname(outRoot), { recursive: true })
+  const file = languages
+    .map(
+      (language) =>
+        `export { tokenizer${language.toUpperCase()}, gpuModel${language.toUpperCase()}, cpuModel${language.toUpperCase()}, modelInfo${language.toUpperCase()} } from './models/${language}/index.js'`
+    )
+    .join('\n')
+  await mkdir(outRoot, { recursive: true })
   await writeFile(outPath, file)
 }
 
 async function main() {
+  const t0 = performance.now()
   const languages = await getLanguages()
   for (const language of languages) {
     const tokenizerPath = `${modelRoot}/${language}/tokenizer.model`
@@ -90,7 +92,7 @@ async function main() {
   }
   await writeEntrypoint(outRoot, languages)
   console.log(
-    `Generated typescript project in ${(performance.now() - t0) / 1000} seconds.`
+    `Generated typescript project in ${Math.round((performance.now() - t0) / 1000)} seconds.`
   )
 }
 
