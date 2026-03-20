@@ -1,6 +1,10 @@
 import { join } from 'path'
 import { cleanText } from '@sctg/sentencepiece-js'
-import { toBase64UrlString, toString, fromString } from '@z-base/bytecodec'
+import {
+  toBase64UrlString,
+  toString,
+  fromString,
+} from '@sovereignbase/bytecodec'
 import { ensurePath } from '../utils/ensurePath/index.js'
 import { writeFile } from 'fs/promises'
 import { outputRoot } from '../index.js'

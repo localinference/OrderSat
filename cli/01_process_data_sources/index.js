@@ -6,7 +6,7 @@ import { tmpdir } from 'os'
 import { join, extname } from 'path'
 import fs from 'fs/promises'
 import { WASMagic } from 'wasmagic'
-import { fromString } from '@z-base/bytecodec'
+import { fromString } from '@sovereignbase/bytecodec'
 import { writeUniqueToDest } from './writeUniqueToDest/index.js'
 import { cliui } from '@poppinss/cliui'
 import {

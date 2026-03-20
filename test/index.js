@@ -1,13 +1,16 @@
 import * as ort from 'onnxruntime-web'
 import { cleanText } from '@sctg/sentencepiece-js'
-import { createInferenceSession, createTokenProcessor } from '../dist/index.js'
+import {
+  createTokenizer,
+  createInferenceSession,
+  GPUAccelerationSupported,
+} from '@localinference/utils'
+import { tokenizerENG, cpuModelENG, gpuModelENG } from '../dist/index.js'
 
-const MAX_INPUT_LENGTH = 256
-const MAX_GENERATION_LENGTH = 513
 const BOS_TOKEN_ID = 1
 const EOS_TOKEN_ID = 2
 
-const input = cleanText(`- 3
+const sample = `- 3
 y TRADER JOE'S
 2001 Greenville Ave
 Dallas TX 75206
@@ -43,7 +46,9 @@ ITEMS 22 Higgins, Ryan
 THANK YOU FOR SHOPPING AT
 TRADER JOE'S
 www. trader joes .com
-`)
+`
+
+const input = cleanText(sample.normalize('NFKC'))
 
 function toInt64Tensor(values, dims) {
   return new ort.Tensor('int64', BigInt64Array.from(values, BigInt), dims)
@@ -71,14 +76,20 @@ function getNextTokenId(logits) {
   return argmax(stepLogits)
 }
 
-const tokenizer = await createTokenProcessor()
-const session = await createInferenceSession()
+const tokenizer = await createTokenizer(await tokenizerENG())
+const session = await createInferenceSession(
+  await (
+    GPUAccelerationSupported()
+      ? async () => await gpuModelENG()
+      : async () => await cpuModelENG()
+  )()
+)
 
-const tokenIds = tokenizer.encodeIds(input).slice(0, MAX_INPUT_LENGTH)
+const tokenIds = tokenizer.encodeIds(input)
 const attentionMask = tokenIds.map(() => 1)
 const decoderTokenIds = [BOS_TOKEN_ID]
 
-for (let step = 0; step < MAX_GENERATION_LENGTH; step += 1) {
+while (true) {
   const outputs = await session.run({
     input_ids: toInt64Tensor(tokenIds, [1, tokenIds.length]),
     attention_mask: toInt64Tensor(attentionMask, [1, attentionMask.length]),
