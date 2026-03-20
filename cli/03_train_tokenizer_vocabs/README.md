@@ -16,7 +16,7 @@ Run:
 python cli/03_train_tokenizer_vocabs/__main__.py --language eng
 ```
 
-The entrypoint is [__main__.py](C:/Users/jorts/OrderSaT/cli/03_train_tokenizer_vocabs/__main__.py).
+The entrypoint is [**main**.py](C:/Users/jorts/OrderSaT/cli/03_train_tokenizer_vocabs/__main__.py).
 
 ## High-Level Flow
 
@@ -55,7 +55,7 @@ It does not permanently keep the temporary prepared training text file.
 The raw `corpus.jsonl` rows are storage records shaped like:
 
 ```json
-{"input":"...","output":"..."}
+{ "input": "...", "output": "..." }
 ```
 
 That wrapper is not the actual text stream the model later tokenizes.

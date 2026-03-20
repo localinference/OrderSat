@@ -21,7 +21,7 @@ Run all discovered formats in parallel:
 python cli/05_train_pytorch_model/__main__.py --language eng --format all --device auto --checkpoint-mode auto
 ```
 
-The entrypoint is [__main__.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
+The entrypoint is [**main**.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
 
 ## High-Level Flow
 
@@ -31,7 +31,7 @@ The trainer does this, in this order:
 2. If `--format all` is requested, discover the available format names in [discover.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/formats/discover.py).
 3. If multiple formats are discovered and `--sequential-formats` is not set, launch one child training process per format through [run_formats.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/orchestration/run_formats.py).
 4. For each concrete `{language, format}` run, set reproducible seeds in [set.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/seed/set.py).
-5. Resolve tokenizer, dataset, stats, and save paths in [__main__.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
+5. Resolve tokenizer, dataset, stats, and save paths in [**main**.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
 6. Read dataset stats from [parse.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/stats/parse.py).
 7. Detect environment and device capability in [capabilities.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/device/capabilities.py).
 8. Build the adaptive training config in [build.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/config/build.py).
@@ -39,9 +39,9 @@ The trainer does this, in this order:
 10. Index tokenized train and validation datasets from [constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/TokenizedJsonlDataset/constructor.py).
 11. Resolve effective sequence lengths in [get_effective_lenght.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/sequence/get_effective_lenght.py).
 12. Build the collator in [constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/Seq2SeqCollator/constructor.py).
-13. Build token-budgeted, length-bucketed train, train-audit, and validation loaders in [__main__.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
+13. Build token-budgeted, length-bucketed train, train-audit, and validation loaders in [**main**.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
 14. Build the model in [constructor.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/Seq2SeqTransformer/constructor.py).
-15. Build the optimizer in [__main__.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
+15. Build the optimizer in [**main**.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/__main__.py).
 16. Resolve checkpoint reuse policy in [load.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/checkpoint/load.py).
 17. Train epoch-by-epoch with [train.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/epoch/train.py).
 18. Evaluate validation loss every epoch with [evaluate.py](C:/Users/jorts/OrderSaT/cli/05_train_pytorch_model/loss/evaluate.py).

@@ -16,7 +16,7 @@ Run:
 python cli/06_export_to_onnx/__main__.py --language eng --opset-version 18
 ```
 
-The entrypoint is [__main__.py](C:/Users/jorts/OrderSaT/cli/06_export_to_onnx/__main__.py).
+The entrypoint is [**main**.py](C:/Users/jorts/OrderSaT/cli/06_export_to_onnx/__main__.py).
 
 ## High-Level Flow
 

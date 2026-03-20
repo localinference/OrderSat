@@ -96,7 +96,9 @@ async function main() {
     console.log(`Samples: ${tokenizedSamples.length}`)
     console.log(`Train: ${train.length}`)
     console.log(`Validation: ${validation.length}`)
-    console.log(`Validation ratio: ${validationPlan.validationRatio.toFixed(4)}`)
+    console.log(
+      `Validation ratio: ${validationPlan.validationRatio.toFixed(4)}`
+    )
     console.log(`Validation range: ${validationPlan.range}`)
     console.log(`Input max length: ${stats.inputLengths.max}`)
     console.log(`Label max length: ${stats.labelLengths.max}`)
