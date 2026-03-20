@@ -1,7 +1,7 @@
 # WebGPU Optimizer Walkthrough
 
 This module converts the canonical `FP32` ONNX export from
-`src/06_FP32_export_onnx_models/{language}` into a WebGPU-targeted
+`src/06_fp32_export_onnx_models/{language}` into a WebGPU-targeted
 `mixed-fp16` ONNX build under `src/07_mixed-fp16_gpu_onnx_models/{language}`.
 
 It is intentionally focused on the browser GPU/WebGPU deployment case:
@@ -30,7 +30,7 @@ The optimizer does this, in this order:
 2. Resolve source and destination paths in [consturctor.py](C:/Users/jorts/OrderSaT/cli/07_optimize_for_webgpu/MixedPaths/consturctor.py).
 3. Require the source FP32 ONNX model, source export config, and tokenizer model in [require.py](C:/Users/jorts/OrderSaT/cli/07_optimize_for_webgpu/file/require.py).
 4. Convert the FP32 model to mixed-fp16 in [fp16.py](C:/Users/jorts/OrderSaT/cli/07_optimize_for_webgpu/mix/fp16.py).
-5. Validate the mixed model against the FP32 source ONNX in [validate.py](C:/Users/jorts/OrderSaT/cli/07_optimize_for_webgpu/mix/validate.py).
+5. Validate the mixed model against the FP32 source ONNX in [validate.py](C:/Users/jorts/OrderSaT/cli/07_optimize_for_webgpu/mix/validate.py), reusing the full `06` validation case set when available.
 6. Copy the tokenizer model in [copy.py](C:/Users/jorts/OrderSaT/cli/07_optimize_for_webgpu/file/copy.py).
 7. Write the mixed build metadata in [write.py](C:/Users/jorts/OrderSaT/cli/07_optimize_for_webgpu/mix/write.py).
 
@@ -38,9 +38,9 @@ The optimizer does this, in this order:
 
 For `--language eng`, the optimizer reads:
 
-- FP32 ONNX model from `src/06_FP32_export_onnx_models/eng/model.onnx`
-- FP32 export config from `src/06_FP32_export_onnx_models/eng/config.json`
-- tokenizer model from `src/06_FP32_export_onnx_models/eng/tokenizer.model`
+- FP32 ONNX model from `src/06_fp32_export_onnx_models/eng/model.onnx`
+- FP32 export config from `src/06_fp32_export_onnx_models/eng/config.json`
+- tokenizer model from `src/06_fp32_export_onnx_models/eng/tokenizer.model`
 
 ## What It Writes
 
@@ -52,6 +52,10 @@ For `--language eng`, the optimizer writes:
 
 It does not intentionally produce `model.mixed-fp16.onnx.data`. This module’s
 rule is single-file ONNX only.
+
+When `06` provides `validation.cases`, this module validates the mixed model on
+that same case list instead of only a single short reference case. That keeps
+`07` aligned with the current dynamic-shape export contract.
 
 ## Design Intent
 
