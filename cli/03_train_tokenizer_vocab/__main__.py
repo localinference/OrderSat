@@ -4,6 +4,7 @@ import pathlib
 import sentencepiece
 
 from args.parse import parse_args
+from corpus.prepare import prepare_corpus
 
 from kwargs.build import build_kwargs
 
@@ -18,15 +19,22 @@ MODEL_PREFIX = "tokenizer"
 def main() -> None:
     args = parse_args()
     language_dir = TOKENIZERS_DIR / args.language
-    input_path = language_dir / CORPUS_NAME
+    source_corpus_path = language_dir / CORPUS_NAME
     output_path = language_dir / MODEL_PREFIX
 
-    trainer_kwargs = build_kwargs(input_path, output_path, args)
+    prepared_corpus = prepare_corpus(source_corpus_path, language_dir)
+    trainer_kwargs = build_kwargs(prepared_corpus.prepared_path, output_path, args)
 
-    sentencepiece.SentencePieceTrainer.train(**trainer_kwargs)
+    try:
+        sentencepiece.SentencePieceTrainer.train(**trainer_kwargs)
+    finally:
+        if prepared_corpus.prepared_path.exists():
+            prepared_corpus.prepared_path.unlink()
 
     print(f"Trained tokenizer for language: {args.language}")
-    print(f"Corpus: {input_path}")
+    print(f"Corpus source: {source_corpus_path}")
+    print(f"Prepared texts: {prepared_corpus.text_count}")
+    print(f"Prepared samples: {prepared_corpus.sample_count}")
     print(f"Model: {output_path}.model")
     print(f"Vocab: {output_path}.vocab")
 

@@ -63,4 +63,7 @@ await writeFile(outPath, ts, 'utf8')
 }
 }
 
-maing().catch(err => console.error(err))
+main().catch((error) => {
+  console.error(error)
+  process.exit(1)
+})

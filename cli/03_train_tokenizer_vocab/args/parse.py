@@ -3,7 +3,8 @@ import argparse
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Train a SentencePiece tokenizer for one language corpus under "
+            "Train a SentencePiece tokenizer from the real model-side input "
+            "and output strings extracted from "
             "src/03_tokenizers/{lang}/corpus.jsonl."
         )
     )
