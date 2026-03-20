@@ -5,6 +5,10 @@ function resolveValidationCount(total, options) {
     return Math.min(total - 1, options.validationCount)
   }
 
+  if (options.validationRatio === null) {
+    throw new Error('validationRatio or validationCount must be provided')
+  }
+
   const derived = Math.round(total * options.validationRatio)
   return Math.min(total - 1, Math.max(1, derived))
 }

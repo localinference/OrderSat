@@ -12,6 +12,7 @@ import { readTokenizerFormats } from './readTokenizerFormats/index.js'
 import { splitSamples } from './splitSamples/index.js'
 import { loadTokenizer } from './loadTokenizer/index.js'
 import { writeJsonl } from './writeJsonl/index.js'
+import { resolveValidationPlan } from './adjustValidationRatio/index.js'
 
 const { languages } = getArgs()
 
@@ -20,7 +21,7 @@ const DEFAULT_OPTIONS = {
   tokenizers: 'src/03_tokenizers',
   datasets: 'src/04_training_datasets',
   corpusName: 'corpus.jsonl',
-  validationRatio: 0.25,
+  validationRatio: null,
   validationCount: null,
 }
 
@@ -50,7 +51,13 @@ async function main() {
       return tokenizeSample(processor, parsed, lineNumber)
     })
 
-    const { train, validation } = splitSamples(tokenizedSamples, options)
+    const validationPlan = resolveValidationPlan(tokenizedSamples.length)
+    const splitOptions = {
+      ...options,
+      validationCount: validationPlan.validationCount,
+      validationRatio: validationPlan.validationRatio,
+    }
+    const { train, validation } = splitSamples(tokenizedSamples, splitOptions)
     const outputRoot = path.join(
       datasetsRoot,
       options.language,
@@ -64,6 +71,8 @@ async function main() {
       sampleCount: tokenizedSamples.length,
       trainCount: train.length,
       validationCount: validation.length,
+      validationRatio: validationPlan.validationRatio,
+      validationRange: validationPlan.range,
       inputLengths: summarizeLengths(
         tokenizedSamples.map((sample) => sample.input_length)
       ),
@@ -87,6 +96,8 @@ async function main() {
     console.log(`Samples: ${tokenizedSamples.length}`)
     console.log(`Train: ${train.length}`)
     console.log(`Validation: ${validation.length}`)
+    console.log(`Validation ratio: ${validationPlan.validationRatio.toFixed(4)}`)
+    console.log(`Validation range: ${validationPlan.range}`)
     console.log(`Input max length: ${stats.inputLengths.max}`)
     console.log(`Label max length: ${stats.labelLengths.max}`)
   }
