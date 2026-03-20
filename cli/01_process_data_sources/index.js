@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { getArgs } from './utils/getArgs/index.js'
+import { getArgs } from '../utils/getArgs/index.js'
 import FastGlob from 'fast-glob'
 import { tmpdir } from 'os'
-import { join, extname } from 'path'
+import { join } from 'path'
 import fs from 'fs/promises'
 import { WASMagic } from 'wasmagic'
 import { fromString } from '@sovereignbase/bytecodec'
@@ -14,7 +14,7 @@ import {
   closeWorkerPool,
   runWithWorker,
 } from './runWithWorker/index.js'
-import { getGlobLength } from './utils/getGlobLength/index.js'
+import { getGlobLength } from '../utils/getGlobLength/index.js'
 
 const t0 = performance.now()
 const ui = cliui()
@@ -212,11 +212,7 @@ function getArchiveTempPath(tempRoot, language, route) {
     ? route.slice(languagePrefix.length)
     : route
 
-  return join(
-    tempRoot,
-    language,
-    relativeRoute.slice(0, -extname(relativeRoute).length)
-  )
+  return join(tempRoot, language, stripArchiveExtension(relativeRoute))
 }
 
 function getArchiveSourceGlobs(language) {
@@ -292,24 +288,51 @@ async function processExtractedFile({ file, filePath, language, magic }) {
             })
           )
         )
-      ).join('')
+      ).join('\n\n')
 
       await writeUniqueToDest(fromString(text), language)
       return
     }
 
-    if (
-      mime.includes('text') ||
-      (mime.includes('application') && !mime.includes('pdf'))
-    ) {
+    if (isTextLikeMime(mime)) {
       console.log(
         `[CLI] Writing text-like file "${file}" directly for language "${language}".\n`
       )
       await writeUniqueToDest(buffer, language)
+      return
     }
+
+    console.log(
+      `[CLI] Skipping "${file}" for language "${language}" because mime "${mime}" is not supported for direct text extraction.\n`
+    )
   } catch (err) {
     console.log(
       `[CLI] Failed while processing "${file}" for language "${language}", because of "${err}".\n\n\n`
     )
   }
+}
+
+function stripArchiveExtension(path) {
+  const normalizedPath = path.replaceAll('\\', '/')
+  const matchingExtension = [...supportedArchiveExtensions]
+    .sort((a, b) => b.length - a.length)
+    .find((extension) => normalizedPath.endsWith(extension))
+
+  if (!matchingExtension) {
+    return path
+  }
+
+  return path.slice(0, -matchingExtension.length)
+}
+
+function isTextLikeMime(mime) {
+  return (
+    mime.startsWith('text/') ||
+    mime === 'application/json' ||
+    mime === 'application/ld+json' ||
+    mime === 'application/xml' ||
+    mime === 'application/x-ndjson' ||
+    mime.endsWith('+json') ||
+    mime.endsWith('+xml')
+  )
 }

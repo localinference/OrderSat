@@ -5,12 +5,19 @@ import {
   toString,
   fromString,
 } from '@sovereignbase/bytecodec'
-import { ensurePath } from '../utils/ensurePath/index.js'
+import { ensurePath } from '../../utils/ensurePath/index.js'
 import { writeFile } from 'fs/promises'
 import { outputRoot } from '../index.js'
 
 export async function writeUniqueToDest(textBuffer, language) {
   const cleanedString = cleanText(toString(textBuffer).normalize('NFKC'))
+
+  if (cleanedString.trim().length === 0) {
+    console.log(
+      `[Output] Skipping empty cleaned output for language "${language}".\n`
+    )
+    return
+  }
 
   const digest = await crypto.subtle.digest(
     'SHA-384',
