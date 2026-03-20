@@ -5,7 +5,7 @@ import {
   createInferenceSession,
   GPUAccelerationSupported,
 } from '@localinference/utils'
-import { tokenizerENG, cpuModelENG, gpuModelENG } from '../dist/index.js'
+import { tokenizerENG, cpuModelENG, gpuModelENG, model } from '../dist/index.js'
 
 const BOS_TOKEN_ID = 1
 const EOS_TOKEN_ID = 2

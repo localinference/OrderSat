@@ -23,7 +23,7 @@ async function writeEntrypoint(outRoot, languages) {
   let file = ``
   const outPath = `${outRoot}/${'index.ts'}`
   for (const language of languages) {
-    file += `export { tokenizer${language.toUpperCase()}, gpuModel${language.toUpperCase()}, cpuModel${language.toUpperCase()} } from './models/${language}/index.js'`
+    file += `export { tokenizer${language.toUpperCase()}, gpuModel${language.toUpperCase()}, cpuModel${language.toUpperCase()}, modelInfo${language.toUpperCase()} } from './models/${language}/index.js'`
   }
   await mkdir(dirname(outRoot), { recursive: true })
   await writeFile(outPath, file)

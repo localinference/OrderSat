@@ -1,1 +1,1 @@
-export { tokenizerENG, gpuModelENG, cpuModelENG } from './models/eng/index.js'
+export { tokenizerENG, gpuModelENG, cpuModelENG, modelInfoENG } from './models/eng/index.js'
