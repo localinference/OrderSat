@@ -21,11 +21,14 @@ class LengthStats:
 @dataclass(frozen=True)
 class DatasetStats:
     language: str | None
+    format: str | None
     corpus_path: str | None
     model_path: str | None
     sample_count: int
     train_count: int
     validation_count: int
+    validation_ratio: float | None
+    validation_range: str | None
     input_lengths: LengthStats
     label_lengths: LengthStats
 
@@ -154,11 +157,22 @@ def parse_stats(path: pathlib.Path) -> DatasetStats:
 
     stats = DatasetStats(
         language=parsed.get("language"),
+        format=parsed.get("format"),
         corpus_path=parsed.get("corpusPath"),
         model_path=parsed.get("modelPath"),
         sample_count=sample_count,
         train_count=train_count,
         validation_count=validation_count,
+        validation_ratio=(
+            float(parsed["validationRatio"])
+            if isinstance(parsed.get("validationRatio"), (int, float))
+            else None
+        ),
+        validation_range=(
+            parsed["validationRange"]
+            if isinstance(parsed.get("validationRange"), str)
+            else None
+        ),
         input_lengths=input_lengths,
         label_lengths=label_lengths,
     )

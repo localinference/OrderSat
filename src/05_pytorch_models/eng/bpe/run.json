@@ -1,0 +1,153 @@
+{
+  "static_config": {
+    "seed": 7,
+    "log_frequency": 1,
+    "pad_id": 8192,
+    "bos_id": 1,
+    "eos_id": 2,
+    "label_pad_id": -100,
+    "grad_clip": 1.0
+  },
+  "checkpoint_policy": {
+    "requested_mode": "fresh",
+    "applied_mode": "fresh",
+    "checkpoint_path": "src\\05_pytorch_models\\eng\\bpe\\best.pt"
+  },
+  "model_signature": {
+    "language": "eng",
+    "vocab_size": 8192,
+    "pad_id": 8192,
+    "bos_id": 1,
+    "eos_id": 2,
+    "label_pad_id": -100,
+    "d_model": 128,
+    "attention_heads": 4,
+    "encoder_layers": 2,
+    "decoder_layers": 2,
+    "ff_dimension": 512,
+    "max_source_positions": 229,
+    "max_target_positions": 807
+  },
+  "run_paths": {
+    "language": "eng",
+    "format": "bpe",
+    "vocab_path": "src\\03_tokenizers\\eng\\bpe\\tokenizer.vocab",
+    "training_dataset_path": "src\\04_training_datasets\\eng\\bpe\\train.jsonl",
+    "validation_dataset_path": "src\\04_training_datasets\\eng\\bpe\\validation.jsonl",
+    "dataset_stats_path": "src\\04_training_datasets\\eng\\bpe\\stats.json",
+    "save_dir": "src\\05_pytorch_models\\eng\\bpe"
+  },
+  "dataset_stats": {
+    "language": "eng",
+    "format": "bpe",
+    "corpus_path": "C:\\Users\\jorts\\OrderSaT\\src\\03_tokenizers\\eng\\corpus.jsonl",
+    "model_path": "C:\\Users\\jorts\\OrderSaT\\src\\03_tokenizers\\eng\\bpe\\tokenizer.model",
+    "sample_count": 100,
+    "train_count": 75,
+    "validation_count": 25,
+    "validation_ratio": 0.25,
+    "validation_range": "extra_small",
+    "input_lengths": {
+      "count": 100,
+      "min": 20,
+      "max": 229,
+      "avg": 128.95,
+      "p50": 126,
+      "p95": 210
+    },
+    "label_lengths": {
+      "count": 100,
+      "min": 80,
+      "max": 806,
+      "avg": 365.32,
+      "p50": 337,
+      "p95": 575
+    }
+  },
+  "device_capabilities": {
+    "requested_device": "auto",
+    "resolved_device": "cpu",
+    "accelerator_name": "CPU",
+    "accelerator_memory_bytes": null,
+    "accelerator_memory_gb": null,
+    "system_memory_bytes": 8428695552,
+    "system_memory_gb": 7.849834442138672,
+    "cpu_count": 8,
+    "supports_fp16": false,
+    "supports_bf16": false,
+    "pin_memory": false,
+    "memory_scale": 0.9905701919941534,
+    "throughput_scale": 1.0,
+    "device_scale": 0.9905701919941534,
+    "recommended_num_workers": 7
+  },
+  "training_config": {
+    "data_scale": 0.5,
+    "device_scale": 0.9905701919941534,
+    "capacity_scale": 0.5,
+    "d_model": 128,
+    "attention_heads": 4,
+    "encoder_layers": 2,
+    "decoder_layers": 2,
+    "ff_dimension": 512,
+    "dropout": 0.2,
+    "average_sequence_tokens": 480,
+    "target_effective_batch_size": 16,
+    "estimated_examples_per_batch": 1,
+    "max_batch_size": 4,
+    "target_tokens_per_batch": 512,
+    "target_tokens_per_optimizer_step": 7680,
+    "accumulation_steps": 16,
+    "achieved_effective_batch_size": 16,
+    "num_workers": 0,
+    "pin_memory": false,
+    "persistent_workers": false,
+    "learning_rate": 0.000282842712474619,
+    "weight_decay": 0.0004,
+    "epochs": 100,
+    "early_stopping_patience": 16,
+    "early_stopping_min_delta": 5e-05,
+    "validation_exact_match_frequency": 1,
+    "run_train_exact_match_at_end": true
+  },
+  "sequence_lengths": {
+    "max_input_length": 229,
+    "max_label_length": 806,
+    "max_source_positions": 229,
+    "max_target_positions": 807
+  },
+  "parameter_count": 3163776,
+  "runtime_state": {
+    "latest_epoch_completed": 2,
+    "best_validation_loss": 7.636598248732717,
+    "epochs_without_improvement": 0,
+    "latest_metrics": {
+      "epoch": 2,
+      "train_loss": 8.075331343353056,
+      "validation_loss": 7.636598248732717,
+      "validation_exact_match": 0.0,
+      "train_duration_seconds": 34.92935330001637,
+      "validation_duration_seconds": 2.4214614999946207,
+      "exact_match_duration_seconds": 0.5092714999918826,
+      "validation_exact_match_ran": true,
+      "checkpoint_mode": "fresh",
+      "optimizer_steps": 5,
+      "train_token_count": 26657,
+      "validation_token_count": 9975
+    },
+    "best_metrics": {
+      "epoch": 2,
+      "train_loss": 8.075331343353056,
+      "validation_loss": 7.636598248732717,
+      "validation_exact_match": 0.0,
+      "train_duration_seconds": 34.92935330001637,
+      "validation_duration_seconds": 2.4214614999946207,
+      "exact_match_duration_seconds": 0.5092714999918826,
+      "validation_exact_match_ran": true,
+      "checkpoint_mode": "fresh",
+      "optimizer_steps": 5,
+      "train_token_count": 26657,
+      "validation_token_count": 9975
+    }
+  }
+}

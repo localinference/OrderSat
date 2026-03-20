@@ -21,6 +21,16 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "-F",
+        "--format",
+        type=str,
+        default="all",
+        help=(
+            "Tokenizer/dataset format to train, for example: bpe or unigram. "
+            "Use 'all' to train every discovered format."
+        ),
+    )
+    parser.add_argument(
         "--device",
         type=str,
         default="auto",
@@ -37,11 +47,21 @@ def parse_args() -> argparse.Namespace:
             "weights, and resume restores optimizer and runtime state."
         ),
     )
+    parser.add_argument(
+        "--sequential-formats",
+        action="store_true",
+        help=(
+            "When --format all is used, train formats one after another instead "
+            "of launching them in parallel."
+        ),
+    )
     args = parser.parse_args()
     log_event(
         "args.parsed",
         language=args.language,
+        format=args.format,
         requested_device=args.device,
         checkpoint_mode=args.checkpoint_mode,
+        sequential_formats=args.sequential_formats,
     )
     return args

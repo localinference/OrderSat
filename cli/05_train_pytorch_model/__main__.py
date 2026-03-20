@@ -19,8 +19,10 @@ from config.build import build_training_config
 from device.build import build_device
 from device.capabilities import get_device_capabilities
 from epoch.train import train_epoch
+from formats.discover import discover_available_formats
 from loss.evaluate import evaluate_loss
 from match.compute import compute_exact_match
+from orchestration.run_formats import run_formats_in_parallel
 from parameters.count import count_parameters
 from reporting.log import (
     log_adjusted_options,
@@ -60,6 +62,7 @@ GRAD_CLIP = 1.0
 @dataclass(frozen=True)
 class RunPaths:
     language: str
+    format: str
     vocab_path: pathlib.Path
     training_dataset_path: pathlib.Path
     validation_dataset_path: pathlib.Path
@@ -69,6 +72,7 @@ class RunPaths:
     def to_dict(self) -> dict:
         return {
             "language": self.language,
+            "format": self.format,
             "vocab_path": str(self.vocab_path),
             "training_dataset_path": str(self.training_dataset_path),
             "validation_dataset_path": str(self.validation_dataset_path),
@@ -77,14 +81,15 @@ class RunPaths:
         }
 
 
-def build_run_paths(language: str) -> RunPaths:
+def build_run_paths(language: str, format_name: str) -> RunPaths:
     return RunPaths(
         language=language,
-        vocab_path=TOKENIZERS_ROOT / language / TOKENIZER_VOCAB_FILE,
-        training_dataset_path=DATASETS_ROOT / language / TRAINING_DATA_FILE,
-        validation_dataset_path=DATASETS_ROOT / language / VALIDATION_DATA_FILE,
-        dataset_stats_path=DATASETS_ROOT / language / STATS_FILE,
-        save_dir=PYTORCH_MODELS_ROOT / language,
+        format=format_name,
+        vocab_path=TOKENIZERS_ROOT / language / format_name / TOKENIZER_VOCAB_FILE,
+        training_dataset_path=DATASETS_ROOT / language / format_name / TRAINING_DATA_FILE,
+        validation_dataset_path=DATASETS_ROOT / language / format_name / VALIDATION_DATA_FILE,
+        dataset_stats_path=DATASETS_ROOT / language / format_name / STATS_FILE,
+        save_dir=PYTORCH_MODELS_ROOT / language / format_name,
     )
 
 
@@ -192,15 +197,21 @@ def checkpoint_score_from_metrics(metrics: dict | None):
     )
 
 
-def main() -> None:
+def train_format(
+    *,
+    language: str,
+    format_name: str,
+    requested_device: str,
+    checkpoint_mode: str,
+) -> None:
     run_started_at = time.perf_counter()
-    args = parse_args()
     set_seed(SEED)
 
-    run_paths = build_run_paths(args.language)
+    run_paths = build_run_paths(language, format_name)
     log_event(
         "run.paths.resolved",
         language=run_paths.language,
+        format=run_paths.format,
         vocab_path=str(run_paths.vocab_path),
         training_dataset_path=str(run_paths.training_dataset_path),
         validation_dataset_path=str(run_paths.validation_dataset_path),
@@ -209,7 +220,7 @@ def main() -> None:
     )
 
     dataset_stats = parse_stats(run_paths.dataset_stats_path)
-    device_capabilities = get_device_capabilities(args.device)
+    device_capabilities = get_device_capabilities(requested_device)
     training_config = build_training_config(
         dataset_stats=dataset_stats,
         device_capabilities=device_capabilities,
@@ -300,6 +311,7 @@ def main() -> None:
     log_stage_start(
         "model.build",
         language=run_paths.language,
+        format=run_paths.format,
         d_model=training_config.d_model,
         attention_heads=training_config.attention_heads,
         encoder_layers=training_config.encoder_layers,
@@ -323,6 +335,7 @@ def main() -> None:
         "model.build",
         duration_seconds=time.perf_counter() - model_started_at,
         language=run_paths.language,
+        format=run_paths.format,
         parameter_count=parameter_count,
         device=str(device),
     )
@@ -358,7 +371,7 @@ def main() -> None:
     )
     checkpoint_path = run_paths.save_dir / "best.pt"
     checkpoint_result = load_checkpoint(
-        checkpoint_mode=args.checkpoint_mode,
+        checkpoint_mode=checkpoint_mode,
         checkpoint_path=checkpoint_path,
         model=model,
         optimizer=optimizer,
@@ -367,7 +380,8 @@ def main() -> None:
 
     log_run_overview(
         language=run_paths.language,
-        checkpoint_mode=args.checkpoint_mode,
+        format_name=run_paths.format,
+        checkpoint_mode=checkpoint_mode,
         checkpoint_applied_mode=checkpoint_result.applied_mode,
         run_paths=run_paths.to_dict(),
         dataset_stats=dataset_stats.to_dict(),
@@ -388,7 +402,7 @@ def main() -> None:
             "grad_clip": GRAD_CLIP,
         },
         "checkpoint_policy": {
-            "requested_mode": args.checkpoint_mode,
+            "requested_mode": checkpoint_mode,
             "applied_mode": checkpoint_result.applied_mode,
             "checkpoint_path": str(checkpoint_path),
         },
@@ -418,6 +432,7 @@ def main() -> None:
         log_event(
             "epoch.start",
             language=run_paths.language,
+            format=run_paths.format,
             epoch=epoch,
             total_epochs=training_config.epochs,
         )
@@ -603,6 +618,7 @@ def main() -> None:
             log_event(
                 "training.memorization_signal",
                 epoch=best_metrics.get("epoch"),
+                format=run_paths.format,
                 train_exact_match=f"{final_train_exact_match_result.exact_match:.4f}",
                 validation_exact_match=(
                     f"{float(best_metrics['validation_exact_match']):.4f}"
@@ -645,6 +661,65 @@ def main() -> None:
         best_metrics=best_metrics,
         save_dir=run_paths.save_dir,
         duration_seconds=time.perf_counter() - run_started_at,
+    )
+
+
+def main() -> None:
+    args = parse_args()
+
+    if args.format == "all":
+        formats = discover_available_formats(
+            language=args.language,
+            tokenizers_root=TOKENIZERS_ROOT,
+            datasets_root=DATASETS_ROOT,
+        )
+        log_event(
+            "formats.discovered",
+            language=args.language,
+            formats=", ".join(formats),
+            count=len(formats),
+            parallel=not args.sequential_formats,
+        )
+
+        if len(formats) == 1:
+            train_format(
+                language=args.language,
+                format_name=formats[0],
+                requested_device=args.device,
+                checkpoint_mode=args.checkpoint_mode,
+            )
+            return
+
+        if args.sequential_formats:
+            for format_name in formats:
+                log_event(
+                    "format.dispatch",
+                    language=args.language,
+                    format=format_name,
+                    mode="sequential",
+                )
+                train_format(
+                    language=args.language,
+                    format_name=format_name,
+                    requested_device=args.device,
+                    checkpoint_mode=args.checkpoint_mode,
+                )
+            return
+
+        run_formats_in_parallel(
+            entrypoint_path=pathlib.Path(__file__).resolve(),
+            language=args.language,
+            formats=formats,
+            requested_device=args.device,
+            checkpoint_mode=args.checkpoint_mode,
+        )
+        return
+
+    train_format(
+        language=args.language,
+        format_name=args.format,
+        requested_device=args.device,
+        checkpoint_mode=args.checkpoint_mode,
     )
 
 

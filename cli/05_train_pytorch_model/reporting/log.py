@@ -47,6 +47,7 @@ def log_adjusted_options(*, adjusted_options: dict) -> None:
 def log_run_overview(
     *,
     language: str,
+    format_name: str,
     checkpoint_mode: str,
     checkpoint_applied_mode: str,
     run_paths: dict,
@@ -60,6 +61,7 @@ def log_run_overview(
         "run.start",
         {
             "language": language,
+            "format": format_name,
             "checkpoint_mode": checkpoint_mode,
             "checkpoint_applied_mode": checkpoint_applied_mode,
             "train_samples": dataset_stats["train_count"],
@@ -108,6 +110,7 @@ def log_run_overview(
     _print_block(
         "run.paths",
         {
+            "format": format_name,
             "tokenizer_vocab_path": run_paths["vocab_path"],
             "train_dataset_path": run_paths["training_dataset_path"],
             "validation_dataset_path": run_paths["validation_dataset_path"],
