@@ -1,50 +1,32 @@
 # Model Architecture Practices
 
-Only capacity knobs should scale with data.
+Only capacity knobs should scale with data and machine capability.
 
-Use one multiplier for what the training set can justify, and another for what
-the current machine can realistically carry.
+The formulas below are project heuristics. They are informed by Transformer and
+scaling literature, but they are not universal constants.
 
-## Data-scale rule
+## Scaling inputs
 
-Use `trainCount`, not total `sampleCount`.
+Use:
+
+- `trainCount`, not total `sampleCount`
+- `device_scale` from `get_device_capabilities()`
 
 Set:
 
 - `DATA_SCALE = clamp((trainCount / 10_000) ** 0.25, 0.5, 2.0)`
-
-Why:
-
-- useful capacity grows sublinearly, not linearly
-- hard small or medium or large buckets throw away information
-- low-data regimes usually generalize better with smaller models
-
-## Device-scale rule
-
-Read raw capability values from `get_device_capabilities()`.
-
-Set:
-
 - `DEVICE_SCALE = capabilities.device_scale`
-
-This is a bounded hardware and environment multiplier derived from available
-memory and host-side throughput.
-
-## Final capacity rule
-
-Set:
-
 - `CAPACITY_SCALE = min(DATA_SCALE, DEVICE_SCALE)`
 
 Why:
 
-- the data may justify a larger model than the machine can train
-- the machine may allow a larger model than the data can support
-- the final architecture must respect both constraints
+- useful model capacity grows sublinearly with data
+- the machine can be the bottleneck even when the data could justify more
+- the data can be the bottleneck even when the machine could carry more
 
-## Base architecture
+## Implemented base architecture
 
-Use these base values at `CAPACITY_SCALE = 1.0`:
+At `CAPACITY_SCALE = 1.0`, the current base shape is:
 
 - `D_MODEL_BASE = 256`
 - `ENCODER_LAYERS_BASE = 4`
@@ -52,21 +34,41 @@ Use these base values at `CAPACITY_SCALE = 1.0`:
 - `FF_RATIO = 4`
 - `DROPOUT_BASE = 0.10`
 
-## Derived architecture
+## Implemented derived architecture
 
-Set:
+The current code in `05` derives:
 
-- `D_MODEL = round_to_multiple(D_MODEL_BASE * CAPACITY_SCALE, 64)`
+- `D_MODEL = clamp(round_to_multiple(256 * CAPACITY_SCALE, 64), 128, 512)`
 - `ATTENTION_HEADS = 4` if `D_MODEL <= 256`, else `8`
-- `ENCODER_LAYERS = clamp(round(ENCODER_LAYERS_BASE * CAPACITY_SCALE), 2, 6)`
-- `DECODER_LAYERS = clamp(round(DECODER_LAYERS_BASE * CAPACITY_SCALE), 2, 6)`
-- `FF_DIMENSION = FF_RATIO * D_MODEL`
-- `DROPOUT = clamp(DROPOUT_BASE / CAPACITY_SCALE, 0.10, 0.20)`
+- `ENCODER_LAYERS = clamp(round(4 * CAPACITY_SCALE), 2, 6)`
+- `DECODER_LAYERS = clamp(round(4 * CAPACITY_SCALE), 2, 6)`
+- `FF_DIMENSION = 4 * D_MODEL`
+- `DROPOUT = clamp(0.10 / CAPACITY_SCALE, 0.10, 0.20)`
 
-## Generalization rules
+## Why this is the current best practice
 
-- Prefer the smallest model that achieves the needed validation exact match.
+- A small local seq2seq model needs width and FF capacity before it needs large
+  depth.
+- `D_MODEL % ATTENTION_HEADS == 0` must always hold.
+- A `4x` FF expansion is standard Transformer practice.
+- Lower-data regimes benefit from more regularization and smaller width.
+- Local/browser-oriented deployment puts a hard ceiling on how large the model
+  should be, even if the corpus eventually grows.
+
+## Rules
+
 - Prefer increasing width before increasing depth.
-- Do not increase heads without enough width to justify them.
-- Keep `D_MODEL % ATTENTION_HEADS == 0`.
-- Do not use `trainCount` or `DEVICE_SCALE` to set sequence lengths.
+- Do not change sequence lengths to justify architecture changes.
+- Do not increase heads without enough width to support them cleanly.
+- Keep architecture decisions separate from deployment precision decisions.
+- If the model family changes, rewrite this file instead of stretching the old
+  rules.
+
+## Sources
+
+- Transformer architecture reference:
+  https://arxiv.org/abs/1706.03762
+- PyTorch Transformer API reference:
+  https://docs.pytorch.org/docs/stable/generated/torch.nn.Transformer.html
+- Compute-optimal scaling motivation:
+  https://arxiv.org/abs/2203.15556

@@ -2,64 +2,71 @@
 
 Generalization is the goal.
 
-That means the trainer must separate cheap signals that should run every epoch
-from expensive signals that should run only when justified.
+That means the trainer should run cheap signals frequently and expensive signals
+only when they are justified.
 
-## Data-scale rule
+## Implemented schedule scaling
 
-Use `trainCount`, not total `sampleCount`.
-
-Set:
+The current trainer uses:
 
 - `DATA_SCALE = clamp((trainCount / 10_000) ** 0.25, 0.5, 2.0)`
 
-## Base schedule
+Then:
 
-Use these base values at `DATA_SCALE = 1.0`:
+- `EPOCHS = clamp(round(30 / (DATA_SCALE ** 2)), 10, 100)`
+- `EARLY_STOPPING_PATIENCE = clamp(round(8 / DATA_SCALE), 3, 20)`
+- `EARLY_STOPPING_MIN_DELTA = clamp(1e-4 * DATA_SCALE, 1e-5, 1e-3)`
+- `VALIDATION_EXACT_MATCH_FREQUENCY = clamp(round(2 * DATA_SCALE), 1, 3)`
 
-- `EPOCHS_BASE = 30`
-- `EARLY_STOPPING_PATIENCE_BASE = 8`
-- `EARLY_STOPPING_MIN_DELTA_BASE = 1e-4`
-- `FULL_VALIDATION_EXACT_MATCH_EVERY_BASE = 2`
+Larger datasets should run full validation exact match less often because exact
+match cost scales with both sample count and decode length.
 
-## Derived schedule
-
-Set:
-
-- `EPOCHS = clamp(round(EPOCHS_BASE / (DATA_SCALE ** 2)), 10, 100)`
-- `EARLY_STOPPING_PATIENCE = clamp(round(EARLY_STOPPING_PATIENCE_BASE / DATA_SCALE), 3, 20)`
-- `EARLY_STOPPING_MIN_DELTA = clamp(EARLY_STOPPING_MIN_DELTA_BASE * DATA_SCALE, 1e-5, 1e-3)`
-- `FULL_VALIDATION_EXACT_MATCH_EVERY_N_EPOCHS = clamp(round(FULL_VALIDATION_EXACT_MATCH_EVERY_BASE * DATA_SCALE), 1, 3)`
-
-Larger datasets should run full exact match less often because the cost scales
-with sample count and decode length.
-
-## Evaluation cadence
+## Current cadence policy
 
 Run every epoch:
 
 - training loss
 - validation loss
-- structural-validity checks on validation outputs when available
 
-Run periodically:
+Run on the configured cadence:
 
 - full validation exact match
 
-Run rarely or only at the end:
+Run only at the end:
 
-- full train exact match
+- full train exact match audit
 
-Why:
+## Why this is the current best practice
 
-- validation exact match measures generalization
-- train exact match mostly measures memorization
+- validation exact match measures the real task outcome
+- validation loss is cheap and useful every epoch
 - full autoregressive exact-match sweeps are expensive
+- train exact match mostly tells you about memorization
 
-## Selection and stopping rules
+## Early stopping rule
 
-- Select the canonical best checkpoint by validation exact match first.
-- Use validation loss as the tie-breaker and fallback metric.
-- Do not stop early because train exact match reached `1.0`.
-- Treat perfect early train exact match with weaker validation as memorization.
-- Keep early stopping enabled.
+Early stopping should follow the checkpoint objective when exact match is part
+of the schedule.
+
+Current implemented behavior:
+
+- if validation exact match is scheduled, patience is counted on those
+  evaluation windows
+- if exact match is disabled, patience falls back to validation loss
+
+This avoids stopping a run just because loss moved while the true checkpoint
+metric was not evaluated yet.
+
+## Rules
+
+- Select best checkpoints by validation exact match first.
+- Use validation loss as tie-breaker or fallback only.
+- Do not stop early because train exact match hit `1.0`.
+- Keep final train exact match as an audit, not a checkpoint metric.
+
+## Sources
+
+- Transformer seq2seq reference:
+  https://arxiv.org/abs/1706.03762
+- Compute-optimal scaling motivation:
+  https://arxiv.org/abs/2203.15556

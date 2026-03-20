@@ -1,12 +1,13 @@
 # Development Practices
 
-This file covers trainer invariants that should stay fixed across normal
-experiments.
+This directory records project policy, not universal law.
 
-These values are not capacity knobs and should not be tied to sample count,
-device class, or convenience heuristics.
+If code and practice docs diverge, fix the divergence. Do not keep aspirational
+rules that the pipeline no longer follows.
 
-## Fixed defaults
+## Fixed invariants
+
+These values are intentional fixed defaults in `05`, not scaling knobs:
 
 - `SEED = 7`
 - `LOG_FREQUENCY = 1`
@@ -15,49 +16,85 @@ device class, or convenience heuristics.
 - `LABEL_PAD_ID = -100`
 - `GRAD_CLIP = 1.0`
 
-## Phase scope
+Do not tie them to sample count, device class, or convenience heuristics.
 
-Phase `05_train_pytorch_model` is an `FP32` training phase.
+## Canonical pipeline shape
 
-That means:
+The current pipeline is:
 
-- train in `FP32`
-- save checkpoints in `FP32`
-- keep mixed precision and deployment conversion for later modules
+1. `01` prepares raw input text samples.
+2. `02` builds a shared `{ input, output }` corpus where `output` is parsed JSON,
+   not a quoted JSON string.
+3. `03` trains both `unigram` and `bpe` tokenizers from the same prepared
+   corpus.
+4. `04` builds per-format tokenized datasets and deterministic train or
+   validation splits.
+5. `05` trains one PyTorch model per `{language, format}`.
+6. `06` selects the best format for one language and exports one canonical FP32
+   ONNX bundle.
+7. `07` and `08` derive deployment-specific bundles from `06`.
+8. `09` packages the runtime artifacts into TypeScript.
 
-## Canonical run policy
+The docs in this directory should explain that pipeline as it actually exists.
 
-Use one canonical save directory per language:
+## Artifact policy
 
-- `src/05_pytorch_models/{language}`
+Use these canonical output shapes:
 
-Within that directory:
-
-- `best.pt` is the current best validation checkpoint
-- `history.json` is the epoch history for the current canonical run
-- `run.json` is the current run metadata
-- overwriting these files is intentional
-
-## Logging policy
-
-Every run should always log:
-
-- resolved paths
-- device capabilities
-- data-scale and compute-scale adjusted options
-- stage timings
-- epoch timings
-- checkpoint events
+- `src/03_tokenizers/{language}/{format}`
+- `src/04_training_datasets/{language}/{format}`
+- `src/05_pytorch_models/{language}/{format}`
+- `src/06_fp32_export_onnx_models/{language}`
+- `src/07_mixed-fp16_gpu_onnx_models/{language}`
+- `src/08_uint8_cpu_onnx_models/{language}`
 
 Why:
 
-- expensive evaluation work must stay visible
-- run behavior must be understandable from the terminal alone
-- scaling decisions should never be hidden
+- tokenizers and training datasets are format-specific
+- PyTorch checkpoints must stay format-specific
+- ONNX export and deployment bundles should be language-specific canonical
+  selections, not duplicated per tokenizer after `06` has already chosen the
+  winner
+
+## Precision boundaries
+
+Keep phase boundaries explicit:
+
+- `05` trains and saves in `FP32`
+- `06` exports one canonical `FP32` ONNX model
+- `07` derives a WebGPU `mixed-fp16` variant from `06`
+- `08` derives a WASM `uint8` variant from `06`
+
+Do not mix deployment compression concerns back into `05`.
+
+## Logging and observability
+
+All substantive stages should log:
+
+- resolved paths
+- device capabilities
+- adjusted options
+- stage timings
+- validation cadence decisions
+- checkpoint decisions
+- final audit results
+
+Why:
+
+- expensive local training has to be observable from the terminal
+- adaptive heuristics must be inspectable
+- run behavior should be reconstructible without opening code first
 
 ## Rules
 
-- Do not invent sample-count logic for the fixed defaults above.
-- Do not treat `GRAD_CLIP` as a scale knob.
-- Keep the canonical per-language overwrite policy explicit.
-- When reusing checkpoints, follow the compatibility rules in `CHECKPOINTING.md`.
+- Keep project-specific heuristics explicit and bounded.
+- Separate fixed invariants from scalable heuristics.
+- Prefer deterministic outputs over hidden randomness in artifact generation.
+- Keep one canonical best artifact per intended scope:
+  `05` per `{language, format}`, `06` and later per `{language}`.
+- Update this directory when pipeline behavior changes materially.
+
+## Sources
+
+This file is mostly project policy. See the more specific practice files for the
+external sources behind tokenizer, model, export, and deployment rules.
