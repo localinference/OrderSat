@@ -9,9 +9,9 @@ import { cleanWhitespace } from '../utils/cleanWhiteSpace/index.js'
 const outputSamplePath = './src/02_training_samples/outputs'
 const tokenizerPath = './src/03_tokenizers'
 
-function compactJson(json, jsonPath) {
+function parseJson(json, jsonPath) {
   try {
-    return JSON.stringify(JSON.parse(json))
+    return JSON.parse(json)
   } catch (error) {
     throw new Error(
       `Invalid JSON output sample at ${jsonPath}: ${error?.message ?? String(error)}`
@@ -54,7 +54,7 @@ try {
       input = cleanWhitespace(input)
       if (!input) continue
 
-      output = compactJson(output, outputPath)
+      output = parseJson(output, outputPath)
 
       jsonlLines.push(JSON.stringify({ input, output }))
     }

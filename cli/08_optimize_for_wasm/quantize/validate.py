@@ -114,6 +114,25 @@ def validate_quantized_model(
 
 def build_validation_cases(source_config: dict) -> list[dict[str, int | str]]:
     reference_validation = source_config.get("validation") or {}
+    configured_cases = reference_validation.get("cases")
+
+    if isinstance(configured_cases, list) and configured_cases:
+        normalized_cases: list[dict[str, int | str]] = []
+        for index, case in enumerate(configured_cases, start=1):
+            if not isinstance(case, dict):
+                continue
+
+            normalized_cases.append(
+                {
+                    "name": str(case.get("name", f"case_{index}")),
+                    "source_length": int(case.get("source_length", 8)),
+                    "target_length": int(case.get("target_length", 8)),
+                }
+            )
+
+        if normalized_cases:
+            return normalized_cases
+
     return [
         {
             "name": "reference",

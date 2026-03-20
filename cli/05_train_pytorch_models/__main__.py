@@ -511,9 +511,6 @@ def train_format(
 
         if improved_validation_loss:
             best_validation_loss = validation_result.average_loss
-            epochs_without_improvement = 0
-        else:
-            epochs_without_improvement += 1
 
         candidate_checkpoint_score = checkpoint_score_from_metrics(epoch_metrics)
         improved_checkpoint = False
@@ -526,6 +523,22 @@ def train_format(
         if improved_checkpoint:
             best_checkpoint_score = candidate_checkpoint_score
             best_metrics = epoch_metrics
+
+        should_track_patience_from_checkpoint_metric = (
+            training_config.validation_exact_match_frequency > 0
+        )
+
+        if should_track_patience_from_checkpoint_metric:
+            if validation_exact_match_result is not None:
+                if improved_checkpoint:
+                    epochs_without_improvement = 0
+                else:
+                    epochs_without_improvement += 1
+        else:
+            if improved_validation_loss:
+                epochs_without_improvement = 0
+            else:
+                epochs_without_improvement += 1
 
         epoch_run_metadata = {
             **run_metadata,
@@ -586,6 +599,10 @@ def train_format(
         if epochs_without_improvement >= training_config.early_stopping_patience:
             log_early_stop(
                 reason=(
+                    "checkpoint selection metric did not improve within patience "
+                    f"({training_config.early_stopping_patience} evaluation windows)"
+                    if should_track_patience_from_checkpoint_metric
+                    else
                     "validation loss did not improve within patience "
                     f"({training_config.early_stopping_patience} epochs)"
                 ),
