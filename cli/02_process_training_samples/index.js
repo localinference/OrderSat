@@ -6,14 +6,24 @@ import { getInputPathFromOutputPath } from './getInputPathFromOutputPath/index.j
 import fs from 'fs/promises'
 import { cleanWhitespace } from '../utils/cleanWhiteSpace/index.js'
 
-const t0 = performance.now()
 const outputSamplePath = './src/02_training_samples/outputs'
 const tokenizerPath = './src/03_tokenizers'
+
+function compactJson(json, jsonPath) {
+  try {
+    return JSON.stringify(JSON.parse(json))
+  } catch (error) {
+    throw new Error(
+      `Invalid JSON output sample at ${jsonPath}: ${error?.message ?? String(error)}`
+    )
+  }
+}
 
 try {
   const { languages } = getArgs()
 
   for (const language of languages) {
+    const languageT0 = performance.now()
     const jsonlLines = []
     const languageOutputPath = `${outputSamplePath}/${language}`
     const languageTokenizerPath = `${tokenizerPath}/${language}`
@@ -44,7 +54,7 @@ try {
       input = cleanWhitespace(input)
       if (!input) continue
 
-      output = JSON.stringify(JSON.parse(output))
+      output = compactJson(output, outputPath)
 
       jsonlLines.push(JSON.stringify({ input, output }))
     }
@@ -57,9 +67,10 @@ try {
       }
     )
     console.log(
-      `Created tokenizer corpus from ${jsonlLines.length} {input+ouput} samples for language "${language}" in ${Math.round(performance.now() - t0)} milliseconds.`
+      `Created tokenizer corpus at ${languageTokenizerCorpusPath} from ${jsonlLines.length} {input+output} samples for language "${language}" in ${Math.round(performance.now() - languageT0)} milliseconds.`
     )
   }
 } catch (err) {
   console.error(err)
+  process.exit(1)
 }
