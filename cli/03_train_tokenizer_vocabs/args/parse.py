@@ -1,10 +1,11 @@
 import argparse
 
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Train a SentencePiece tokenizer from the real model-side input "
-            "and output strings extracted from "
+            "Train both unigram and bpe SentencePiece tokenizers from the real "
+            "model-side input and output strings extracted from "
             "src/03_tokenizers/{lang}/corpus.jsonl."
         )
     )
@@ -16,20 +17,11 @@ def parse_args() -> argparse.Namespace:
         help="Language directory name under src/03_tokenizers, for example: eng",
     )
     parser.add_argument(
-        "-M",
-        "--model-type",
-        type=str,
-        default="unigram",
-        choices=["unigram", "bpe", "char", "word"],
-        help="SentencePiece model type (default: unigram)",
-    )
-
-    parser.add_argument(
         "-V",
-        "--vocab-size",
+        "--max-vocab-size",
         type=int,
-        default=32000,
-        help="SentencePiece vocab size (default: 32000)",
+        default=8192,
+        help="SentencePiece max vocab size ceiling (default: 8192)",
     )
     parser.add_argument(
         "-C",
