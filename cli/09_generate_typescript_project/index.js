@@ -21,6 +21,7 @@ async function getLanguages() {
 
 async function writeEntrypoint(outRoot, languages) {
   let file = ``
+  const t0 = performance.now()
   const outPath = `${outRoot}/${'index.ts'}`
   for (const language of languages) {
     file += `export { tokenizer${language.toUpperCase()}, gpuModel${language.toUpperCase()}, cpuModel${language.toUpperCase()}, modelInfo${language.toUpperCase()} } from './models/${language}/index.js'`
@@ -88,6 +89,9 @@ async function main() {
     await writeFile(languageOutPath, ts, 'utf8')
   }
   await writeEntrypoint(outRoot, languages)
+  console.log(
+    `Generated typescript project in ${(performance.now() - t0) / 1000} seconds.`
+  )
 }
 
 main().catch((error) => {
