@@ -9,7 +9,7 @@ from checkpoint.load import ExportModelConfig
 
 SEQ2SEQ_CONSTRUCTOR_PATH = (
     pathlib.Path(__file__).resolve().parents[2]
-    / "05_train_pytorch_model"
+    / "05_train_pytorch_models"
     / "Seq2SeqTransformer"
     / "constructor.py"
 )

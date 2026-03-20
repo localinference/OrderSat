@@ -1,28 +1,29 @@
 {
   "language": "eng",
+  "selected_format": "bpe",
   "format": "onnx",
   "precision": "fp32",
   "onnx_model_filename": "model.onnx",
   "tokenizer_model_filename": "tokenizer.model",
-  "source_checkpoint_path": "src\\05_pytorch_models\\eng\\best.pt",
+  "source_checkpoint_path": "src\\05_pytorch_models\\eng\\bpe\\best.pt",
   "source_metrics": {
     "epoch": 100,
-    "train_loss": 1.2771646472440181,
-    "validation_loss": 1.4571526938758823,
+    "train_loss": 1.297473153986335,
+    "validation_loss": 1.7003740604897788,
     "validation_exact_match": 0.0,
-    "train_duration_seconds": 21.183802399988053,
-    "validation_duration_seconds": 1.5900407000153791,
-    "exact_match_duration_seconds": 2.8157502000103705,
+    "train_duration_seconds": 20.895307999977376,
+    "validation_duration_seconds": 1.6444589999737218,
+    "exact_match_duration_seconds": 3.925345499999821,
     "validation_exact_match_ran": true,
     "checkpoint_mode": "warm_start",
     "optimizer_steps": 5,
-    "train_token_count": 40887,
-    "validation_token_count": 15412
+    "train_token_count": 26657,
+    "validation_token_count": 9975
   },
   "model_config": {
     "language": "eng",
-    "vocab_size": 3971,
-    "pad_id": 3971,
+    "vocab_size": 8192,
+    "pad_id": 8192,
     "bos_id": 1,
     "eos_id": 2,
     "d_model": 128,
@@ -31,18 +32,105 @@
     "decoder_layers": 2,
     "ff_dimension": 512,
     "dropout": 0.2,
-    "max_source_positions": 336,
-    "max_target_positions": 1215
+    "max_source_positions": 229,
+    "max_target_positions": 807
+  },
+  "selection": {
+    "language": "eng",
+    "selected_format": "bpe",
+    "confidence": "low",
+    "reason": "lower validation bits per output char: 0.391368 < 0.521189",
+    "selected": {
+      "language": "eng",
+      "format": "bpe",
+      "checkpoint_path": "src\\05_pytorch_models\\eng\\bpe\\best.pt",
+      "tokenizer_model_path": "src\\03_tokenizers\\eng\\bpe\\tokenizer.model",
+      "run_path": "src\\05_pytorch_models\\eng\\bpe\\run.json",
+      "stats_path": "src\\04_training_datasets\\eng\\bpe\\stats.json",
+      "validation_dataset_path": "src\\04_training_datasets\\eng\\bpe\\validation.jsonl",
+      "validation_count": 25,
+      "validation_exact_match": 0.0,
+      "validation_exact_match_count": 0,
+      "validation_exact_match_wilson_lb": 0.0,
+      "validation_loss": 1.7003740604897788,
+      "validation_token_count": 9975,
+      "validation_output_char_count": 62524,
+      "validation_bits_per_output_char": 0.3913678622069961,
+      "parameter_count": 3163776,
+      "runtime_proxy": 4302735360.0,
+      "label_p95": 575,
+      "best_epoch": 100,
+      "latest_epoch_completed": 100,
+      "edge_of_training": true
+    },
+    "candidates": [
+      {
+        "language": "eng",
+        "format": "bpe",
+        "checkpoint_path": "src\\05_pytorch_models\\eng\\bpe\\best.pt",
+        "tokenizer_model_path": "src\\03_tokenizers\\eng\\bpe\\tokenizer.model",
+        "run_path": "src\\05_pytorch_models\\eng\\bpe\\run.json",
+        "stats_path": "src\\04_training_datasets\\eng\\bpe\\stats.json",
+        "validation_dataset_path": "src\\04_training_datasets\\eng\\bpe\\validation.jsonl",
+        "validation_count": 25,
+        "validation_exact_match": 0.0,
+        "validation_exact_match_count": 0,
+        "validation_exact_match_wilson_lb": 0.0,
+        "validation_loss": 1.7003740604897788,
+        "validation_token_count": 9975,
+        "validation_output_char_count": 62524,
+        "validation_bits_per_output_char": 0.3913678622069961,
+        "parameter_count": 3163776,
+        "runtime_proxy": 4302735360.0,
+        "label_p95": 575,
+        "best_epoch": 100,
+        "latest_epoch_completed": 100,
+        "edge_of_training": true
+      },
+      {
+        "language": "eng",
+        "format": "unigram",
+        "checkpoint_path": "src\\05_pytorch_models\\eng\\unigram\\best.pt",
+        "tokenizer_model_path": "src\\03_tokenizers\\eng\\unigram\\tokenizer.model",
+        "run_path": "src\\05_pytorch_models\\eng\\unigram\\run.json",
+        "stats_path": "src\\04_training_datasets\\eng\\unigram\\stats.json",
+        "validation_dataset_path": "src\\04_training_datasets\\eng\\unigram\\validation.jsonl",
+        "validation_count": 25,
+        "validation_exact_match": 0.0,
+        "validation_exact_match_count": 0,
+        "validation_exact_match_wilson_lb": 0.0,
+        "validation_loss": 1.4679587226618396,
+        "validation_token_count": 15387,
+        "validation_output_char_count": 62524,
+        "validation_bits_per_output_char": 0.5211894093623599,
+        "parameter_count": 2143230,
+        "runtime_proxy": 4427913180.0,
+        "label_p95": 884,
+        "best_epoch": 99,
+        "latest_epoch_completed": 100,
+        "edge_of_training": true
+      }
+    ]
   },
   "validation": {
     "source_length": 8,
     "target_length": 8,
-    "logits_shape": [1, 8, 3971],
-    "max_abs_diff": 2.86102294921875e-6
+    "logits_shape": [
+      1,
+      8,
+      8192
+    ],
+    "max_abs_diff": 2.86102294921875e-06
   },
   "export": {
     "opset_version": 18,
-    "input_names": ["input_ids", "attention_mask", "decoder_input_ids"],
-    "output_names": ["logits"]
+    "input_names": [
+      "input_ids",
+      "attention_mask",
+      "decoder_input_ids"
+    ],
+    "output_names": [
+      "logits"
+    ]
   }
 }

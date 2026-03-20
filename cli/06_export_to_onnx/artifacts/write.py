@@ -15,6 +15,7 @@ def write_export_bundle(
     model_config: ExportModelConfig,
     opset_version: int,
     validation: dict[str, object],
+    selection: dict[str, object],
 ) -> None:
     if not paths.tokenizer_model_path.exists():
         raise SystemExit(
@@ -34,6 +35,7 @@ def write_export_bundle(
 
     config_payload = {
         "language": paths.language,
+        "selected_format": paths.selected_format,
         "format": "onnx",
         "precision": "fp32",
         "onnx_model_filename": paths.onnx_model_path.name,
@@ -41,6 +43,7 @@ def write_export_bundle(
         "source_checkpoint_path": str(paths.checkpoint_path),
         "source_metrics": checkpoint.get("metrics"),
         "model_config": asdict(model_config),
+        "selection": selection,
         "validation": validation,
         "export": {
             "opset_version": opset_version,

@@ -7,7 +7,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Export the trained FP32 PyTorch seq2seq checkpoint to an ONNX "
-            "bundle under src/06_FP32_export_onnx_models/{language}."
+            "bundle under src/06_fp32_export_onnx_models/{language}."
         )
     )
     parser.add_argument(
@@ -17,7 +17,7 @@ def parse_args() -> argparse.Namespace:
         default="eng",
         help=(
             "Language directory under src/03_tokenizers, "
-            "src/05_pytorch_models, and src/06_FP32_export_onnx_models."
+            "src/05_pytorch_models, and src/06_fp32_export_onnx_models."
         ),
     )
     parser.add_argument(

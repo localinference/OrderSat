@@ -16,6 +16,7 @@ ONNX_EXPORT_ROOT = pathlib.Path("src/06_fp32_export_onnx_models")
 @dataclass(frozen=True)
 class ExportPaths:
     language: str
+    selected_format: str
     checkpoint_path: pathlib.Path
     tokenizer_model_path: pathlib.Path
     export_dir: pathlib.Path
@@ -24,12 +25,13 @@ class ExportPaths:
     exported_tokenizer_model_path: pathlib.Path
 
 
-def build_export_paths(language: str) -> ExportPaths:
+def build_export_paths(language: str, selected_format: str) -> ExportPaths:
     export_dir = ONNX_EXPORT_ROOT / language
     return ExportPaths(
         language=language,
-        checkpoint_path=PYTORCH_MODELS_ROOT / language / CHECKPOINT_NAME,
-        tokenizer_model_path=TOKENIZERS_ROOT / language / TOKENIZER_MODEL_NAME,
+        selected_format=selected_format,
+        checkpoint_path=PYTORCH_MODELS_ROOT / language / selected_format / CHECKPOINT_NAME,
+        tokenizer_model_path=TOKENIZERS_ROOT / language / selected_format / TOKENIZER_MODEL_NAME,
         export_dir=export_dir,
         onnx_model_path=export_dir / ONNX_MODEL_NAME,
         config_path=export_dir / CONFIG_NAME,
