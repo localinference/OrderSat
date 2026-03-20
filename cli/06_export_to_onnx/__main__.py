@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import sys
+
 from args.parse import parse_args
 from artifacts.write import write_export_bundle
 from checkpoint.load import load_export_checkpoint
@@ -16,7 +18,19 @@ from selection.discover import discover_export_candidates
 from selection.select import select_best_candidate
 
 
+def configure_text_streams() -> None:
+    for stream_name in ("stdout", "stderr"):
+        stream = getattr(sys, stream_name, None)
+        if stream is None or not hasattr(stream, "reconfigure"):
+            continue
+        try:
+            stream.reconfigure(encoding="utf-8")
+        except (OSError, ValueError):
+            continue
+
+
 def main() -> None:
+    configure_text_streams()
     args = parse_args()
     selection = select_best_candidate(
         discover_export_candidates(
@@ -68,6 +82,7 @@ def main() -> None:
         f"shape={validation['logits_shape']} "
         f"max_abs_diff={validation['max_abs_diff']:.8f}"
     )
+    print(f"validated_cases: {validation['validated_case_count']}")
 
 
 if __name__ == "__main__":

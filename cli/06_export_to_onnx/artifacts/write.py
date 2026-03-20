@@ -47,6 +47,7 @@ def write_export_bundle(
         "validation": validation,
         "export": {
             "opset_version": opset_version,
+            "external_data": False,
             "input_names": [
                 "input_ids",
                 "attention_mask",

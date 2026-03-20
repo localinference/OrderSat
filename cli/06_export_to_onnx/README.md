@@ -129,10 +129,14 @@ Why:
 ## ONNX Export And Validation
 
 [export.py](C:/Users/jorts/OrderSaT/cli/06_export_to_onnx/onnx_model/export.py)
-does two separate quality checks:
+uses the modern `torch.onnx.export(..., dynamo=True)` path so source and target
+sequence lengths stay dynamic in the emitted graph.
+
+It then does two separate quality checks:
 
 1. `onnx.checker.check_model(...)`
-2. ONNX Runtime vs PyTorch numeric parity on the same inputs
+2. ONNX Runtime vs PyTorch numeric parity across multiple validation shapes, not
+   just one `8x8` reference input
 
 That parity result is written into `config.json` as part of the export record.
 
@@ -147,6 +151,7 @@ writes `config.json` with:
 - exact model config
 - selection analysis and all candidate scores
 - ONNX validation result
+- dynamic-shape validation cases
 - opset and IO names
 
 So downstream modules can consume the canonical `06/{language}` bundle without
@@ -164,7 +169,8 @@ This module prints a short summary:
 - config path
 - selection confidence
 - selection reason
-- ONNX validation shape and `max_abs_diff`
+- ONNX validation reference shape and worst-case `max_abs_diff`
+- validated case count
 
 ## Design Intent
 
@@ -175,3 +181,5 @@ The exporter is built around these rules:
 3. Prefer exact-match quality first.
 4. Use character-normalized likelihood when token losses are not directly comparable.
 5. Export one canonical single-file `FP32` ONNX bundle plus the matching tokenizer.
+6. Reject fake-dynamic exports by validating non-`8x8` sequence shapes before
+   declaring the export good.

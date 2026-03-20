@@ -115,12 +115,93 @@
   "validation": {
     "source_length": 8,
     "target_length": 8,
-    "logits_shape": [1, 8, 8192],
-    "max_abs_diff": 2.86102294921875e-6
+    "logits_shape": [
+      1,
+      8,
+      8192
+    ],
+    "max_abs_diff": 3.814697265625e-06,
+    "validated_case_count": 5,
+    "validated_dynamic_shapes": true,
+    "reference": {
+      "name": "reference",
+      "source_length": 8,
+      "target_length": 8,
+      "logits_shape": [
+        1,
+        8,
+        8192
+      ],
+      "max_abs_diff": 2.86102294921875e-06
+    },
+    "cases": [
+      {
+        "name": "reference",
+        "source_length": 8,
+        "target_length": 8,
+        "logits_shape": [
+          1,
+          8,
+          8192
+        ],
+        "max_abs_diff": 2.86102294921875e-06
+      },
+      {
+        "name": "longer_source",
+        "source_length": 16,
+        "target_length": 8,
+        "logits_shape": [
+          1,
+          8,
+          8192
+        ],
+        "max_abs_diff": 3.814697265625e-06
+      },
+      {
+        "name": "longer_target",
+        "source_length": 8,
+        "target_length": 16,
+        "logits_shape": [
+          1,
+          16,
+          8192
+        ],
+        "max_abs_diff": 2.86102294921875e-06
+      },
+      {
+        "name": "max_source_decode_start",
+        "source_length": 229,
+        "target_length": 1,
+        "logits_shape": [
+          1,
+          1,
+          8192
+        ],
+        "max_abs_diff": 2.1457672119140625e-06
+      },
+      {
+        "name": "wider_window",
+        "source_length": 32,
+        "target_length": 32,
+        "logits_shape": [
+          1,
+          32,
+          8192
+        ],
+        "max_abs_diff": 2.86102294921875e-06
+      }
+    ]
   },
   "export": {
     "opset_version": 18,
-    "input_names": ["input_ids", "attention_mask", "decoder_input_ids"],
-    "output_names": ["logits"]
+    "external_data": false,
+    "input_names": [
+      "input_ids",
+      "attention_mask",
+      "decoder_input_ids"
+    ],
+    "output_names": [
+      "logits"
+    ]
   }
 }

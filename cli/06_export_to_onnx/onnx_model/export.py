@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pathlib
-import warnings
 
 import onnx
 import onnxruntime as ort
@@ -30,24 +29,20 @@ def export_onnx_model(
     try:
         torch.backends.mha.set_fastpath_enabled(False)
         with torch.inference_mode():
-            with warnings.catch_warnings():
-                warnings.filterwarnings(
-                    "ignore",
-                    message="You are using the legacy TorchScript-based ONNX export.",
-                    category=DeprecationWarning,
-                )
-                torch.onnx.export(
-                    wrapper,
-                    args=dummy_inputs,
-                    f=str(onnx_model_path),
-                    export_params=True,
-                    opset_version=opset_version,
-                    do_constant_folding=True,
-                    dynamo=False,
-                    input_names=["input_ids", "attention_mask", "decoder_input_ids"],
-                    output_names=["logits"],
-                    dynamic_axes=build_dynamic_axes(),
-                )
+            torch.onnx.export(
+                wrapper,
+                args=dummy_inputs,
+                f=str(onnx_model_path),
+                export_params=True,
+                opset_version=opset_version,
+                do_constant_folding=True,
+                dynamo=True,
+                external_data=False,
+                fallback=False,
+                input_names=["input_ids", "attention_mask", "decoder_input_ids"],
+                output_names=["logits"],
+                dynamic_shapes=build_dynamic_shapes(),
+            )
     finally:
         torch.backends.mha.set_fastpath_enabled(previous_fastpath_state)
 
@@ -61,35 +56,56 @@ def validate_exported_onnx_model(
     onnx_model = onnx.load(str(onnx_model_path))
     onnx.checker.check_model(onnx_model)
 
-    input_ids, attention_mask, decoder_input_ids = build_dummy_inputs(model_config)
-    with torch.inference_mode():
-        torch_logits = model(
-            input_ids=input_ids,
-            attention_mask=attention_mask,
-            decoder_input_ids=decoder_input_ids,
-        ).detach()
-
     session = ort.InferenceSession(
         str(onnx_model_path),
         providers=["CPUExecutionProvider"],
     )
-    ort_logits = session.run(
-        ["logits"],
-        {
-            "input_ids": input_ids.numpy(),
-            "attention_mask": attention_mask.numpy(),
-            "decoder_input_ids": decoder_input_ids.numpy(),
-        },
-    )[0]
-    max_abs_diff = float(
-        (torch_logits - torch.from_numpy(ort_logits)).abs().max().item()
-    )
+    cases: list[dict[str, object]] = []
 
+    for case_name, source_length, target_length in build_validation_cases(model_config):
+        input_ids, attention_mask, decoder_input_ids = build_inputs(
+            model_config=model_config,
+            source_length=source_length,
+            target_length=target_length,
+        )
+        with torch.inference_mode():
+            torch_logits = model(
+                input_ids=input_ids,
+                attention_mask=attention_mask,
+                decoder_input_ids=decoder_input_ids,
+            ).detach()
+
+        ort_logits = session.run(
+            ["logits"],
+            {
+                "input_ids": input_ids.numpy(),
+                "attention_mask": attention_mask.numpy(),
+                "decoder_input_ids": decoder_input_ids.numpy(),
+            },
+        )[0]
+        max_abs_diff = float(
+            (torch_logits - torch.from_numpy(ort_logits)).abs().max().item()
+        )
+        cases.append(
+            {
+                "name": case_name,
+                "source_length": source_length,
+                "target_length": target_length,
+                "logits_shape": list(ort_logits.shape),
+                "max_abs_diff": max_abs_diff,
+            }
+        )
+
+    reference = cases[0]
     return {
-        "source_length": int(input_ids.size(1)),
-        "target_length": int(decoder_input_ids.size(1)),
-        "logits_shape": list(ort_logits.shape),
-        "max_abs_diff": max_abs_diff,
+        "source_length": reference["source_length"],
+        "target_length": reference["target_length"],
+        "logits_shape": reference["logits_shape"],
+        "max_abs_diff": max(case["max_abs_diff"] for case in cases),
+        "validated_case_count": len(cases),
+        "validated_dynamic_shapes": True,
+        "reference": reference,
+        "cases": cases,
     }
 
 
@@ -98,6 +114,21 @@ def build_dummy_inputs(
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     source_length = max(2, min(8, model_config.max_source_positions))
     target_length = max(2, min(8, model_config.max_target_positions))
+    return build_inputs(
+        model_config=model_config,
+        source_length=source_length,
+        target_length=target_length,
+    )
+
+
+def build_inputs(
+    *,
+    model_config: ExportModelConfig,
+    source_length: int,
+    target_length: int,
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    source_length = max(1, source_length)
+    target_length = max(1, target_length)
 
     input_ids = torch.full(
         (1, source_length),
@@ -118,10 +149,59 @@ def build_dummy_inputs(
     return input_ids, attention_mask, decoder_input_ids
 
 
-def build_dynamic_axes() -> dict[str, dict[int, str]]:
+def build_dynamic_shapes() -> dict[str, dict[int, torch.export.Dim]]:
     return {
-        "input_ids": {0: "batch_size", 1: "source_length"},
-        "attention_mask": {0: "batch_size", 1: "source_length"},
-        "decoder_input_ids": {0: "batch_size", 1: "target_length"},
-        "logits": {0: "batch_size", 1: "target_length"},
+        "input_ids": {
+            0: torch.export.Dim("batch_size"),
+            1: torch.export.Dim("source_length"),
+        },
+        "attention_mask": {
+            0: torch.export.Dim("batch_size"),
+            1: torch.export.Dim("source_length"),
+        },
+        "decoder_input_ids": {
+            0: torch.export.Dim("batch_size"),
+            1: torch.export.Dim("target_length"),
+        },
     }
+
+
+def build_validation_cases(
+    model_config: ExportModelConfig,
+) -> list[tuple[str, int, int]]:
+    reference_source_length = max(2, min(8, model_config.max_source_positions))
+    reference_target_length = max(2, min(8, model_config.max_target_positions))
+    candidates = [
+        ("reference", reference_source_length, reference_target_length),
+        (
+            "longer_source",
+            max(2, min(16, model_config.max_source_positions)),
+            reference_target_length,
+        ),
+        (
+            "longer_target",
+            reference_source_length,
+            max(2, min(16, model_config.max_target_positions)),
+        ),
+        (
+            "max_source_decode_start",
+            model_config.max_source_positions,
+            1,
+        ),
+        (
+            "wider_window",
+            max(2, min(32, model_config.max_source_positions)),
+            max(2, min(32, model_config.max_target_positions)),
+        ),
+    ]
+    cases: list[tuple[str, int, int]] = []
+    seen: set[tuple[int, int]] = set()
+
+    for case_name, source_length, target_length in candidates:
+        case_key = (source_length, target_length)
+        if case_key in seen:
+            continue
+        seen.add(case_key)
+        cases.append((case_name, source_length, target_length))
+
+    return cases

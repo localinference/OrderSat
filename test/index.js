@@ -1,54 +1,18 @@
 import * as ort from 'onnxruntime-web'
 import { cleanText } from '@sctg/sentencepiece-js'
 import {
-  createTokenizer,
   createInferenceSession,
+  createTokenizer,
   GPUAccelerationSupported,
 } from '@localinference/utils'
-import { tokenizerENG, cpuModelENG, gpuModelENG, model } from '../dist/index.js'
+import {
+  cpuModelENG,
+  gpuModelENG,
+  modelInfoENG,
+  tokenizerENG,
+} from '../dist/index.js'
 
-const BOS_TOKEN_ID = 1
-const EOS_TOKEN_ID = 2
-
-const sample = `- 3
-y TRADER JOE'S
-2001 Greenville Ave
-Dallas TX 75206
-Store #403 - (469) 334-0614
-OPEN 8:00AM TO 9:00PM DAILY
-R-CARROTS SHREDDED 10 0Z 1.29
-R-CUCUMBERS PERSIAN 1 LB 1.99
-TOMATOES CRUSHED NO SALT 1.59
-TOMATOES WHOLE NO SALT W/BASIL 1.59
-ORGANIC OLD_FASHIONED OATMEAL ~~ 2.69
-MINI-PEARL TOMATOES. . 2.49
-PKG SHREDDED MOZZARELLA LITET 3.9
-EGGS 1 DOZ ORGANIC BROWN. 3.79
-BEANS GARBANZO 0.89
-SPROUTED CA STYLE Zea
-A-AVOCADOS HASS BAG ACT 2:39
-A-APPLE BAG JAZZ 2 |B gr
-A-PEPPER BELL EACH XL RED 0.99
-GROCERY NON TAXABLE 0.98
-260.49
-BANANAS ORGANIC 0.87
-3kA 6 0.29/EA
-CREAMY SALTED PEANUT BUT TER 2.49
-WHL WHT PITA BREAD 1.69
-GROCERY NON TAXABLE 1.38
-260.69
-SUBTOTAL $38.68
-TOTAL $38.68
-CASH $40.00
-CHANGE $1.32
-ITEMS 22 Higgins, Ryan
-06-28-2014 12:34PM 0403 04 1346 4683
-THANK YOU FOR SHOPPING AT
-TRADER JOE'S
-www. trader joes .com
-`
-
-const input = cleanText(sample.normalize('NFKC'))
+const sample = `order id: 10869 shipping details: ship name: seven seas imports ship address: 90 wadhurst rd. ship city: london ship region: british isles ship postal code: ox15 4nb ship country: uk customer details: customer id: seves customer name: seven seas imports employee details: employee name: steven buchanan shipper details: shipper id: 1 shipper name: speedy express order details: order date: 2018-02-04 shipped date: 2018-02-09 products: product: chai quantity: 40 unit price: 18.0 total: 720.0 product: queso cabrales quantity: 10 unit price: 21.0 total: 210.0 product: tunnbrod quantity: 50 unit price: 9.0 total: 450.0 product: scottish longbreads quantity: 20 unit price: 12.5 total: 250.0 total price: total price: 1630.0`
 
 function toInt64Tensor(values, dims) {
   return new ort.Tensor('int64', BigInt64Array.from(values, BigInt), dims)
@@ -76,44 +40,107 @@ function getNextTokenId(logits) {
   return argmax(stepLogits)
 }
 
-const tokenizer = await createTokenizer(await tokenizerENG())
-const session = await createInferenceSession(
-  await (
-    GPUAccelerationSupported()
-      ? async () => await gpuModelENG()
-      : async () => await cpuModelENG()
-  )()
-)
-
-const tokenIds = tokenizer.encodeIds(input)
-const attentionMask = tokenIds.map(() => 1)
-const decoderTokenIds = [BOS_TOKEN_ID]
-
-while (true) {
-  const outputs = await session.run({
-    input_ids: toInt64Tensor(tokenIds, [1, tokenIds.length]),
-    attention_mask: toInt64Tensor(attentionMask, [1, attentionMask.length]),
-    decoder_input_ids: toInt64Tensor(decoderTokenIds, [
-      1,
-      decoderTokenIds.length,
-    ]),
-  })
-
-  const nextTokenId = getNextTokenId(outputs.logits)
-  if (nextTokenId === EOS_TOKEN_ID) {
-    break
-  }
-
-  decoderTokenIds.push(nextTokenId)
+function normalizeInput(text) {
+  return cleanText(text.normalize('NFKC'))
 }
 
-const outputTokenIds = decoderTokenIds.slice(1)
+function encodeInput(text, tokenizer, modelInfo) {
+  const inputText = normalizeInput(text)
+  const inputTokenIds = tokenizer.encodeIds(inputText)
+
+  if (inputTokenIds.length > modelInfo.maxSourcePositions) {
+    throw new Error(
+      [
+        `Input exceeds model maxSourcePositions.`,
+        `tokenCount=${inputTokenIds.length}`,
+        `maxSourcePositions=${modelInfo.maxSourcePositions}`,
+        `The test harness does not truncate inputs automatically.`,
+      ].join(' ')
+    )
+  }
+
+  return {
+    inputText,
+    inputTokenIds,
+    attentionMask: inputTokenIds.map(() => 1),
+  }
+}
+
+async function loadRuntime() {
+  const useGPU = GPUAccelerationSupported()
+  const loader = useGPU ? gpuModelENG : cpuModelENG
+  const modelBytes = await loader()
+  const session = await createInferenceSession(modelBytes)
+
+  return {
+    runtime: useGPU ? 'gpu' : 'cpu',
+    session,
+  }
+}
+
+async function greedyDecode({
+  session,
+  inputIdsTensor,
+  attentionMaskTensor,
+  modelInfo,
+}) {
+  const decoderTokenIds = [modelInfo.bosTokenId]
+
+  while (true) {
+    const outputs = await session.run({
+      input_ids: inputIdsTensor,
+      attention_mask: attentionMaskTensor,
+      decoder_input_ids: toInt64Tensor(decoderTokenIds, [
+        1,
+        decoderTokenIds.length,
+      ]),
+    })
+
+    const nextTokenId = getNextTokenId(outputs.logits)
+    if (nextTokenId === modelInfo.eosTokenId) {
+      return decoderTokenIds.slice(1)
+    }
+
+    if (decoderTokenIds.length >= modelInfo.maxTargetPositions) {
+      throw new Error(
+        [
+          `Model failed to emit EOS within maxTargetPositions.`,
+          `decoderLength=${decoderTokenIds.length}`,
+          `maxTargetPositions=${modelInfo.maxTargetPositions}`,
+        ].join(' ')
+      )
+    }
+
+    decoderTokenIds.push(nextTokenId)
+  }
+}
+
+const tokenizer = await createTokenizer(await tokenizerENG())
+const { runtime, session } = await loadRuntime()
+const { inputText, inputTokenIds, attentionMask } = encodeInput(
+  sample,
+  tokenizer,
+  modelInfoENG
+)
+
+const inputIdsTensor = toInt64Tensor(inputTokenIds, [1, inputTokenIds.length])
+const attentionMaskTensor = toInt64Tensor(attentionMask, [
+  1,
+  attentionMask.length,
+])
+const outputTokenIds = await greedyDecode({
+  session,
+  inputIdsTensor,
+  attentionMaskTensor,
+  modelInfo: modelInfoENG,
+})
 const outputText = tokenizer.decodeIds(outputTokenIds)
 
 console.log({
-  inputLength: input.length,
-  tokenCount: tokenIds.length,
+  runtime,
+  modelInfo: modelInfoENG,
+  inputLength: inputText.length,
+  inputTokenCount: inputTokenIds.length,
   outputTokenCount: outputTokenIds.length,
-  outputTokenIds,
   outputText,
 })
