@@ -61,7 +61,7 @@ def compute_exact_match(
             generated = torch.full(
                 (batch_size, 1),
                 fill_value=bos_id,
-                dtype=torch.long,
+                dtype=input_ids.dtype,
                 device=device,
             )
             finished = torch.zeros(batch_size, dtype=torch.bool, device=device)

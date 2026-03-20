@@ -54,6 +54,14 @@ def write_export_bundle(
                 "decoder_input_ids",
             ],
             "output_names": ["logits"],
+            "input_dtypes": {
+                "input_ids": "int32",
+                "attention_mask": "int32",
+                "decoder_input_ids": "int32",
+            },
+            "output_dtypes": {
+                "logits": "float32",
+            },
         },
     }
     paths.config_path.write_text(

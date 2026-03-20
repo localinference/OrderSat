@@ -149,7 +149,7 @@ def build_validation_inputs(
             bos_id=bos_id,
             eos_id=eos_id,
         ),
-        input_names[1]: np.ones((1, source_length), dtype=np.int64),
+        input_names[1]: np.ones((1, source_length), dtype=np.int32),
         input_names[2]: build_token_ids(
             length=target_length,
             vocab_size=vocab_size,
@@ -167,7 +167,7 @@ def build_token_ids(
     eos_id: int,
 ) -> np.ndarray:
     token_upper_bound = max(3, vocab_size - 1)
-    token_ids = ((np.arange(length, dtype=np.int64) * 7) + 3) % token_upper_bound
+    token_ids = ((np.arange(length, dtype=np.int32) * 7) + 3) % token_upper_bound
     if length >= 1:
         token_ids[0] = bos_id
     if length >= 2:

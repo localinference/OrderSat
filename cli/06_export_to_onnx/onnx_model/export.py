@@ -133,16 +133,16 @@ def build_inputs(
     input_ids = torch.full(
         (1, source_length),
         fill_value=model_config.bos_id,
-        dtype=torch.long,
+        dtype=torch.int32,
     )
     input_ids[0, -1] = model_config.eos_id
 
-    attention_mask = torch.ones((1, source_length), dtype=torch.long)
+    attention_mask = torch.ones((1, source_length), dtype=torch.int32)
 
     decoder_input_ids = torch.full(
         (1, target_length),
         fill_value=model_config.bos_id,
-        dtype=torch.long,
+        dtype=torch.int32,
     )
     decoder_input_ids[0, -1] = model_config.eos_id
 

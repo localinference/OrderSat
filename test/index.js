@@ -14,8 +14,8 @@ import {
 
 const sample = `order id: 10869 shipping details: ship name: seven seas imports ship address: 90 wadhurst rd. ship city: london ship region: british isles ship postal code: ox15 4nb ship country: uk customer details: customer id: seves customer name: seven seas imports employee details: employee name: steven buchanan shipper details: shipper id: 1 shipper name: speedy express order details: order date: 2018-02-04 shipped date: 2018-02-09 products: product: chai quantity: 40 unit price: 18.0 total: 720.0 product: queso cabrales quantity: 10 unit price: 21.0 total: 210.0 product: tunnbrod quantity: 50 unit price: 9.0 total: 450.0 product: scottish longbreads quantity: 20 unit price: 12.5 total: 250.0 total price: total price: 1630.0`
 
-function toInt64Tensor(values, dims) {
-  return new ort.Tensor('int64', BigInt64Array.from(values, BigInt), dims)
+function toInt32Tensor(values, dims) {
+  return new ort.Tensor('int32', Int32Array.from(values), dims)
 }
 
 function argmax(values) {
@@ -90,7 +90,7 @@ async function greedyDecode({
     const outputs = await session.run({
       input_ids: inputIdsTensor,
       attention_mask: attentionMaskTensor,
-      decoder_input_ids: toInt64Tensor(decoderTokenIds, [
+      decoder_input_ids: toInt32Tensor(decoderTokenIds, [
         1,
         decoderTokenIds.length,
       ]),
@@ -123,8 +123,8 @@ const { inputText, inputTokenIds, attentionMask } = encodeInput(
   modelInfoENG
 )
 
-const inputIdsTensor = toInt64Tensor(inputTokenIds, [1, inputTokenIds.length])
-const attentionMaskTensor = toInt64Tensor(attentionMask, [
+const inputIdsTensor = toInt32Tensor(inputTokenIds, [1, inputTokenIds.length])
+const attentionMaskTensor = toInt32Tensor(attentionMask, [
   1,
   attentionMask.length,
 ])

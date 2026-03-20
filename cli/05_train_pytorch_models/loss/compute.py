@@ -39,9 +39,12 @@ def compute_loss(
     if token_count <= 0:
         raise SystemExit("Encountered batch without any supervised label tokens.")
 
+    # CrossEntropyLoss still requires int64 class indices even though the
+    # training pipeline stores token ids as int32.
+    labels_for_loss = labels.to(dtype=torch.long)
     loss_sum = F.cross_entropy(
         logits.reshape(-1, logits.size(-1)),
-        labels.reshape(-1),
+        labels_for_loss.reshape(-1),
         ignore_index=label_pad_id,
         reduction="sum",
     )

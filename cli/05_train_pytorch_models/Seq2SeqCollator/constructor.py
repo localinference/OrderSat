@@ -35,13 +35,13 @@ class Seq2SeqCollator:
         decoder_targets = [[*labels, self.eos_id] for labels in truncated_labels]
 
         input_ids = self._pad_tokens(truncated_inputs, pad_value=self.pad_id)
-        attention_mask = input_ids.ne(self.pad_id).to(dtype=torch.long)
+        attention_mask = input_ids.ne(self.pad_id).to(dtype=torch.int32)
         decoder_input_ids = self._pad_tokens(
             decoder_inputs,
             pad_value=self.pad_id,
         )
         decoder_attention_mask = decoder_input_ids.ne(self.pad_id).to(
-            dtype=torch.long
+            dtype=torch.int32
         )
         labels = self._pad_tokens(
             decoder_targets,
@@ -58,11 +58,11 @@ class Seq2SeqCollator:
             "target_token_ids": [list(tokens) for tokens in truncated_labels],
             "input_lengths": torch.tensor(
                 [len(tokens) for tokens in truncated_inputs],
-                dtype=torch.long,
+                dtype=torch.int32,
             ),
             "label_lengths": torch.tensor(
                 [len(tokens) for tokens in decoder_targets],
-                dtype=torch.long,
+                dtype=torch.int32,
             ),
         }
 
@@ -85,4 +85,4 @@ class Seq2SeqCollator:
             sequence + [pad_value] * (max_length - len(sequence))
             for sequence in sequences
         ]
-        return torch.tensor(padded, dtype=torch.long)
+        return torch.tensor(padded, dtype=torch.int32)
