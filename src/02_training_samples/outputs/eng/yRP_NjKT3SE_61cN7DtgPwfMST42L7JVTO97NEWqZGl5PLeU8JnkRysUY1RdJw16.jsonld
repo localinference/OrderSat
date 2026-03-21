@@ -1,0 +1,116 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Amphawa Thai Tea & Co.",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Paradigm Mall, Lot No. 4F-27 & 4FK-38, 4th Floor"
+      },
+      "identifier": [
+        {
+          "@type": "PropertyValue",
+          "name": "Operating Company",
+          "value": "T Plus F&B Sdn. Bhd."
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Company Registration Number",
+          "value": "1219716-T"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "GST Registration Number",
+          "value": "000707211264"
+        }
+      ]
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": {
+        "@id": "#merchant"
+      },
+      "orderNumber": "197",
+      "orderDate": "2018-05-11T16:23:00",
+      "priceCurrency": "MYR",
+      "paymentMethod": "https://schema.org/Cash",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "9.45",
+        "priceCurrency": "MYR"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Number",
+          "value": "CSPD029197"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Staff",
+          "value": "take away"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier",
+          "value": "maribel"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "GST",
+          "value": "0.53",
+          "unitText": "MYR"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Rounding",
+          "value": "0.02",
+          "unitText": "MYR"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cash Tendered",
+          "value": "10.00",
+          "unitText": "MYR"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Change",
+          "value": "0.55",
+          "unitText": "MYR"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "8.90",
+      "priceCurrency": "MYR",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 1,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "seller": {
+        "@id": "#merchant"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "thai milk tea - cha yen"
+    }
+  ]
+}
