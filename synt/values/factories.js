@@ -1,119 +1,114 @@
-import { expandTemplatedValue, splitAddress } from './placeholders.js'
-
-const merchantPrefixes = [
-  'Blue',
-  'Prime',
-  'Urban',
-  'Golden',
-  'North',
-  'Green',
-  'Silver',
-  'Modern',
-  'Bright',
-  'Fresh',
-  'Summit',
-  'Harbor',
-  'Oak',
-  'Maple',
-  'True',
-]
-
-const merchantRoots = [
-  'Market',
-  'Supply',
-  'Depot',
-  'Kitchen',
-  'Studio',
-  'Works',
-  'Collective',
-  'Center',
-  'Hub',
-  'Services',
-  'Store',
-  'Outfitters',
-  'Corner',
-  'House',
-  'Goods',
-]
-
-const merchantSuffixes = ['Ltd', 'Co', 'Group', 'Partners', 'Shop', 'Labs']
-
-const paymentMethods = [
-  { display: 'Cash', schemaUrl: 'https://schema.org/Cash' },
-  { display: 'Visa', schemaUrl: 'https://schema.org/CreditCard' },
-  { display: 'Mastercard', schemaUrl: 'https://schema.org/CreditCard' },
-  {
-    display: 'Bank Transfer',
-    schemaUrl: 'https://schema.org/ByBankTransferInAdvance',
-  },
-]
-
-const orderStatuses = [
-  { display: 'Processing', schemaUrl: 'https://schema.org/OrderProcessing' },
-  { display: 'In Transit', schemaUrl: 'https://schema.org/OrderInTransit' },
-  { display: 'Delivered', schemaUrl: 'https://schema.org/OrderDelivered' },
-  {
-    display: 'Pickup Available',
-    schemaUrl: 'https://schema.org/OrderPickupAvailable',
-  },
-]
-
-const paymentStatuses = [
-  {
-    display: 'Paid',
-    schemaUrl: 'https://schema.org/PaymentComplete',
-  },
-  {
-    display: 'Due',
-    schemaUrl: 'https://schema.org/PaymentDue',
-  },
-]
-
-const serviceModes = ['Dine In', 'Takeaway', 'Delivery', 'Pickup', 'Online']
-const receiptTypes = [
-  'Sales Receipt',
-  'Order Confirmation',
-  'Checkout Summary',
-  'Shipment Notice',
-  'Service Confirmation',
-]
-
 export function chooseCustomerName(values, rng) {
-  return rng.pick(values.customer)
+  return choosePersonName(values, rng)
 }
 
 export function chooseBrokerName(values, rng) {
-  return rng.pick(values.broker)
+  return choosePersonName(values, rng)
 }
 
-export function chooseMerchantName(rng) {
-  return `${rng.pick(merchantPrefixes)} ${rng.pick(merchantRoots)} ${rng.pick(merchantSuffixes)}`
+export function chooseLocale(values, rng) {
+  return rng.pick(values.atoms.geography.locales)
 }
 
-export function chooseAddress(values, rng) {
-  const fullText = expandTemplatedValue(rng.pick(values.billingAddress), rng)
-  return splitAddress(fullText)
+export function chooseMerchantName(values, rng) {
+  return interpolatePattern(
+    rng.pick(values.patterns.companyNameFormats),
+    {
+      prefix: rng.pick(values.atoms.companies.prefixes),
+      root: rng.pick(values.atoms.companies.roots),
+      suffix: rng.pick(values.atoms.companies.suffixes),
+      family: rng.pick(values.atoms.people.lastNames),
+      family2: rng.pick(values.atoms.people.lastNames),
+    }
+  )
+}
+
+export function chooseLogisticsProviderName(values, rng) {
+  return interpolatePattern(
+    rng.pick(values.patterns.logisticsCompanyFormats),
+    {
+      prefix: rng.pick(values.atoms.companies.logisticsPrefixes),
+      root: rng.pick(values.atoms.companies.logisticsRoots),
+      suffix: rng.pick(values.atoms.companies.logisticsSuffixes),
+    }
+  )
+}
+
+export function chooseAddress(locale, rng, values) {
+  const city = rng.pick(locale.cities)
+  const streetName = rng.pick(city.streets)
+  const houseNumber = String(rng.int(1, 999))
+  const secondLine = rng.chance(0.28)
+    ? `${rng.pick(values.atoms.companies.suiteLabels)} ${rng.int(1, 40)}`
+    : null
+  const streetAddress = [houseNumber, streetName, secondLine]
+    .filter(Boolean)
+    .join(', ')
+  const postalCode = formatMask(rng.pick(locale.postalFormats), rng)
+  const fullText = [
+    streetAddress,
+    city.name,
+    city.region,
+    postalCode,
+    locale.countryName,
+  ].join(', ')
+
+  return {
+    fullText,
+    streetAddress,
+    addressLocality: city.name,
+    addressRegion: city.region,
+    postalCode,
+    addressCountry: locale.countryName,
+    addressCountryCode: locale.countryCode,
+    currency: locale.currency,
+    locale,
+  }
 }
 
 export function chooseItems(values, rng, blueprint) {
+  const quantityRange =
+    blueprint === 'service-confirmation'
+      ? values.atoms.commerce.ranges.serviceQuantity
+      : values.atoms.commerce.ranges.productQuantity
   const itemCount =
-    blueprint === 'service-confirmation' ? rng.int(1, 3) : rng.int(1, 5)
+    blueprint === 'service-confirmation'
+      ? rng.int(1, Math.min(3, quantityRange.max))
+      : rng.int(1, Math.min(5, quantityRange.max))
 
-  const names = rng.shuffle(values.acceptedOffer).slice(0, itemCount)
-  return names.map((name) => {
-    const type = inferOfferType(name, blueprint)
-    const quantity = type === 'Service' ? 1 : rng.int(1, 4)
+  const categoryNames = values.patterns.blueprintCatalogs[blueprint]
+  const candidates = uniqueByName(
+    categoryNames.flatMap((categoryName) =>
+      buildCategoryCandidates(values, rng, categoryName, itemCount * 3)
+    )
+  )
+
+  return rng.shuffle(candidates).slice(0, itemCount).map((candidate) => {
+    const categoryConfig = values.catalogs.composedOffers[candidate.categoryName]
+    const type = inferOfferType(candidate.name, blueprint)
+    const effectiveQuantityRange =
+      type === 'Service'
+        ? values.atoms.commerce.ranges.serviceQuantity
+        : categoryConfig?.quantityRange ?? values.atoms.commerce.ranges.productQuantity
+    const effectivePriceRange = categoryConfig?.priceRange ?? {
+      min: type === 'Service' ? 18 : 4,
+      max: type === 'Service' ? 180 : 120,
+    }
+    const quantity = rng.int(
+      effectiveQuantityRange.min,
+      effectiveQuantityRange.max
+    )
     const unitPrice = randomMoney(
       rng,
-      type === 'Service' ? 18 : 4,
-      type === 'Service' ? 180 : 120
+      effectivePriceRange.min,
+      effectivePriceRange.max
     )
-    const linePrice = quantity * unitPrice
+    const linePrice = roundMoney(quantity * unitPrice)
 
     return {
       type,
-      name,
-      sku: `${rng.id(3)}-${rng.id(4)}`,
+      name: candidate.name,
+      sku: formatMask(rng.pick(values.patterns.skuFormats), rng),
       quantity,
       unitText: 'item',
       unitPrice,
@@ -122,31 +117,17 @@ export function chooseItems(values, rng, blueprint) {
   })
 }
 
-export function chooseCurrency(country, rng) {
-  if (country === 'United Kingdom') {
-    return { code: 'GBP', symbol: '£' }
-  }
-  if (country === 'Ireland' || country === 'France' || country === 'Germany') {
-    return { code: 'EUR', symbol: '€' }
-  }
-  if (country === 'Canada') {
-    return { code: 'CAD', symbol: 'CA$' }
-  }
-  if (country === 'Australia') {
-    return { code: 'AUD', symbol: 'A$' }
-  }
-  return rng.pick([
-    { code: 'USD', symbol: '$' },
-    { code: 'EUR', symbol: '€' },
-    { code: 'GBP', symbol: '£' },
-  ])
+export function chooseCurrency(locale) {
+  return locale.currency
 }
 
-export function choosePayment(rng) {
-  const method = rng.pick(paymentMethods)
+export function choosePayment(values, rng) {
+  const method = rng.pick(values.atoms.commerce.paymentMethods)
   const status = rng.weightedPick([
-    { value: paymentStatuses[0], weight: 4 },
-    { value: paymentStatuses[1], weight: 1 },
+    { value: values.atoms.commerce.paymentStatuses[0], weight: 5 },
+    { value: values.atoms.commerce.paymentStatuses[1], weight: 2 },
+    { value: values.atoms.commerce.paymentStatuses[2], weight: 1 },
+    { value: values.atoms.commerce.paymentStatuses[3], weight: 1 },
   ])
 
   return {
@@ -156,74 +137,132 @@ export function choosePayment(rng) {
   }
 }
 
-export function chooseOrderStatus(rng, blueprint) {
+export function chooseOrderStatus(values, rng, blueprint) {
   if (blueprint === 'shipping-notice') {
     return rng.weightedPick([
-      { value: orderStatuses[1], weight: 2 },
-      { value: orderStatuses[2], weight: 1 },
+      { value: values.atoms.commerce.orderStatuses.shipping[0], weight: 3 },
+      { value: values.atoms.commerce.orderStatuses.shipping[1], weight: 2 },
+      { value: values.atoms.commerce.orderStatuses.shipping[2], weight: 1 },
     ])
   }
 
   if (blueprint === 'service-confirmation') {
-    return orderStatuses[0]
+    return rng.weightedPick([
+      { value: values.atoms.commerce.orderStatuses.service[0], weight: 3 },
+      { value: values.atoms.commerce.orderStatuses.service[1], weight: 1 },
+    ])
   }
 
   return rng.weightedPick([
-    { value: orderStatuses[0], weight: 3 },
-    { value: orderStatuses[3], weight: 1 },
+    { value: values.atoms.commerce.orderStatuses.default[0], weight: 4 },
+    { value: values.atoms.commerce.orderStatuses.default[1], weight: 2 },
+    { value: values.atoms.commerce.orderStatuses.default[2], weight: 1 },
   ])
 }
 
-export function generateOrderNumber(rng) {
-  return `${rng.id(2)}-${rng.id(4)}-${rng.id(4)}`
+export function chooseDiscountPercent(values, rng) {
+  return randomPercent(rng, values.atoms.commerce.ranges.discountPercent)
 }
 
-export function generateTrackingNumber(rng) {
-  return `${rng.id(4)}${rng.id(4)}${rng.id(4)}${rng.id(4)}`
+export function chooseTaxRate(values, rng, taxType = 'default') {
+  const percent = randomPercent(
+    rng,
+    values.atoms.commerce.ranges.taxPercent[taxType]
+  )
+  return percent / 100
 }
 
-export function generateTelephone(country, rng) {
-  if (country === 'United Kingdom') {
-    return `+44 20 ${rng.int(1000, 9999)} ${rng.int(1000, 9999)}`
-  }
-  if (country === 'Ireland') {
-    return `+353 1 ${rng.int(100, 999)} ${rng.int(1000, 9999)}`
-  }
-  return `+1 ${rng.int(200, 999)}-${rng.int(200, 999)}-${rng.int(1000, 9999)}`
+export function generateOrderNumber(values, rng) {
+  return formatMask(rng.pick(values.patterns.orderNumberFormats), rng)
 }
 
-export function generateEmail(name, domain, rng) {
-  const slug = slugify(name).replaceAll('-', '.')
-  return `${slug}${rng.int(1, 99)}@${domain}`
+export function generateTrackingNumber(values, rng) {
+  return formatMask(rng.pick(values.patterns.trackingNumberFormats), rng)
 }
 
-export function generateTaxId(country, rng) {
-  if (country === 'United Kingdom') {
-    return `GB${rng.int(100000000, 999999999)}`
+export function generateTelephone(locale, rng) {
+  return formatMask(rng.pick(locale.phoneFormats), rng)
+}
+
+export function generateEmail(values, name, merchantName, rng) {
+  const parts = name.split(/\s+/).filter(Boolean)
+  const tokens = {
+    first: slugify(parts[0] ?? 'user').replaceAll('-', '.'),
+    last: slugify(parts.at(-1) ?? 'user').replaceAll('-', '.'),
+    merchant: slugify(merchantName),
+    nn: String(rng.int(1, 99)),
   }
-  if (country === 'Ireland') {
-    return `${rng.id(7)}${rng.pick(['W', 'X'])}`
-  }
-  if (country === 'France') {
-    return `FR${rng.int(10000000000, 99999999999)}`
-  }
-  return `${rng.id(2)}-${rng.id(7)}`
+  const local = interpolatePattern(
+    rng.pick(values.patterns.emailLocalFormats),
+    tokens
+  )
+  const domain = rng.pick(values.atoms.commerce.emailDomains)
+  return `${local}@${domain}`
+}
+
+export function generateTaxId(locale, rng) {
+  return formatMask(rng.pick(locale.taxIdFormats), rng)
 }
 
 export function choosePromoCode(values, rng) {
-  return rng.pick(values.discountCode)
+  const percent = String(
+    randomPercent(rng, values.atoms.commerce.ranges.promoPercent)
+  )
+  const tokens = {
+    prefix: rng.pick(values.atoms.commerce.promoPrefixes),
+    theme: rng.pick(values.atoms.commerce.promoThemes),
+    percent,
+    year2: String(24 + rng.int(0, 6)),
+  }
+  const raw = interpolatePattern(
+    rng.pick(values.patterns.promoCodeFormats),
+    tokens
+  )
+  return applyCaseStyle(raw, rng)
 }
 
-export function chooseServiceMode(rng) {
-  return rng.pick(serviceModes)
+export function chooseServiceMode(values, rng) {
+  return rng.pick(values.atoms.commerce.serviceModes)
 }
 
-export function chooseReceiptType(rng) {
-  return rng.pick(receiptTypes)
+export function chooseReceiptType(values, rng) {
+  return rng.pick(values.atoms.commerce.receiptTypes)
+}
+
+export function generateCustomerId(values, rng) {
+  return formatMask(rng.pick(values.patterns.customerIdFormats), rng)
+}
+
+export function generateRegisterNumber(values, rng) {
+  return formatMask(rng.pick(values.patterns.registerNumberFormats), rng)
+}
+
+export function generateWebsiteUrl(values, merchantName, rng) {
+  const host = interpolatePattern(
+    rng.pick(values.patterns.websiteHostFormats),
+    {
+      merchant: slugify(merchantName),
+    }
+  )
+  const suffix = rng.pick(values.atoms.companies.domains)
+  return `https://${host}${suffix}`
 }
 
 export function randomMoney(rng, min, max) {
   return Number((rng.int(min * 100, max * 100) / 100).toFixed(2))
+}
+
+export function randomPercent(rng, range) {
+  const decimals = range.decimals ?? 0
+  const factor = 10 ** decimals
+  return Number(
+    (
+      rng.int(
+        Math.round(range.min * factor),
+        Math.round(range.max * factor)
+      ) / factor
+    ).toFixed(decimals)
+  )
 }
 
 export function toMoneyString(value) {
@@ -237,14 +276,120 @@ export function slugify(value) {
     .replaceAll(/^-+|-+$/g, '')
 }
 
+function choosePersonName(values, rng) {
+  const first = rng.pick(values.atoms.people.firstNames)
+  const last = rng.pick(values.atoms.people.lastNames)
+  const middle = rng.pick(values.atoms.people.middleInitials)
+  return interpolatePattern(
+    rng.pick(values.patterns.personNameFormats),
+    {
+      first,
+      middle,
+      last,
+    }
+  )
+}
+
+function buildCategoryCandidates(values, rng, categoryName, generatedCount) {
+  const fixed = (values.catalogs.offers[categoryName] ?? []).map((name) => ({
+    name,
+    categoryName,
+  }))
+  const composed = Array.from({ length: generatedCount }, () => ({
+    name: generateOfferName(values.catalogs.composedOffers[categoryName], rng),
+    categoryName,
+  })).filter((entry) => entry.name)
+
+  return [...fixed, ...composed]
+}
+
+function generateOfferName(categoryConfig, rng) {
+  if (!categoryConfig) {
+    return null
+  }
+
+  return interpolatePattern(rng.pick(categoryConfig.formats), {
+    adj: rng.pick(categoryConfig.adjectives),
+    noun: rng.pick(categoryConfig.nouns),
+    qual: rng.pick(categoryConfig.qualifiers),
+  }).replaceAll(/\s+/g, ' ').trim()
+}
+
+function uniqueByName(entries) {
+  const seen = new Set()
+  const out = []
+
+  for (const entry of entries) {
+    if (!entry?.name || seen.has(entry.name)) {
+      continue
+    }
+    seen.add(entry.name)
+    out.push(entry)
+  }
+
+  return out
+}
+
+function interpolatePattern(pattern, tokens) {
+  return pattern.replaceAll(/\{([^}]+)\}/g, (_match, key) => tokens[key] ?? key)
+}
+
+function applyCaseStyle(value, rng) {
+  const style = rng.pick(['upper', 'lower', 'title'])
+  if (style === 'upper') {
+    return value.toUpperCase()
+  }
+  if (style === 'lower') {
+    return value.toLowerCase()
+  }
+  return value
+    .split(/([_-])/)
+    .map((part) =>
+      part === '_' || part === '-'
+        ? part
+        : part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
+    )
+    .join('')
+}
+
+function formatMask(mask, rng) {
+  let out = ''
+
+  for (const character of mask) {
+    if (character === 'A') {
+      out += rng.pick('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''))
+      continue
+    }
+    if (character === 'a') {
+      out += rng.pick('abcdefghijklmnopqrstuvwxyz'.split(''))
+      continue
+    }
+    if (character === '#') {
+      out += String(rng.int(0, 9))
+      continue
+    }
+    if (character === '*') {
+      out += rng.pick('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split(''))
+      continue
+    }
+    out += character
+  }
+
+  return out
+}
+
 function inferOfferType(name, blueprint) {
   if (blueprint === 'service-confirmation') {
     return 'Service'
   }
 
-  return /service|session|subscription|ticket|pass|booking|consultation|lesson|plan|access/i.test(
+  return /service|session|subscription|ticket|pass|booking|consultation|lesson|plan|access|inspection|support|repair/i.test(
     name
   )
     ? 'Service'
     : 'Product'
+}
+
+function roundMoney(value) {
+  return Number(value.toFixed(2))
 }

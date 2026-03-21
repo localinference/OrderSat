@@ -3,10 +3,10 @@ import { toMoneyString } from '../values/factories.js'
 export function pickLabel(labels, key, rng) {
   const candidates = labels[key]
   if (Array.isArray(candidates) && candidates.length > 0) {
-    return rng.pick(candidates)
+    return varyLabelSurface(rng.pick(candidates), rng)
   }
 
-  return humanizeKey(key)
+  return varyLabelSurface(humanizeKey(key), rng)
 }
 
 export function formatField(label, value, rng) {
@@ -62,4 +62,18 @@ function humanizeKey(value) {
     .replaceAll(/([a-z])([A-Z])/g, '$1 $2')
     .replaceAll(/[_-]+/g, ' ')
     .toLowerCase()
+}
+
+function varyLabelSurface(value, rng) {
+  const style = rng.pick(['original', 'lower', 'upper', 'title'])
+  if (style === 'lower') {
+    return value.toLowerCase()
+  }
+  if (style === 'upper') {
+    return value.toUpperCase()
+  }
+  if (style === 'title') {
+    return value.replaceAll(/\b[a-z]/g, (match) => match.toUpperCase())
+  }
+  return value
 }

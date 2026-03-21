@@ -3,20 +3,25 @@ import {
   chooseBrokerName,
   chooseCurrency,
   chooseCustomerName,
+  chooseDiscountPercent,
   chooseItems,
+  chooseLocale,
+  chooseLogisticsProviderName,
   chooseMerchantName,
   chooseOrderStatus,
   choosePayment,
   choosePromoCode,
   chooseReceiptType,
   chooseServiceMode,
+  chooseTaxRate,
+  generateCustomerId,
   generateEmail,
   generateOrderNumber,
+  generateRegisterNumber,
   generateTaxId,
   generateTelephone,
   generateTrackingNumber,
-  randomMoney,
-  slugify,
+  generateWebsiteUrl,
 } from '../values/factories.js'
 
 export const renderers = [
@@ -57,23 +62,29 @@ export function getCoveragePlan(index) {
 }
 
 export function buildOrderRecord({ languageConfig, rng, plan, index }) {
-  const merchantAddress = chooseAddress(languageConfig.values, rng)
-  const customerAddress = chooseAddress(languageConfig.values, rng)
-  const sellerName = chooseMerchantName(rng)
+  const sellerLocale = chooseLocale(languageConfig.values, rng)
+  const customerLocale = rng.chance(0.75)
+    ? sellerLocale
+    : chooseLocale(languageConfig.values, rng)
+  const merchantAddress = chooseAddress(sellerLocale, rng, languageConfig.values)
+  const customerAddress = chooseAddress(customerLocale, rng, languageConfig.values)
+  const sellerName = chooseMerchantName(languageConfig.values, rng)
   const customerName = chooseCustomerName(languageConfig.values, rng)
-  const currency = chooseCurrency(merchantAddress.addressCountry, rng)
+  const currency = chooseCurrency(sellerLocale)
   const items = chooseItems(languageConfig.values, rng, plan.blueprint)
   const subtotal = roundMoney(
     items.reduce((sum, item) => sum + item.linePrice, 0)
   )
-  const discountAmount = rng.chance(0.3)
-    ? roundMoney(subtotal * rng.pick([0.05, 0.1, 0.15]))
+  const discountPercent = rng.chance(0.3)
+    ? chooseDiscountPercent(languageConfig.values, rng)
     : 0
+  const discountAmount = roundMoney(subtotal * (discountPercent / 100))
   const taxableAmount = subtotal - discountAmount
-  const taxRate =
-    plan.blueprint === 'service-confirmation'
-      ? rng.pick([0, 0.1, 0.2])
-      : rng.pick([0, 0.05, 0.08, 0.2])
+  const taxRate = chooseTaxRate(
+    languageConfig.values,
+    rng,
+    plan.blueprint === 'service-confirmation' ? 'service' : 'default'
+  )
   const taxAmount = roundMoney(taxableAmount * taxRate)
   const total = roundMoney(taxableAmount + taxAmount)
   const orderDate = new Date(
@@ -85,11 +96,14 @@ export function buildOrderRecord({ languageConfig, rng, plan, index }) {
       rng.int(0, 59)
     )
   )
-  const payment = choosePayment(rng)
-  const orderStatus = chooseOrderStatus(rng, plan.blueprint)
-  const serviceMode = chooseServiceMode(rng)
-  const receiptType = chooseReceiptType(rng)
-  const domain = `${slugify(sellerName)}.example`
+  const payment = choosePayment(languageConfig.values, rng)
+  const orderStatus = chooseOrderStatus(
+    languageConfig.values,
+    rng,
+    plan.blueprint
+  )
+  const serviceMode = chooseServiceMode(languageConfig.values, rng)
+  const receiptType = chooseReceiptType(languageConfig.values, rng)
   const record = {
     language: languageConfig.language,
     blueprint: plan.blueprint,
@@ -97,21 +111,21 @@ export function buildOrderRecord({ languageConfig, rng, plan, index }) {
     currencySymbol: currency.symbol,
     seller: {
       name: sellerName,
-      telephone: generateTelephone(merchantAddress.addressCountry, rng),
-      email: generateEmail(sellerName, domain, rng),
-      taxId: generateTaxId(merchantAddress.addressCountry, rng),
+      telephone: generateTelephone(sellerLocale, rng),
+      email: generateEmail(languageConfig.values, sellerName, sellerName, rng),
+      taxId: generateTaxId(sellerLocale, rng),
       address: merchantAddress,
-      website: `https://${domain}`,
+      website: generateWebsiteUrl(languageConfig.values, sellerName, rng),
     },
     customer: {
       type: rng.chance(0.8) ? 'Person' : 'Organization',
       name: customerName,
-      email: generateEmail(customerName, 'customer.example', rng),
+      email: generateEmail(languageConfig.values, customerName, sellerName, rng),
       address: customerAddress,
-      identifier: `CUST-${rng.id(6)}`,
+      identifier: generateCustomerId(languageConfig.values, rng),
     },
     order: {
-      number: generateOrderNumber(rng),
+      number: generateOrderNumber(languageConfig.values, rng),
       dateIso: orderDate.toISOString().slice(0, 10),
       timeIso: orderDate.toISOString().slice(11, 16),
       paymentMethodDisplay: payment.display,
@@ -122,15 +136,15 @@ export function buildOrderRecord({ languageConfig, rng, plan, index }) {
       orderStatusUrl: orderStatus.schemaUrl,
       receiptType,
       serviceMode,
-      registerNumber: String(rng.int(1, 24)),
+      registerNumber: generateRegisterNumber(languageConfig.values, rng),
       cashierName: chooseBrokerName(languageConfig.values, rng),
       promoCode: discountAmount > 0 ? choosePromoCode(languageConfig.values, rng) : null,
     },
     delivery:
       plan.blueprint === 'shipping-notice' || rng.chance(0.35)
         ? {
-            providerName: `${chooseMerchantName(rng)} Logistics`,
-            trackingNumber: generateTrackingNumber(rng),
+            providerName: chooseLogisticsProviderName(languageConfig.values, rng),
+            trackingNumber: generateTrackingNumber(languageConfig.values, rng),
             address: customerAddress,
           }
         : null,

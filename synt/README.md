@@ -25,6 +25,30 @@ The generator is coverage-driven, not blind-random. It cycles:
 
 and randomizes values inside each coverage cell. That gives deliberate coverage without pretending that every literal semantic combination is tractable.
 
+## Config Shape
+
+The intended per-language config model is:
+
+- `labels`
+  Human-facing field labels and synonyms that can appear in the synthetic input.
+- `values/atoms`
+  Reusable lexical building blocks such as first names, last names, company roots, locales, currencies, promo prefixes, and status vocabularies.
+- `values/catalogs`
+  Curated semantic item banks such as products, foods, services, subscriptions, travel items, and tickets.
+- `values/patterns`
+  Reusable composition formats for ids, promo codes, emails, websites, and company names.
+
+English is the first production-grade config. New languages should copy this structure and then replace:
+
+- locale data
+- people names
+- company lexemes
+- product/service catalogs
+- promo vocabulary
+- country-specific formats
+
+The generator logic should stay mostly unchanged while the language config changes.
+
 ## Blueprints
 
 - `retail-receipt`
@@ -94,7 +118,7 @@ Options:
 
 The intended growth path is:
 
-1. add richer value banks per language
+1. add richer atoms, catalogs, and patterns per language
 2. add more semantic blueprints
 3. add more renderers
 4. add stronger OCR-noise and corruption profiles
