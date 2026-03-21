@@ -1,0 +1,102 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Finnegan's Way",
+      "telephone": "305-672-7747",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "1344 Ocean Drive",
+        "addressLocality": "Miami Beach",
+        "addressRegion": "Florida",
+        "postalCode": "33139",
+        "addressCountry": "USA"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": {
+        "@id": "#merchant"
+      },
+      "orderNumber": "822819",
+      "orderDate": "2017-08-21T20:38:00",
+      "priceCurrency": "USD",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "43.60",
+        "priceCurrency": "USD"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Table",
+          "value": "15"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Customer Count",
+          "value": "1"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Waiter",
+          "value": "58 Iryna P"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Sales Tax",
+          "value": "2.80",
+          "unitText": "USD"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Resort Tax",
+          "value": "0.80",
+          "unitText": "USD"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Voluntary Tip",
+          "value": "7.20",
+          "unitText": "USD"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Suggested Total With Tip",
+          "value": "50.80",
+          "unitText": "USD"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "40.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 4,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "seller": {
+        "@id": "#merchant"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "sobe mojito's"
+    }
+  ]
+}
