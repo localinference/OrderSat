@@ -1,0 +1,160 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "name": "Folies Gourmandes",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "folig"
+      }
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Speedy Express",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Shipper ID",
+        "value": "1"
+      }
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "streetAddress": "[ERROR:UNCERTAIN] 184, chaussée de toumnai",
+        "addressLocality": "Lille",
+        "addressRegion": "Western Europe",
+        "postalCode": "59000",
+        "addressCountry": "France"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "orderNumber": "10408",
+      "orderDate": "2017-01-08",
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "1622.4"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Employee Name",
+          "value": "Laura Callahan"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2017-01-14"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "208.0",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 10,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "20.8",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "Gravad Lax"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "35.4",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 6,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-2"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "5.9",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-2",
+      "@type": "Product",
+      "name": "[ERROR:UNCERTAIN] tourtiére"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "1379.0",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 35,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-3"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "39.4",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-3",
+      "@type": "Product",
+      "name": "tarte au sucre"
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "name": "Cactus Comidas Para Llevar",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "cactu"
+      }
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Federal Shipping",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Shipper ID",
+        "value": "3"
+      }
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "streetAddress": "Cerrito 333",
+        "addressLocality": "Buenos Aires",
+        "addressRegion": "South America",
+        "postalCode": "1010",
+        "addressCountry": "Argentina"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "orderNumber": "10782",
+      "orderDate": "2017-12-17",
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "12.5"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Employee Name",
+          "value": "Anne Dodsworth"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2017-12-22"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "12.5",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 1,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "12.5",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "gorgonzola telino"
+    }
+  ]
+}

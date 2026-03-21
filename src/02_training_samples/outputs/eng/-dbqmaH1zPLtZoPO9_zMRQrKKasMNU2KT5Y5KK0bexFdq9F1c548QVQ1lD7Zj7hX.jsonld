@@ -1,0 +1,100 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "name": "Quick-Stop",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "quick"
+      }
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Speedy Express",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Shipper ID",
+        "value": "1"
+      }
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "streetAddress": "Taucherstrate 10",
+        "addressLocality": "Cunewalde",
+        "addressRegion": "Western Europe",
+        "postalCode": "1307",
+        "addressCountry": "Germany"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "orderNumber": "10878",
+      "orderDate": "2018-02-10",
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "1620.0"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Employee Name",
+          "value": "Margaret Peacock"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2018-02-12"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "1620.0",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 20,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "81.0",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "Sir Rodney's Marmalade"
+    }
+  ]
+}
