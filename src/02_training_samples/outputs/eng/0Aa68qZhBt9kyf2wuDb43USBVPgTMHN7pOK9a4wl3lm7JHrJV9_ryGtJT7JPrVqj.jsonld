@@ -4,24 +4,26 @@
     {
       "@id": "#merchant",
       "@type": "Store",
-      "name": "[ERROR:UNCERTAIN] Wing Tiger",
+      "name": "Wing Tiger",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "Rua Nova da Trindade 16",
         "postalCode": "1200-219"
       },
-      "identifier": [
-        {
-          "@type": "PropertyValue",
-          "name": "Taxpayer Number",
-          "value": "210414650"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "Customer Taxpayer Number",
-          "value": "510776914"
-        }
-      ]
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Taxpayer Number",
+        "value": "210414650"
+      }
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Taxpayer Number",
+        "value": "510776914"
+      }
     },
     {
       "@id": "#order",
@@ -29,9 +31,12 @@
       "seller": {
         "@id": "#merchant"
       },
+      "customer": {
+        "@id": "#customer"
+      },
       "orderDate": "2019-03-10T10:47:00",
       "priceCurrency": "EUR",
-      "paymentMethod": "[ERROR:UNCERTAIN] Multibanco",
+      "paymentMethod": "Multibanco",
       "paymentStatus": "https://schema.org/PaymentComplete",
       "acceptedOffer": [
         {
@@ -48,6 +53,9 @@
         },
         {
           "@id": "#offer-5"
+        },
+        {
+          "@id": "#offer-6"
         }
       ],
       "totalPaymentDue": {
@@ -135,7 +143,7 @@
     {
       "@id": "#offer-5",
       "@type": "Offer",
-      "price": "2.00",
+      "price": "1.00",
       "priceCurrency": "EUR",
       "eligibleQuantity": {
         "@type": "QuantitativeValue",
@@ -148,6 +156,25 @@
     },
     {
       "@id": "#product-5",
+      "@type": "Product",
+      "name": "calendar 2019 desk"
+    },
+    {
+      "@id": "#offer-6",
+      "@type": "Offer",
+      "price": "2.00",
+      "priceCurrency": "EUR",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 1,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-6"
+      }
+    },
+    {
+      "@id": "#product-6",
       "@type": "Product",
       "name": "notebook sequence"
     }
