@@ -1,12 +1,103 @@
-## HIGH-LEVEL GOALS
+## Purpose
 
-We want to teach the model to generalize on transforming [order like arbitrary text](../WHAT_IS_AN_ORDER.md) in to a schema.org/Order, that should be taken in to account when desinging the synthtization algorithms.
+`synt` generates synthetic `{input -> schema.org/Order JSON-LD}` pairs directly into:
 
-We want the model to encode the data in to a semantic presentation then move the semantic pieces to the semantics mathcing schema org field
+- `src/02_training_samples/inputs/{language}/*.txt`
+- `src/02_training_samples/outputs/{language}/*.jsonld`
 
-## POSSIBLE FLOW
+It exists to widen semantic and presentation coverage for `Order`-like documents. It is complementary to real OCR-derived samples, not a replacement for them.
 
-read config per language (added per language possible labels and values or sets of data that can be combined in to data) pick randomly a set of fields and values build a input presentation plain text with artificially created random ocr noise, clean plaintext, html, xml,csv, json and other possible structured text formats and a output "annotated" (generated correctly) schema.org/Order JSON-LD hash the input pair see src/02_training/samples/inputs/${language}/${SHA-384}.txt if exists continue to next iter, if doesn't exist write input to src/02_training/samples/inputs/${language}/${SHA-384}.txt output to src/02_training/samples/outputs/${language}/${SHA-384}.jsonld continue until all possible combinations that make sense for goals are iterated on, do this for every langauage console.log how many were written and how long it took per language
+## Flow
 
-see C:\Users\jorts\OrderSaT\synthesizer\config  
-it can be desinged to something entirely different the key is that per language vocabulary that is needed to generate a enormous/huge/massive ammount of receipts can be added cleanly, in a clear structured managed flow there should be variance in labels there should be data without an label everything the goal is to try and cover as much unique order like stuff ass possible, as many ocr noises as possible but do it with max performance maybe a runWithWorker style thing where we utilize a worker pool for concurrency see C:\Users\jorts\OrderSaT\cli\01_process_data_sources
+1. Load `synt/config/{language}/labels` and `synt/config/{language}/values`.
+2. Build a semantic order record first.
+3. Render that same record into one arbitrary order-like input presentation.
+4. Build the matching JSON-LD from the semantic record.
+5. Hash the `{input + stable output}` pair with `SHA-384` base64url.
+6. Write the `.txt` and `.jsonld` pair only when that hash does not already exist.
+
+The generator is coverage-driven, not blind-random. It cycles:
+
+- blueprint
+- renderer
+- OCR noise profile
+- error profile
+
+and randomizes values inside each coverage cell. That gives deliberate coverage without pretending that every literal semantic combination is tractable.
+
+## Blueprints
+
+- `retail-receipt`
+- `online-confirmation`
+- `shipping-notice`
+- `service-confirmation`
+
+## Renderers
+
+- `plain-receipt`
+- `email-summary`
+- `html-order`
+- `json-dump`
+- `xml-summary`
+- `csv-export`
+
+The same underlying order can therefore surface as line-oriented receipt text, structured machine text, or semi-structured confirmation text.
+
+## Error Behavior
+
+`synt` supports the same two output markers used by the real annotation pipeline:
+
+- `[ERROR:UNCERTAIN]`
+- `[ERROR:FATAL]`
+
+Targeted fields are corrupted in the input first, then the JSON-LD keeps the raw corrupted value in the native field with the correct prefix. Global OCR noise is applied separately to teach normalization behavior.
+
+## Performance Model
+
+`synt` uses a worker pool like `cli/01_process_data_sources`, but keeps generation deterministic:
+
+- each worker receives an index range
+- the index maps to a stable coverage plan
+- the seed and index fully determine the generated sample
+
+That makes large runs parallel without giving up reproducibility.
+
+## CLI
+
+Example:
+
+```powershell
+node synt -L eng -C 5000 --batchSize 64 --concurrency 8 --seed 1
+```
+
+Options:
+
+- `-L, --languages`
+- `-C, --count`
+- `--batchSize`
+- `--concurrency`
+- `--seed`
+- `--validateMode all|sample|none`
+- `--maxAttemptsFactor`
+
+## Validation
+
+`synt` can validate generated JSON-LD with the same validator used elsewhere:
+
+- `all`: validate every written sample
+- `sample`: validate the first sample seen for each coverage cell
+- `none`: skip structural validation
+
+`sample` is the default because the output side uses a small set of stable JSON-LD shapes while the input side carries most of the variation.
+
+## Extension Model
+
+The intended growth path is:
+
+1. add richer value banks per language
+2. add more semantic blueprints
+3. add more renderers
+4. add stronger OCR-noise and corruption profiles
+5. add new field generators only when they improve downstream generalization
+
+The important rule is semantic-first synthesis. The output JSON-LD should come from the semantic record, not be reverse-parsed from the rendered input.
