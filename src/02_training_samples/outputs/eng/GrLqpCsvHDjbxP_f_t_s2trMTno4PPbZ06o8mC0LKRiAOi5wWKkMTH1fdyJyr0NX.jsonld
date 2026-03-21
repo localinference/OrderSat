@@ -1,0 +1,116 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Bar Wang Rice @ Permas Jaya",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "12, Jalan Tampoi 7/4, Kawasan Perindustrian Tampoi",
+        "postalCode": "81200",
+        "addressLocality": "Johor Bahru",
+        "addressRegion": "Johor"
+      },
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "GST Registration Number",
+        "value": "000656195584"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": {
+        "@id": "#merchant"
+      },
+      "orderNumber": "OR18050302170448",
+      "orderDate": "2018-05-03T18:27:00",
+      "priceCurrency": "MYR",
+      "paymentMethod": "https://schema.org/Cash",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "8.20",
+        "priceCurrency": "MYR"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Operating Company",
+          "value": "Unihakka International Sdn Bhd"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax",
+          "value": "0.46",
+          "unitText": "MYR"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cash Tendered",
+          "value": "8.20",
+          "unitText": "MYR"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Change",
+          "value": "0.00",
+          "unitText": "MYR"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "7.10",
+      "priceCurrency": "MYR",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 1,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "seller": {
+        "@id": "#merchant"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "1 meat + 3 vege"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "1.10",
+      "priceCurrency": "MYR",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 1,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-2"
+      },
+      "seller": {
+        "@id": "#merchant"
+      }
+    },
+    {
+      "@id": "#product-2",
+      "@type": "Product",
+      "name": "vegetable"
+    }
+  ]
+}
