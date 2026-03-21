@@ -1,0 +1,160 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "name": "Save-a-Lot Markets",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "savea"
+      }
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "United Package",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Shipper ID",
+        "value": "2"
+      }
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "streetAddress": "187 Suffolk Ln.",
+        "addressLocality": "Boise",
+        "addressRegion": "North America",
+        "postalCode": "83720",
+        "addressCountry": "USA"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "orderNumber": "10711",
+      "orderDate": "2017-10-21",
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "4451.7"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Employee Name",
+          "value": "Steven Buchanan"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2017-10-29"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "110.4",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 12,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "9.2",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "teatime chocolate biscuits"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "405.3",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 42,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-2"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "9.65",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-2",
+      "@type": "Product",
+      "name": "Jack's New England Clam Chowder"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "3936.0",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 120,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-3"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "32.8",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-3",
+      "@type": "Product",
+      "name": "perth pasties"
+    }
+  ]
+}

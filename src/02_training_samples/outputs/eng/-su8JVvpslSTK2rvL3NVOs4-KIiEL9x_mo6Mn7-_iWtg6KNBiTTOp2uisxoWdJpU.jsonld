@@ -1,0 +1,160 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "name": "Frankenversand",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "frank"
+      }
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Speedy Express",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Shipper ID",
+        "value": "1"
+      }
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "streetAddress": "Berliner Platz 43",
+        "addressLocality": "Miinchen",
+        "addressRegion": "Western Europe",
+        "postalCode": "80805",
+        "addressCountry": "Germany"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "orderNumber": "10929",
+      "orderDate": "2018-03-05",
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "1174.75"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Employee Name",
+          "value": "Michael Suyama"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2018-03-12"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "600.0",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 60,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "10.0",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "Sir Rodney's Scones"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "379.75",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 49,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-2"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "7.75",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-2",
+      "@type": "Product",
+      "name": "rhénbrau klosterbier"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "195.0",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 15,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-3"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "13.0",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      }
+    },
+    {
+      "@id": "#product-3",
+      "@type": "Product",
+      "name": "[ERROR:UNCERTAIN] original frankfurter griine sofie"
+    }
+  ]
+}
