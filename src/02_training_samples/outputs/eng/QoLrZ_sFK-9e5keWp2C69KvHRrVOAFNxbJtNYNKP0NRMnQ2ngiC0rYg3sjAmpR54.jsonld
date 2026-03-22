@@ -1,0 +1,161 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Wellington",
+        "addressRegion": "Wellington",
+        "postalCode": "2347",
+        "streetAddress": "13, Bowen Street"
+      },
+      "email": "orders@status.example",
+      "name": "[ERROR:UNCERTAIN] Full Architects & C0",
+      "taxID": "295-694-079",
+      "telephone": "+64 9 394 3749",
+      "url": "https://full-architects-co.ski"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Auckland",
+        "addressRegion": "Auckland",
+        "postalCode": "9460",
+        "streetAddress": "333, Ti Rakau Drive"
+      },
+      "email": "fabio60@reply.example.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "BCC-2429-8419"
+      },
+      "name": "Fabio Freeman"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Royal Express Parcel"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Auckland",
+        "addressRegion": "Auckland",
+        "postalCode": "9460",
+        "streetAddress": "333, Ti Rakau Drive"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "255.86",
+      "priceCurrency": "NZD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "127.93",
+        "priceCurrency": "NZD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Space Heater",
+      "sku": "PRD-MPR-376"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "NZD 255.86"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "NZD 17.07"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Shipment Notice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Delivery"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "László Alvarez"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "749"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "VWB33608509510"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2026-06-25"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2026-06-21",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "EQ-8237-6183",
+      "orderStatus": "https://schema.org/OrderInTransit",
+      "paymentMethod": "https://schema.org/ByBankTransferInAdvance",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "272.93",
+        "priceCurrency": "NZD"
+      }
+    }
+  ]
+}

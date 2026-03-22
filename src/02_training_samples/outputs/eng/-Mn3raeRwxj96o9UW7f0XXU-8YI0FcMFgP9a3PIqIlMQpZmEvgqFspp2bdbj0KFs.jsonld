@@ -1,0 +1,161 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Wellington",
+        "addressRegion": "Wellington",
+        "postalCode": "9864",
+        "streetAddress": "697, Willis Street"
+      },
+      "email": "orders@sales.example.com",
+      "name": "Terra Textiles & Co",
+      "taxID": "688-178-638",
+      "telephone": "+64 7 081 9824",
+      "url": "https://checkout.terra-textiles-co.freight"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Auckland",
+        "addressRegion": "Auckland",
+        "postalCode": "1286",
+        "streetAddress": "44, Queen Street East"
+      },
+      "email": "nino.morin87@example.site",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "MEM-12301211"
+      },
+      "name": "[ERROR:UNCERTAIN] Nin0 Morin"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "North Forwarding Global"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Auckland",
+        "addressRegion": "Auckland",
+        "postalCode": "1286",
+        "streetAddress": "44, Queen Street East"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 4
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "907.96",
+      "priceCurrency": "NZD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "226.99",
+        "priceCurrency": "NZD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Vacuum Cleaner",
+      "sku": "CMU-00-47"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "NZD 907.96"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "NZD 3.63"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Shipment Notice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Delivery"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Chika Carter"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "LUNE-9"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "[ERROR:FATAL] TRK4291-6294-0BS4"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2026-03-06"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2026-03-02",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "SO-169040",
+      "orderStatus": "https://schema.org/OrderDelivered",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "911.59",
+        "priceCurrency": "NZD"
+      }
+    }
+  ]
+}

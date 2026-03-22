@@ -1,0 +1,260 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Wellington",
+        "addressRegion": "Wellington",
+        "postalCode": "5215",
+        "streetAddress": "862, Cambridge Terrace, Stop 27"
+      },
+      "email": "lara-studios-limited.team@partner.example.com",
+      "name": "Lara Studios Limited",
+      "taxID": "540-200-274",
+      "telephone": "+64 1 800 5803",
+      "url": "https://shop.lara-studios-limited.direct"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Auckland",
+        "addressRegion": "Auckland",
+        "postalCode": "9815",
+        "streetAddress": "202, Customs Street"
+      },
+      "email": "aayla.montgomery@invoices.example.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "USR78906087"
+      },
+      "name": "Aayla W. Montgomery"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Northeast Services Network"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Auckland",
+        "addressRegion": "Auckland",
+        "postalCode": "9815",
+        "streetAddress": "202, Customs Street"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "757.08",
+      "priceCurrency": "NZD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "378.54",
+        "priceCurrency": "NZD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Motherboard",
+      "sku": "YGG-4014"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "65.76",
+      "priceCurrency": "NZD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "65.76",
+        "priceCurrency": "NZD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Necklace",
+      "sku": "20323199"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 4
+      },
+      "itemOffered": {
+        "@id": "#item-3"
+      },
+      "price": "40.68",
+      "priceCurrency": "NZD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "10.17",
+        "priceCurrency": "NZD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-3",
+      "@type": "Product",
+      "name": "Spaghetti Bolognese",
+      "sku": "CDT-4081-JZ"
+    },
+    {
+      "@id": "#offer-4",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 4
+      },
+      "itemOffered": {
+        "@id": "#item-4"
+      },
+      "price": "459.76",
+      "priceCurrency": "NZD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "114.94",
+        "priceCurrency": "NZD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-4",
+      "@type": "Product",
+      "name": "Quick Dry Everyday Sports Bra",
+      "sku": "55502695"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        },
+        {
+          "@id": "#offer-4"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "NZD 1323.28"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "NZD 123.07"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Payment Receipt"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "In Store"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Sana Pavlov"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "481"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "[ERROR:FATAL] TRKa3O822514-9029"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2026-11-13"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2026-11-12",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "PO-615575-CN",
+      "orderStatus": "https://schema.org/OrderPickupAvailable",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "1446.35",
+        "priceCurrency": "NZD"
+      }
+    }
+  ]
+}
