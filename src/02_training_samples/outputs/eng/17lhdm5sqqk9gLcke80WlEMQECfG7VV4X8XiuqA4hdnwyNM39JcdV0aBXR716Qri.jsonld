@@ -1,0 +1,160 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "name": "Lila-Supermercado",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "lilas"
+      }
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Federal Shipping",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Shipper ID",
+        "value": "3"
+      }
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "streetAddress": "Carrera 52 con Ave. Bolivar #65-98 Llano Largo",
+        "postalCode": "3508",
+        "addressLocality": "Barquisimeto",
+        "addressRegion": "South America",
+        "addressCountry": "Venezuela"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "orderNumber": "10461",
+      "orderDate": "2017-02-28",
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "2051.6"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Employee Name",
+          "value": "Nancy Davolio"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2017-03-05"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "320.0",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 40,
+        "unitText": "item"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "8.0",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "Sir Rodney's Scones"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "579.6",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 28,
+        "unitText": "item"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "20.7",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      },
+      "itemOffered": {
+        "@id": "#product-2"
+      }
+    },
+    {
+      "@id": "#product-2",
+      "@type": "Product",
+      "name": "Nord-Ost Matjeshering"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "price": "1152.0",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 60,
+        "unitText": "item"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "19.2",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      },
+      "itemOffered": {
+        "@id": "#product-3"
+      }
+    },
+    {
+      "@id": "#product-3",
+      "@type": "Product",
+      "name": "Paté Chinois"
+    }
+  ]
+}
