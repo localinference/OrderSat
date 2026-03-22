@@ -1,0 +1,95 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "StationeryStore",
+      "name": "Sanyu Stationery Shop",
+      "telephone": "+603-3362 4137",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "No. 31G & 33G, Jalan Setia Indah X U13/X",
+        "postalCode": "40170",
+        "addressLocality": "Setia Alam",
+        "addressRegion": "Selangor",
+        "addressCountry": "Malaysia"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": {
+        "@id": "#merchant"
+      },
+      "orderNumber": "CS-SA-0098805",
+      "orderDate": "2017-07-24",
+      "paymentMethod": "https://schema.org/Cash",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "priceCurrency": "MYR",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "priceCurrency": "MYR",
+        "price": "5.80"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Tax Invoice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Counter",
+          "value": "TT1.2012-0025"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Change",
+          "value": "0.20"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "WhatsApp",
+          "value": "+6012-918 7937"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "5.80",
+      "priceCurrency": "MYR",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 2,
+        "unitText": "item"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "2.90",
+        "priceCurrency": "MYR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "seller": {
+        "@id": "#merchant"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "Restaurant Order Chit NCR 3.5\"x6\""
+    }
+  ]
+}

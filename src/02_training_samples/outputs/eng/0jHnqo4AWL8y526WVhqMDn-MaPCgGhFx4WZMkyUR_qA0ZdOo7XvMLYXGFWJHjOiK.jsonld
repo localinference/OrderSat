@@ -1,0 +1,94 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Restaurant",
+      "name": "Best Restaurant",
+      "telephone": "012-2060 778",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "No. 12, Jalan SS4C/5",
+        "addressLocality": "Petaling Jaya",
+        "addressRegion": "Selangor Darul Ehsan",
+        "addressCountry": "Malaysia"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": {
+        "@id": "#merchant"
+      },
+      "orderNumber": "00134603",
+      "orderDate": "2017-04-22T12:23:34",
+      "paymentMethod": "https://schema.org/Cash",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "priceCurrency": "MYR",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "priceCurrency": "MYR",
+        "price": "22.25"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Tax Invoice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier",
+          "value": "Manager"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Change",
+          "value": "0.00"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "GST Number",
+          "value": "001800839168"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "21.00",
+      "priceCurrency": "MYR",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 3,
+        "unitText": "item"
+      },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "7.00",
+        "priceCurrency": "MYR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": 1,
+          "unitText": "item"
+        }
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "seller": {
+        "@id": "#merchant"
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "MenuItem",
+      "name": "Fishball Noodle"
+    }
+  ]
+}
