@@ -1,0 +1,127 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#carrier",
+      "@type": "Organization",
+      "name": "Federal Shipping"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "name": "Bottom-Dollar Markets",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "[ERROR:UNCERTAIN] 23 tsawassen biv",
+        "addressLocality": "Tsawassen",
+        "postalCode": "T2F 8M4",
+        "addressCountry": "Canada"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": {
+        "@id": "#carrier"
+      },
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderNumber": "10918",
+      "orderDate": "2018-03-02",
+      "priceCurrency": "USD",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "priceCurrency": "USD",
+        "price": "1930.00"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Customer ID",
+          "value": "BOTTM"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Employee Name",
+          "value": "Janet Leverling"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipper ID",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "carrier": {
+        "@id": "#carrier"
+      },
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "streetAddress": "[ERROR:UNCERTAIN] 23 tsawassen biv",
+        "addressLocality": "Tsawassen",
+        "postalCode": "T2F 8M4",
+        "addressCountry": "Canada"
+      },
+      "expectedArrivalUntil": "2018-03-11"
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "1080.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 60,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "seller": {
+        "@id": "#carrier"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "Chai"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "850.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 25,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-2"
+      },
+      "seller": {
+        "@id": "#carrier"
+      }
+    },
+    {
+      "@id": "#product-2",
+      "@type": "Product",
+      "name": "Camembert Pierrot"
+    }
+  ]
+}

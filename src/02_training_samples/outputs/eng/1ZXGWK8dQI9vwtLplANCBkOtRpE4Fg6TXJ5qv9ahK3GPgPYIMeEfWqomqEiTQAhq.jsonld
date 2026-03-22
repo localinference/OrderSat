@@ -1,0 +1,127 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#carrier",
+      "@type": "Organization",
+      "name": "Federal Shipping"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "name": "Island Trading",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Garden House Crowther Way",
+        "addressLocality": "Cowes",
+        "postalCode": "PO31 7PJ",
+        "addressCountry": "UK"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": {
+        "@id": "#carrier"
+      },
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderNumber": "10473",
+      "orderDate": "2017-03-13",
+      "priceCurrency": "USD",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "priceCurrency": "USD",
+        "price": "230.40"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Customer ID",
+          "value": "ISLAT"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Employee Name",
+          "value": "Nancy Davolio"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipper ID",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "carrier": {
+        "@id": "#carrier"
+      },
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "streetAddress": "Garden House Crowther Way",
+        "addressLocality": "Cowes",
+        "postalCode": "PO31 7PJ",
+        "addressCountry": "UK"
+      },
+      "expectedArrivalUntil": "2017-03-21"
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "24.00",
+      "priceCurrency": "USD",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 12,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "seller": {
+        "@id": "#carrier"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "Geitost"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "206.40",
+      "priceCurrency": "USD",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 12,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-2"
+      },
+      "seller": {
+        "@id": "#carrier"
+      }
+    },
+    {
+      "@id": "#product-2",
+      "@type": "Product",
+      "name": "Flotemysost"
+    }
+  ]
+}
