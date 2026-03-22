@@ -31,6 +31,8 @@ export function renderJsonDump(record, _labels, rng) {
 
   if (record.delivery) {
     view.delivery = {
+      provider: record.delivery.providerName,
+      shipped_date: record.delivery.shippedDateIso,
       address: formatAddress(record.delivery.address),
       tracking: record.delivery.trackingNumber,
     }

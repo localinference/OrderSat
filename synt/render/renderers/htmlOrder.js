@@ -36,6 +36,19 @@ export function renderHtmlOrder(record, labels, rng) {
     `<p>${escapeHtml(pickLabel(labels, 'paymentMethod', rng))}: ${escapeHtml(
       record.order.paymentMethodDisplay
     )}</p>`,
+    ...(record.delivery
+      ? [
+          `<p>${escapeHtml(
+            pickLabel(labels, 'deliveryProvider', rng)
+          )}: ${escapeHtml(record.delivery.providerName)}</p>`,
+          `<p>${escapeHtml(
+            pickLabel(labels, 'shippedDate', rng)
+          )}: ${escapeHtml(record.delivery.shippedDateIso)}</p>`,
+          `<p>${escapeHtml(
+            pickLabel(labels, 'trackingNumber', rng)
+          )}: ${escapeHtml(record.delivery.trackingNumber)}</p>`,
+        ]
+      : []),
     '</section>',
   ].join('\n')
 }

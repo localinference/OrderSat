@@ -1,5 +1,5 @@
-import firstnames from '../../shared/firstnames'
-import lastnames from '../../shared/lastnames'
+import firstnames from '../../shared/firstnames/index.js'
+import lastnames from '../../shared/lastnames/index.js'
 
 export default {
   people: {

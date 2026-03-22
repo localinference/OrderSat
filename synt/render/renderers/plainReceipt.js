@@ -107,6 +107,16 @@ export function renderPlainReceipt(record, labels, rng) {
         rng
       ),
       formatField(
+        pickLabel(labels, 'deliveryProvider', rng),
+        record.delivery.providerName,
+        rng
+      ),
+      formatField(
+        pickLabel(labels, 'shippedDate', rng),
+        record.delivery.shippedDateIso,
+        rng
+      ),
+      formatField(
         pickLabel(labels, 'trackingNumber', rng),
         record.delivery.trackingNumber,
         rng

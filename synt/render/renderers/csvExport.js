@@ -39,6 +39,8 @@ export function renderCsvExport(record, _labels, rng) {
 
   if (record.delivery) {
     rows.push(
+      ['delivery', 'provider', record.delivery.providerName],
+      ['delivery', 'shipped_date', record.delivery.shippedDateIso],
       ['delivery', 'address', formatAddress(record.delivery.address)],
       ['delivery', 'tracking', record.delivery.trackingNumber]
     )

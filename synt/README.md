@@ -15,6 +15,7 @@ It exists to widen semantic and presentation coverage for `Order`-like documents
 4. Build the matching JSON-LD from the semantic record.
 5. Hash the `{input + stable output}` pair with `SHA-384` base64url.
 6. Write the `.txt` and `.jsonld` pair only when that hash does not already exist.
+7. Persist a per-`{language, seed}` generation cursor under `tmp/synt-state` so repeated runs continue forward instead of re-scanning the same deterministic prefix.
 
 The generator is coverage-driven, not blind-random. It cycles:
 
@@ -24,6 +25,8 @@ The generator is coverage-driven, not blind-random. It cycles:
 - error profile
 
 and randomizes values inside each coverage cell. That gives deliberate coverage without pretending that every literal semantic combination is tractable.
+
+Repeated runs with the same seed are therefore safe: `synt` resumes from its saved cursor for that `{language, seed}` pair. If you want to restart from the beginning, delete `tmp/synt-state/cursors.json` or change `--seed`.
 
 ## Config Shape
 
@@ -113,6 +116,17 @@ Options:
 - `none`: skip structural validation
 
 `sample` is the default because the output side uses a small set of stable JSON-LD shapes while the input side carries most of the variation.
+
+## Delivery Grounding
+
+When a synthetic sample includes delivery semantics, the rendered input now carries the same critical facts that appear in JSON-LD:
+
+- delivery provider / carrier
+- tracking number
+- shipped date
+- delivery address
+
+That avoids hallucinated output-side delivery fields that were never present in the input text.
 
 ## Extension Model
 

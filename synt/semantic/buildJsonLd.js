@@ -116,6 +116,10 @@ export function buildJsonLd(record) {
     )
   }
 
+  if (record.delivery?.shippedDateIso) {
+    additionalProperty.push(propertyValue('Shipped Date', record.delivery.shippedDateIso))
+  }
+
   graph.push({
     '@id': '#order',
     '@type': 'Order',

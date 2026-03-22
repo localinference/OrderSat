@@ -221,12 +221,12 @@ export function choosePromoCode(values, rng) {
   return applyCaseStyle(raw, rng)
 }
 
-export function chooseServiceMode(values, rng) {
-  return rng.pick(values.atoms.commerce.serviceModes)
+export function chooseServiceMode(values, rng, blueprint) {
+  return rng.pick(getServiceModesForBlueprint(values, blueprint))
 }
 
-export function chooseReceiptType(values, rng) {
-  return rng.pick(values.atoms.commerce.receiptTypes)
+export function chooseReceiptType(values, rng, blueprint) {
+  return rng.pick(getReceiptTypesForBlueprint(values, blueprint))
 }
 
 export function generateCustomerId(values, rng) {
@@ -392,4 +392,58 @@ function inferOfferType(name, blueprint) {
 
 function roundMoney(value) {
   return Number(value.toFixed(2))
+}
+
+function getServiceModesForBlueprint(values, blueprint) {
+  const modes = values.atoms.commerce.serviceModes
+  if (blueprint === 'shipping-notice') {
+    return modes.filter((mode) => ['Delivery', 'Online'].includes(mode))
+  }
+  if (blueprint === 'service-confirmation') {
+    return modes.filter((mode) =>
+      ['Remote', 'Scheduled Service', 'In Store'].includes(mode)
+    )
+  }
+  if (blueprint === 'online-confirmation') {
+    return modes.filter((mode) =>
+      ['Online', 'Delivery', 'Pickup', 'Subscription', 'Curbside'].includes(
+        mode
+      )
+    )
+  }
+  return modes.filter((mode) =>
+    ['Dine In', 'Takeaway', 'Pickup', 'In Store', 'Delivery'].includes(mode)
+  )
+}
+
+function getReceiptTypesForBlueprint(values, blueprint) {
+  const receiptTypes = values.atoms.commerce.receiptTypes
+  if (blueprint === 'shipping-notice') {
+    return receiptTypes.filter((type) =>
+      ['Shipment Notice', 'Dispatch Summary', 'Pickup Notice'].includes(type)
+    )
+  }
+  if (blueprint === 'service-confirmation') {
+    return receiptTypes.filter((type) =>
+      ['Service Confirmation', 'Payment Receipt', 'Tax Invoice'].includes(type)
+    )
+  }
+  if (blueprint === 'online-confirmation') {
+    return receiptTypes.filter((type) =>
+      [
+        'Order Confirmation',
+        'Checkout Summary',
+        'Subscription Renewal',
+        'Pickup Notice',
+      ].includes(type)
+    )
+  }
+  return receiptTypes.filter((type) =>
+    [
+      'Sales Receipt',
+      'Payment Receipt',
+      'Tax Invoice',
+      'Checkout Summary',
+    ].includes(type)
+  )
 }

@@ -30,6 +30,7 @@ export async function generateBatch({ language, startIndex, count, baseSeed }) {
     const output = buildJsonLd(record)
 
     samples.push({
+      absoluteIndex,
       coverageKey: plan.coverageKey,
       inputText: renderInput({
         record,

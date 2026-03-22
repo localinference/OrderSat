@@ -36,6 +36,17 @@ export function renderXmlSummary(record, _labels, rng) {
     )}" tax="${escapeXml(
       formatCurrency(record.amounts.taxAmount, record, rng)
     )}" total="${escapeXml(formatCurrency(record.amounts.total, record, rng))}" />`,
+    ...(record.delivery
+      ? [
+          `<delivery provider="${escapeXml(
+            record.delivery.providerName
+          )}" tracking="${escapeXml(
+            record.delivery.trackingNumber
+          )}" shippedDate="${escapeXml(record.delivery.shippedDateIso)}">`,
+          `<address>${escapeXml(formatAddress(record.delivery.address))}</address>`,
+          '</delivery>',
+        ]
+      : []),
     '</order>',
     '</orderDocument>',
   ].join('\n')

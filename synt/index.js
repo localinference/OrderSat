@@ -4,6 +4,7 @@ import { parseCliArgs } from './args/parse.js'
 import { createWorkerPool } from './runWithWorker/index.js'
 import { pairHash } from './hash/pairHash.js'
 import { writeSamplePair } from './io/writeSamplePair.js'
+import { readCursor, writeCursor } from './state/cursor.js'
 import { validateStructure } from '../cli/utils/validateStructure/index.js'
 
 const inputRoot = './src/02_training_samples/inputs'
@@ -32,19 +33,26 @@ try {
 async function generateLanguageSamples({ language, options, workerPool }) {
   const startedAt = performance.now()
   const validatedCoverageKeys = new Set()
+  const cursorStart = await readCursor({
+    language,
+    seed: options.seed,
+  })
   const maxAttempts = Math.max(
     options.count,
     options.count * options.maxAttemptsFactor
   )
+  const maxIndexExclusive = cursorStart + maxAttempts
 
-  let nextIndex = 0
+  let nextIndex = cursorStart
   let attempted = 0
   let written = 0
   let skipped = 0
   let validated = 0
+  let maxAttemptedIndexExclusive = cursorStart
+  let writeLock = Promise.resolve()
 
   console.log(
-    `[synt] Starting synthetic generation for "${language}". Target new samples: ${options.count}. Concurrency: ${options.concurrency}. Batch size: ${options.batchSize}. Seed: ${options.seed}.\n`
+    `[synt] Starting synthetic generation for "${language}". Target new samples: ${options.count}. Concurrency: ${options.concurrency}. Batch size: ${options.batchSize}. Seed: ${options.seed}. Cursor: ${cursorStart}.\n`
   )
 
   await Promise.all(
@@ -55,7 +63,7 @@ async function generateLanguageSamples({ language, options, workerPool }) {
         }
 
         const startIndex = nextIndex
-        if (startIndex >= maxAttempts) {
+        if (startIndex >= maxIndexExclusive) {
           return
         }
 
@@ -63,7 +71,7 @@ async function generateLanguageSamples({ language, options, workerPool }) {
 
         const requestCount = Math.min(
           options.batchSize,
-          maxAttempts - startIndex
+          maxIndexExclusive - startIndex
         )
 
         const { samples } = await workerPool.run('generateBatch', {
@@ -75,6 +83,10 @@ async function generateLanguageSamples({ language, options, workerPool }) {
 
         for (const sample of samples) {
           attempted += 1
+          maxAttemptedIndexExclusive = Math.max(
+            maxAttemptedIndexExclusive,
+            sample.absoluteIndex + 1
+          )
 
           if (written >= options.count) {
             return
@@ -98,19 +110,31 @@ async function generateLanguageSamples({ language, options, workerPool }) {
           }
 
           const fileStem = pairHash(sample.inputText, sample.outputStableText)
-          const result = await writeSamplePair({
-            fileStem,
-            inputRoot,
-            outputRoot,
-            language,
-            inputText: sample.inputText,
-            outputText: sample.outputText,
+          const result = await withWriteLock(async () => {
+            if (written >= options.count) {
+              return { written: false, skipped: false, saturated: true }
+            }
+
+            const writeResult = await writeSamplePair({
+              fileStem,
+              inputRoot,
+              outputRoot,
+              language,
+              inputText: sample.inputText,
+              outputText: sample.outputText,
+            })
+
+            if (writeResult.written) {
+              written += 1
+              return { written: true, skipped: false, saturated: false }
+            }
+
+            skipped += 1
+            return { written: false, skipped: true, saturated: false }
           })
 
-          if (result.written) {
-            written += 1
-          } else {
-            skipped += 1
+          if (result.saturated) {
+            return
           }
         }
       }
@@ -119,13 +143,25 @@ async function generateLanguageSamples({ language, options, workerPool }) {
 
   if (written < options.count) {
     throw new Error(
-      `Unable to write the requested ${options.count} new "${language}" synthetic samples within ${maxAttempts} attempts. Wrote ${written}, skipped ${skipped}.`
+      `Unable to write the requested ${options.count} new "${language}" synthetic samples within ${maxAttempts} attempts starting from cursor ${cursorStart}. Wrote ${written}, skipped ${skipped}.`
     )
   }
 
+  await writeCursor({
+    language,
+    seed: options.seed,
+    nextIndex: maxAttemptedIndexExclusive,
+  })
+
   console.log(
-    `[synt] Finished "${language}". Wrote ${written} new pairs, skipped ${skipped} existing pairs, attempted ${attempted} candidates, validated ${validated} structural sample(s) in ${Math.round(performance.now() - startedAt)} ms.\n`
+    `[synt] Finished "${language}". Wrote ${written} new pairs, skipped ${skipped} existing pairs, attempted ${attempted} candidates, validated ${validated} structural sample(s), advanced cursor to ${maxAttemptedIndexExclusive} in ${Math.round(performance.now() - startedAt)} ms.\n`
   )
+
+  function withWriteLock(task) {
+    const run = writeLock.then(task)
+    writeLock = run.catch(() => {})
+    return run
+  }
 }
 
 function shouldValidateSample(coverageKey, validateMode, validatedCoverageKeys) {

@@ -102,8 +102,24 @@ export function buildOrderRecord({ languageConfig, rng, plan, index }) {
     rng,
     plan.blueprint
   )
-  const serviceMode = chooseServiceMode(languageConfig.values, rng)
-  const receiptType = chooseReceiptType(languageConfig.values, rng)
+  const serviceMode = chooseServiceMode(
+    languageConfig.values,
+    rng,
+    plan.blueprint
+  )
+  const receiptType = chooseReceiptType(
+    languageConfig.values,
+    rng,
+    plan.blueprint
+  )
+  const delivery = shouldIncludeDelivery(plan.blueprint, rng)
+    ? buildDeliveryRecord({
+        customerAddress,
+        languageConfig,
+        orderDate,
+        rng,
+      })
+    : null
   const record = {
     language: languageConfig.language,
     blueprint: plan.blueprint,
@@ -140,14 +156,7 @@ export function buildOrderRecord({ languageConfig, rng, plan, index }) {
       cashierName: chooseBrokerName(languageConfig.values, rng),
       promoCode: discountAmount > 0 ? choosePromoCode(languageConfig.values, rng) : null,
     },
-    delivery:
-      plan.blueprint === 'shipping-notice' || rng.chance(0.35)
-        ? {
-            providerName: chooseLogisticsProviderName(languageConfig.values, rng),
-            trackingNumber: generateTrackingNumber(languageConfig.values, rng),
-            address: customerAddress,
-          }
-        : null,
+    delivery,
     items,
     amounts: {
       subtotal,
@@ -304,4 +313,29 @@ function rebuildAddress(address) {
 
 function roundMoney(value) {
   return Number(value.toFixed(2))
+}
+
+function buildDeliveryRecord({ customerAddress, languageConfig, orderDate, rng }) {
+  const shippedAt = new Date(orderDate)
+  shippedAt.setUTCDate(shippedAt.getUTCDate() + rng.int(0, 5))
+
+  return {
+    providerName: chooseLogisticsProviderName(languageConfig.values, rng),
+    trackingNumber: generateTrackingNumber(languageConfig.values, rng),
+    address: customerAddress,
+    shippedDateIso: shippedAt.toISOString().slice(0, 10),
+  }
+}
+
+function shouldIncludeDelivery(blueprint, rng) {
+  if (blueprint === 'shipping-notice') {
+    return true
+  }
+  if (blueprint === 'online-confirmation') {
+    return rng.chance(0.45)
+  }
+  if (blueprint === 'retail-receipt') {
+    return rng.chance(0.15)
+  }
+  return false
 }
