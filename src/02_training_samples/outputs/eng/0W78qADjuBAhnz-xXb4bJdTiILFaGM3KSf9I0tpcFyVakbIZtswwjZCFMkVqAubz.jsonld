@@ -1,0 +1,113 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Store",
+      "name": "Syarikat Perniagaan Gin Kee",
+      "telephone": "03-40210276",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "No. 290, Jalan Air Panas, Setapak",
+        "postalCode": "53200",
+        "addressLocality": "Kuala Lumpur",
+        "addressCountry": "Malaysia"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": {
+        "@id": "#merchant"
+      },
+      "orderDate": "2018-01-24T10:50:00",
+      "paymentMethod": "https://schema.org/Cash",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "priceCurrency": "MYR",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "priceCurrency": "MYR",
+        "price": "74.20"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Document Type",
+          "value": "Simplified Tax Invoice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Document Number",
+          "value": "CS00012922"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "GST Registration Number",
+          "value": "000750673920"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier",
+          "value": "user"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Total GST",
+          "value": "4.20"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "38.16",
+      "priceCurrency": "MYR",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 6,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "seller": {
+        "@id": "#merchant"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "Pasir Halus (lag)"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "price": "36.04",
+      "priceCurrency": "MYR",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 2,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-2"
+      },
+      "seller": {
+        "@id": "#merchant"
+      }
+    },
+    {
+      "@id": "#product-2",
+      "@type": "Product",
+      "name": "Cement (50kg)"
+    }
+  ]
+}

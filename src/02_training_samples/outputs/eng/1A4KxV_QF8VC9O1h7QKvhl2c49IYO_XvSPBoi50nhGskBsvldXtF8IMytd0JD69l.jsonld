@@ -1,0 +1,79 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Store",
+      "name": "Syarikat Perniagaan Gin Kee",
+      "telephone": "03-40210276",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "No. 290, Jalan Air Panas, Setapak",
+        "postalCode": "53200",
+        "addressLocality": "Kuala Lumpur",
+        "addressCountry": "Malaysia"
+      }
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": {
+        "@id": "#merchant"
+      },
+      "orderNumber": "CS00012485",
+      "orderDate": "2017-12-29T15:32:00",
+      "paymentMethod": "https://schema.org/Cash",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "priceCurrency": "MYR",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "priceCurrency": "MYR",
+        "price": "10.60"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Document Type",
+          "value": "Simplified Tax Invoice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier",
+          "value": "user"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "GST Registration Number",
+          "value": "000750673920"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "10.60",
+      "priceCurrency": "MYR",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 1,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "seller": {
+        "@id": "#merchant"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "GI Wire RM10"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#merchant",
+      "@type": "Store",
+      "name": "99 Speedmart",
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Company Registration Number",
+          "value": "519537-X"
+        }
+      ]
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "seller": {
+        "@id": "#merchant"
+      },
+      "orderNumber": "17858/102/T0308",
+      "orderDate": "2016-11-21",
+      "paymentMethod": "https://schema.org/Cash",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "priceCurrency": "MYR",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "priceCurrency": "MYR",
+        "price": "31.80"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Cash Tendered",
+          "value": "50.00"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Change",
+          "value": "18.20"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "GST Amount",
+          "value": "1.80"
+        }
+      ]
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "price": "31.80",
+      "priceCurrency": "MYR",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 6,
+        "unitText": "item"
+      },
+      "itemOffered": {
+        "@id": "#product-1"
+      },
+      "seller": {
+        "@id": "#merchant"
+      }
+    },
+    {
+      "@id": "#product-1",
+      "@type": "Product",
+      "name": "Star Brand Garbage Bag"
+    }
+  ]
+}
