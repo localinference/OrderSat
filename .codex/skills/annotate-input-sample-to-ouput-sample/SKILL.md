@@ -17,15 +17,31 @@ Read [references/error-marking.md](references/error-marking.md) when deciding be
 
 ## Input And Output
 
+Before selecting the next sample, sync the unannotated working queue with:
+
+```powershell
+node cli/listUnannotated --language <requestedLanguage>
+```
+
 Read:
 
-- `./src/02_training_samples/inputs/<requestedLanguage>/*.txt`
+- `./temp-unannotated/<requestedLanguage>/*.txt` by default
+- `./src/02_training_samples/inputs/<requestedLanguage>/*.txt` only when the user explicitly points to a specific source file
+
+Treat `./src/02_training_samples/inputs` and `./src/02_training_samples/outputs` as the source of truth.
+Treat `./temp-unannotated` as a regenerated working queue only.
 
 Write:
 
 - `./src/02_training_samples/outputs/<requestedLanguage>/<inputSampleFileName>.jsonld`
 
+After writing the output sample, delete the matching working-queue file:
+
+- `./temp-unannotated/<requestedLanguage>/<inputSampleFileName>.txt`
+
 If the input language does not match the language implied by the directory, ignore that sample.
+
+If the user asks for the "next" samples, take them from `./temp-unannotated/<requestedLanguage>` in lexicographic order unless the user specifies another ordering rule.
 
 ## Output Contract
 
