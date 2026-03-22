@@ -1,0 +1,161 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Melbourne",
+        "addressRegion": "Victoria",
+        "postalCode": "9397",
+        "streetAddress": "107, Chapel Street"
+      },
+      "email": "ready-optics65@exchange.example.com",
+      "name": "Ready Optics",
+      "taxID": "06 111 522 073",
+      "telephone": "+61 4 3317 4103",
+      "url": "https://ready-optics.broker"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Melbourne",
+        "addressRegion": "Victoria",
+        "postalCode": "5339",
+        "streetAddress": "299, Smith Street"
+      },
+      "email": "deniz.dudley@returns.example.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "CUST-703068"
+      },
+      "name": "[ERROR:UNCERTAIN] Dcniz E. Dudley"
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 4
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "557.52",
+      "priceCurrency": "AUD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "139.38",
+        "priceCurrency": "AUD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Leggings",
+      "sku": "JHA-85-68"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 3
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "674.49",
+      "priceCurrency": "AUD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "224.83",
+        "priceCurrency": "AUD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Laundry Drying Rack",
+      "sku": "SKU-508946"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "AUD 1232.01"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "AUD 299.38"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Sales Receipt"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Pickup"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Mona X. Wise"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "LWNE-7"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2026-04-11",
+      "orderNumber": "PO-932822-KB",
+      "orderStatus": "https://schema.org/OrderProcessing",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "1531.39",
+        "priceCurrency": "AUD"
+      }
+    }
+  ]
+}

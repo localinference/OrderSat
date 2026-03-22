@@ -1,0 +1,194 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Canada",
+        "addressLocality": "Vancouver",
+        "addressRegion": "British Columbia",
+        "postalCode": "H7K 5I9",
+        "streetAddress": "69, 4th Avenue"
+      },
+      "email": "support@hello.example",
+      "name": "Stone Point",
+      "taxID": "995450931RT9995",
+      "telephone": "[ERROR:FATAL] a1 9O4-887O7537",
+      "url": "https://shop.stone-point.holidays"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Canada",
+        "addressLocality": "Calgary",
+        "addressRegion": "Alberta",
+        "postalCode": "C9G 4S0",
+        "streetAddress": "519, 11 Avenue"
+      },
+      "email": "elmar.s.rensen@partner.example.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "NCC-5663-5991"
+      },
+      "name": "Elmar W. Sørensen"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Grand Mobility"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "Canada",
+        "addressLocality": "Calgary",
+        "addressRegion": "Alberta",
+        "postalCode": "C9G 4S0",
+        "streetAddress": "519, 11 Avenue"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 5
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "69.65",
+      "priceCurrency": "CAD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "13.93",
+        "priceCurrency": "CAD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Cargo Pants",
+      "sku": "SKU-124302"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "272.4",
+      "priceCurrency": "CAD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "136.2",
+        "priceCurrency": "CAD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Pressure Cooker",
+      "sku": "63291406"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "CAD 342.05"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "CAD 82.91"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Order Confirmation"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Delivery"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Milan Zimmerman"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "POS-97"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "1Z0MYBEGT0CKCWW8UK"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2025-07-12"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-07-07",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "RCP-851576",
+      "orderStatus": "https://schema.org/OrderPickupAvailable",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "424.96",
+        "priceCurrency": "CAD"
+      }
+    }
+  ]
+}

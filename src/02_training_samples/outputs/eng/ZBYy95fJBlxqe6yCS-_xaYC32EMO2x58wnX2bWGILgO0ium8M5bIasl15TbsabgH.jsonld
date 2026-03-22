@@ -1,0 +1,161 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Birmingham",
+        "addressRegion": "England",
+        "postalCode": "GH6 7DQ",
+        "streetAddress": "416, Snow Hill"
+      },
+      "email": "standard-store-llc.team@vendor.example.com",
+      "name": "Standard Store LLC",
+      "taxID": "GB105702309",
+      "telephone": "+44 1030 657224",
+      "url": "https://orders.standard-store-llc.shopping"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Birmingham",
+        "addressRegion": "England",
+        "postalCode": "RB66 5XY",
+        "streetAddress": "603, Smallbrook Queensway"
+      },
+      "email": "nadia.braun@example.systems",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "MEM-81322729"
+      },
+      "name": "[ERROR:UNCERTAIN] Nadla Braun"
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "499.04",
+      "priceCurrency": "GBP",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "249.52",
+        "priceCurrency": "GBP",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Service",
+      "name": "General Admission Ticket",
+      "sku": "GCT-4476"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "84.32",
+      "priceCurrency": "GBP",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "42.16",
+        "priceCurrency": "GBP",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Service",
+      "name": "Maintenance Contract",
+      "sku": "CQT-7998-OX"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "GBP 583.36"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "GBP 47.37"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Payment Receipt"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Scheduled Service"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Naoko Y. Stephens"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "90"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2026-04-13",
+      "orderNumber": "[ERROR:FATAL] TX,a23260B5252",
+      "orderStatus": "https://schema.org/OrderProcessing",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "630.73",
+        "priceCurrency": "GBP"
+      }
+    }
+  ]
+}

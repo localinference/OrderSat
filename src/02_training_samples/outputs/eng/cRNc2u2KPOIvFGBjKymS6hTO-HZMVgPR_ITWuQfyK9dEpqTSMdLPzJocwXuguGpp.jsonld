@@ -1,0 +1,237 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Singapore",
+        "addressLocality": "Singapore",
+        "addressRegion": "Central",
+        "postalCode": "995341",
+        "streetAddress": "353, New Bridge Road, Complex 35"
+      },
+      "email": "elite-warehousing-network-solutions@marketplace.example.com",
+      "name": "Elite Warehousing Network Solutions",
+      "taxID": "12598676G",
+      "telephone": "+65 1588 3158",
+      "url": "https://elite-warehousing-network-solutions-online.fm"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Singapore",
+        "addressLocality": "Singapore",
+        "addressRegion": "Central",
+        "postalCode": "289330",
+        "streetAddress": "789, South Bridge Road"
+      },
+      "email": "elite-warehousing-network-solutions@portal.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "CLI-436269QU"
+      },
+      "name": "Jozef Watson"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Northstar Linehaul Transit"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "Singapore",
+        "addressLocality": "Singapore",
+        "addressRegion": "Central",
+        "postalCode": "289330",
+        "streetAddress": "789, South Bridge Road"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "112.89",
+      "priceCurrency": "SGD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "112.89",
+        "priceCurrency": "SGD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Service",
+      "name": "Planter Pot",
+      "sku": "UJN-95-54"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "93.67",
+      "priceCurrency": "SGD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "93.67",
+        "priceCurrency": "SGD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Bed Sheet Set",
+      "sku": "53654370"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-3"
+      },
+      "price": "905.64",
+      "priceCurrency": "SGD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "452.82",
+        "priceCurrency": "SGD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-3",
+      "@type": "Product",
+      "name": "Adventure Travel Travel Adapter Pack",
+      "sku": "PRD-PBZ-287"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "SGD 1112.2"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "SGD 22.57"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Shipment Notice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Online"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Nele Eriksson"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "5"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Discount Code",
+          "value": "Shopseasonal24"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Discount Amount",
+          "value": "SGD 456"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "TRK-2985-2153-5545"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2024-06-09"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2024-06-08",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "PO-621749-XV",
+      "orderStatus": "https://schema.org/OrderProblem",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "678.77",
+        "priceCurrency": "SGD"
+      }
+    }
+  ]
+}

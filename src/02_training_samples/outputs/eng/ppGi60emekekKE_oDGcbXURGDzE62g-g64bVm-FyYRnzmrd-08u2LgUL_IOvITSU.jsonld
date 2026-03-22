@@ -1,0 +1,128 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Ireland",
+        "addressLocality": "Dublin",
+        "addressRegion": "Leinster",
+        "postalCode": "V55 P354",
+        "streetAddress": "179, Aungier Street"
+      },
+      "email": "oak.direct@delivery.example.com",
+      "name": "Oak Showroom Direct",
+      "taxID": "5714942L",
+      "telephone": "+353 35 146 0084",
+      "url": "https://billing.oak-showroom-direct.cafe"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Ireland",
+        "addressLocality": "Dublin",
+        "addressRegion": "Leinster",
+        "postalCode": "O39 P747",
+        "streetAddress": "471, Rathmines Road"
+      },
+      "email": "billing@paynow.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "CLI-120732YR"
+      },
+      "name": "[ERROR:UNCERTAIN] Sašo K. Picrre"
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "288.29",
+      "priceCurrency": "EUR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "288.29",
+        "priceCurrency": "EUR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Service",
+      "name": "Fast Entry Pass",
+      "sku": "CIT-7714-ZO"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "EUR 288.29"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "EUR 45.35"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Service Confirmation"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Remote"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Sibel E. Sinclair"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "POS-39"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2024-07-27",
+      "orderNumber": "PO-761662-BX",
+      "orderStatus": "https://schema.org/OrderProcessing",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "333.64",
+        "priceCurrency": "EUR"
+      }
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United States",
+        "addressLocality": "Seattle",
+        "addressRegion": "Washington",
+        "postalCode": "03228-2817",
+        "streetAddress": "302, Broadway, Interior 37"
+      },
+      "email": "cargo-zafar-center@marketplace.example",
+      "name": "[ERROR:UNCERTAIN] Cargo Zafar venter",
+      "taxID": "29-7797185",
+      "telephone": "+1 696-063-2683",
+      "url": "https://cargo-zafar-center-store.jewellery"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United States",
+        "addressLocality": "New York",
+        "addressRegion": "New York",
+        "postalCode": "67789-3327",
+        "streetAddress": "467, Nostrand Avenue, Interior 26"
+      },
+      "email": "support@supply.example.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "MEM-74789510"
+      },
+      "name": "Iwan Tanner"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Rush Haulage Global"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "United States",
+        "addressLocality": "New York",
+        "addressRegion": "New York",
+        "postalCode": "67789-3327",
+        "streetAddress": "467, Nostrand Avenue, Interior 26"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "461.1",
+      "priceCurrency": "USD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "230.55",
+        "priceCurrency": "USD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Creator Starter Pack",
+      "sku": "CVT-9317-TE"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "USD 461.1"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "USD 39.99"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Checkout Summary"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Pickup"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Gülcan T. Pratt"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "POS-0"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Discount Code",
+          "value": "exclusive-secret-94"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Discount Amount",
+          "value": "USD 156.77"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "[ERROR:FATAL] R,B88S,9940543"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2026-07-16"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2026-07-13",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "PO-393893-RT",
+      "orderStatus": "https://schema.org/OrderPickupAvailable",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "344.32",
+        "priceCurrency": "USD"
+      }
+    }
+  ]
+}

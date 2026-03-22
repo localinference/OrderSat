@@ -1,0 +1,194 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Singapore",
+        "addressLocality": "Singapore",
+        "addressRegion": "Central",
+        "postalCode": "884463",
+        "streetAddress": "203, Toa Payoh Lorong 6"
+      },
+      "email": "orders@paynow.example.com",
+      "name": "[ERROR:UNCERTAIN] Grcen Investments Retail Group",
+      "taxID": "42099753S",
+      "telephone": "+65 0372 4545",
+      "url": "https://orders.green-investments-retail-group.training"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Singapore",
+        "addressLocality": "Singapore",
+        "addressRegion": "Central",
+        "postalCode": "093407",
+        "streetAddress": "963, Orchard Road"
+      },
+      "email": "hafsa.bishop51@register.example.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "ECC-9087-4907"
+      },
+      "name": "Hafsa Bishop"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "South Transport Global"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "Singapore",
+        "addressLocality": "Singapore",
+        "addressRegion": "Central",
+        "postalCode": "093407",
+        "streetAddress": "963, Orchard Road"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "142.05",
+      "priceCurrency": "SGD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "142.05",
+        "priceCurrency": "SGD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Service",
+      "name": "Video Streaming Subscription",
+      "sku": "CBT-3545-JO"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 3
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "370.95",
+      "priceCurrency": "SGD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "123.65",
+        "priceCurrency": "SGD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Patio Chair",
+      "sku": "74503400"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "SGD 513"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "SGD 1.13"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Subscription Renewal"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Delivery"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Aissatou A. Öztürk"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "POS-6"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "XP-3156-0805-7415-49"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2024-03-14"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2024-03-09",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "PO-179060-JX",
+      "orderStatus": "https://schema.org/OrderProblem",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "514.13",
+        "priceCurrency": "SGD"
+      }
+    }
+  ]
+}

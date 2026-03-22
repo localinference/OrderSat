@@ -1,0 +1,161 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United States",
+        "addressLocality": "New York",
+        "addressRegion": "New York",
+        "postalCode": "60127",
+        "streetAddress": "461, Delancey Street, Module 34"
+      },
+      "email": "support@supply.example",
+      "name": "Core Hospitality Global",
+      "taxID": "16-6615717",
+      "telephone": "[ERROR:FATAL] +I 049292-S030",
+      "url": "https://billing.core-hospitality-global.tools"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United States",
+        "addressLocality": "Boston",
+        "addressRegion": "Massachusetts",
+        "postalCode": "78762-3408",
+        "streetAddress": "459, Columbus Avenue, Block 23"
+      },
+      "email": "billing@checkout.example.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "USR88686233"
+      },
+      "name": "Aurelijus Chauhan"
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "337.3",
+      "priceCurrency": "USD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "337.3",
+        "priceCurrency": "USD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Service",
+      "name": "Resort Booking",
+      "sku": "CCT-4893-QL"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "307.14",
+      "priceCurrency": "USD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "307.14",
+        "priceCurrency": "USD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Service",
+      "name": "SEO Audit",
+      "sku": "PRD-AYD-638"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "USD 644.44"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "USD 12.57"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Service Confirmation"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Scheduled Service"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Moussa Morrow"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "302"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-04-05",
+      "orderNumber": "TXN-7720641787",
+      "orderStatus": "https://schema.org/OrderProcessing",
+      "paymentMethod": "https://schema.org/ByBankTransferInAdvance",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "657.01",
+        "priceCurrency": "USD"
+      }
+    }
+  ]
+}

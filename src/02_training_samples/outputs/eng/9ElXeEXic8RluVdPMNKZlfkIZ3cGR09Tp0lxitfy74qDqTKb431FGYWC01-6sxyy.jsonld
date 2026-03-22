@@ -1,0 +1,128 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Auckland",
+        "addressRegion": "Auckland",
+        "postalCode": "5287",
+        "streetAddress": "431, Manukau Station Road"
+      },
+      "email": "orders@secure.example.com",
+      "name": "Brooks Office",
+      "taxID": "743-492-431",
+      "telephone": "[ERROR:FATAL] +64 9 462 B5a9",
+      "url": "https://checkout.brooks-office.flights"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Auckland",
+        "addressRegion": "Auckland",
+        "postalCode": "1271",
+        "streetAddress": "303, Quay Street"
+      },
+      "email": "brooks-office@examplereceipts.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "CLI-975028IE"
+      },
+      "name": "Wojciech Q. Rusu"
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "178.21",
+      "priceCurrency": "NZD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "178.21",
+        "priceCurrency": "NZD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Disinfecting Wipes",
+      "sku": "PRD-SVR-412"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "NZD 178.21"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "NZD 41.33"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Tax Invoice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Delivery"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Nikol Cullen"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "REG-486"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-12-08",
+      "orderNumber": "RCP-671610",
+      "orderStatus": "https://schema.org/OrderPickupAvailable",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "219.54",
+        "priceCurrency": "NZD"
+      }
+    }
+  ]
+}

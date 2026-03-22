@@ -1,0 +1,161 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Brisbane",
+        "addressRegion": "Queensland",
+        "postalCode": "7307",
+        "streetAddress": "97, Turbot Street"
+      },
+      "email": "support@no-reply.example.com",
+      "name": "Village Skincare",
+      "taxID": "99 551 342 718",
+      "telephone": "+61 2 4768 5933",
+      "url": "https://billing.village-skincare.style"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Melbourne",
+        "addressRegion": "Victoria",
+        "postalCode": "0636",
+        "streetAddress": "103, Victoria Parade"
+      },
+      "email": "vasile64@invoice.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "CLI-762359GA"
+      },
+      "name": "Vasile H. Calvo"
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "87.14",
+      "priceCurrency": "AUD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "43.57",
+        "priceCurrency": "AUD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Service",
+      "name": "Cloud Compute Plan",
+      "sku": "PRD-JIG-042"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "252.03",
+      "priceCurrency": "AUD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "252.03",
+        "priceCurrency": "AUD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Service",
+      "name": "Cabin Baggage",
+      "sku": "PRD-YJU-501"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "AUD 339.17"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "AUD 59.46"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Service Confirmation"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Remote"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Petr U. Lemon"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "REG-70"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2026-11-20",
+      "orderNumber": "INV-52019484",
+      "orderStatus": "https://schema.org/OrderDelivered",
+      "paymentMethod": "https://schema.org/PaymentMethod",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "398.63",
+        "priceCurrency": "AUD"
+      }
+    }
+  ]
+}

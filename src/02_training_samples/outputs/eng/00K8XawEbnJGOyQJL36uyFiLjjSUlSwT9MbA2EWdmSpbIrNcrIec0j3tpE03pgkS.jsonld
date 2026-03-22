@@ -1,0 +1,227 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Canada",
+        "addressLocality": "Toronto",
+        "addressRegion": "Ontario",
+        "postalCode": "J0V 4Z1",
+        "streetAddress": "293, St Clair Avenue, Rear 40"
+      },
+      "email": "solid.cafe@example.business",
+      "name": "Solid Tavern Cafe",
+      "taxID": "275895381RT6302",
+      "telephone": "+1 422-570-6755",
+      "url": "https://solid-tavern-cafe-online.pictures"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United States",
+        "addressLocality": "Chicago",
+        "addressRegion": "Illinois",
+        "postalCode": "11401",
+        "streetAddress": "947, Michigan Avenue, Suite 35"
+      },
+      "email": "nurcan.douglas98@pay.example.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "USR73864876"
+      },
+      "name": "Nurcan Douglas"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Key Air Global"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "United States",
+        "addressLocality": "Chicago",
+        "addressRegion": "Illinois",
+        "postalCode": "11401",
+        "streetAddress": "947, Michigan Avenue, Suite 35"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "94.77",
+      "priceCurrency": "CAD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "94.77",
+        "priceCurrency": "CAD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "VIP Membership",
+      "sku": "VE-XK-8207"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "26.74",
+      "priceCurrency": "CAD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "26.74",
+        "priceCurrency": "CAD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Service",
+      "name": "Family Plan",
+      "sku": "58513732"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 4
+      },
+      "itemOffered": {
+        "@id": "#item-3"
+      },
+      "price": "342.48",
+      "priceCurrency": "CAD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "85.62",
+        "priceCurrency": "CAD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-3",
+      "@type": "Product",
+      "name": "Memory Card",
+      "sku": "CTT-6468-HV"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "CAD 463.99"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "CAD 18.84"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Subscription Renewal"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Pickup"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Sahar W. Nagpal"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "POS-3"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "XP-0973-8857-0552-98"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2025-11-07"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-11-03",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "SO-409950",
+      "orderStatus": "https://schema.org/OrderPickupAvailable",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "482.83",
+        "priceCurrency": "CAD"
+      }
+    }
+  ]
+}

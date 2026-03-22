@@ -1,0 +1,138 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "London",
+        "addressRegion": "England",
+        "postalCode": "MH7 6JK",
+        "streetAddress": "[ERROR:UNCERTAIN] 201, B0nd Street, Apt. 10"
+      },
+      "email": "orders@marketplace.example",
+      "name": "Prairie Store Global",
+      "taxID": "GB869369514",
+      "telephone": "+44 20 0085 2073",
+      "url": "https://prairie-store-global.ngo"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Manchester",
+        "addressRegion": "England",
+        "postalCode": "WD3 1JM",
+        "streetAddress": "851, Great Ancoats Street, Apt. 27"
+      },
+      "email": "oleh80@vendor.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "CLI-273434VW"
+      },
+      "name": "Oleh Soares"
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "1053.34",
+      "priceCurrency": "GBP",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "526.67",
+        "priceCurrency": "GBP",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Service",
+      "name": "UI Review Session",
+      "sku": "CQT-8565-GM"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "GBP 1053.34"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "GBP 29.02"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Tax Invoice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Scheduled Service"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Qiao Q. Keegan"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "7"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Discount Code",
+          "value": "Back2school-7"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Discount Amount",
+          "value": "GBP 895.34"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-04-21",
+      "orderNumber": "ZT7352EO5250",
+      "orderStatus": "https://schema.org/OrderDelivered",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "187.02",
+        "priceCurrency": "GBP"
+      }
+    }
+  ]
+}

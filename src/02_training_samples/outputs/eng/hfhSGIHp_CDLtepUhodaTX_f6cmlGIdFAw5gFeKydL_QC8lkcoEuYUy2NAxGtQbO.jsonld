@@ -1,0 +1,227 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United States",
+        "addressLocality": "Austin",
+        "addressRegion": "Texas",
+        "postalCode": "56494-8971",
+        "streetAddress": "903, Bee Cave Road"
+      },
+      "email": "[ERROR:FATAL] circleinsightsdirect15@api,example",
+      "name": "Circle Insights Direct",
+      "taxID": "75-6059519",
+      "telephone": "+1 134-963-4384",
+      "url": "https://circle-insights-direct.click"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United States",
+        "addressLocality": "Chicago",
+        "addressRegion": "Illinois",
+        "postalCode": "39567",
+        "streetAddress": "602, Roosevelt Road, Wing 18"
+      },
+      "email": "umut80@example.shop",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "CUST-255844"
+      },
+      "name": "Umut Van den Berg"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Northeast Carrier Express"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "United States",
+        "addressLocality": "Chicago",
+        "addressRegion": "Illinois",
+        "postalCode": "39567",
+        "streetAddress": "602, Roosevelt Road, Wing 18"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "171.96",
+      "priceCurrency": "USD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "171.96",
+        "priceCurrency": "USD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "LED Light Bulb",
+      "sku": "SKU-806500"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "466.23",
+      "priceCurrency": "USD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "466.23",
+        "priceCurrency": "USD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Checked Baggage",
+      "sku": "78181862"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 3
+      },
+      "itemOffered": {
+        "@id": "#item-3"
+      },
+      "price": "757.53",
+      "priceCurrency": "USD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "252.51",
+        "priceCurrency": "USD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-3",
+      "@type": "Product",
+      "name": "Power Bank",
+      "sku": "57558453"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "USD 1395.72"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "USD 147.67"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Shipment Notice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Delivery"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Mikhail Manning"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "44"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "SHIP8164931612"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2025-08-07"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-08-07",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "INV-17742011",
+      "orderStatus": "https://schema.org/OrderInTransit",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "1543.39",
+        "priceCurrency": "USD"
+      }
+    }
+  ]
+}

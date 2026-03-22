@@ -1,0 +1,128 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Ireland",
+        "addressLocality": "Dublin",
+        "addressRegion": "Leinster",
+        "postalCode": "J37 J719",
+        "streetAddress": "622, Kildare Street"
+      },
+      "email": "eze.group@example.email",
+      "name": "Eze Electrics House Group",
+      "taxID": "5572449T",
+      "telephone": "+353 83 954 5908",
+      "url": "https://eze-electrics-house-group-online.cafe"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Ireland",
+        "addressLocality": "Dublin",
+        "addressRegion": "Leinster",
+        "postalCode": "T46 D940",
+        "streetAddress": "164, Aungier Street, Stop 40"
+      },
+      "email": "rita30@example.tech",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "CUST-455555"
+      },
+      "name": "Rita N. Ochoa"
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "763.12",
+      "priceCurrency": "EUR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "381.56",
+        "priceCurrency": "EUR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Service",
+      "name": "Bus Ticket",
+      "sku": "VUY-97-46"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "EUR 763.12"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "EUR 77.53"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Tax Invoice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Scheduled Service"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Fumiya Mateo"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "152"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-08-26",
+      "orderNumber": "PO-087544-NB",
+      "orderStatus": "https://schema.org/OrderProcessing",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "840.65",
+        "priceCurrency": "EUR"
+      }
+    }
+  ]
+}

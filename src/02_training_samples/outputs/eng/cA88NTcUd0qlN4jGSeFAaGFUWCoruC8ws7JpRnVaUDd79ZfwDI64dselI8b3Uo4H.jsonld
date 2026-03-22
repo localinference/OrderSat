@@ -1,0 +1,161 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "London",
+        "addressRegion": "England",
+        "postalCode": "KC46 2VB",
+        "streetAddress": "93, Regent Street"
+      },
+      "email": "momentum-retail@exampleorders.com",
+      "name": "[ERROR:UNCERTAIN] Mornentum Retail",
+      "taxID": "GB602586644",
+      "telephone": "[ERROR:FATAL] +44 I9O5 a34626",
+      "url": "https://billing.momentum-retail.press"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "London",
+        "addressRegion": "England",
+        "postalCode": "IG01 3CD",
+        "streetAddress": "495, Notting Hill Gate"
+      },
+      "email": "momentum-retail.store@partner.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "BUYER04837"
+      },
+      "name": "Kwame L. Basu"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Trusted Air Mail Services"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "London",
+        "addressRegion": "England",
+        "postalCode": "IG01 3CD",
+        "streetAddress": "495, Notting Hill Gate"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "158.16",
+      "priceCurrency": "GBP",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "79.08",
+        "priceCurrency": "GBP",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "City Tax",
+      "sku": "PAI-7755"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "GBP 158.16"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "GBP 27.08"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Dispatch Summary"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Delivery"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Ieva Ardalan"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "POS-5"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "TRK-5522-2061-0261"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2026-12-11"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2026-12-07",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "INV-51509279",
+      "orderStatus": "https://schema.org/OrderInTransit",
+      "paymentMethod": "https://schema.org/PaymentMethod",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "185.24",
+        "priceCurrency": "GBP"
+      }
+    }
+  ]
+}

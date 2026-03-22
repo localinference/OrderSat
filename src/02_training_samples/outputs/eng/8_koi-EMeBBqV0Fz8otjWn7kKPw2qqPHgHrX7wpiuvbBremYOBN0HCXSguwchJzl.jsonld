@@ -1,0 +1,128 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Singapore",
+        "addressLocality": "Singapore",
+        "addressRegion": "Central",
+        "postalCode": "677867",
+        "streetAddress": "185, Jurong Gateway Road, Suite 29"
+      },
+      "email": "williams-near-advisors.team@app.example.com",
+      "name": "Williams Near Advisors",
+      "taxID": "37977333E",
+      "telephone": "+65 6926 5739",
+      "url": "https://orders.williams-near-advisors.black"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Melbourne",
+        "addressRegion": "Victoria",
+        "postalCode": "0103",
+        "streetAddress": "927, Queen Street"
+      },
+      "email": "support@vendor.example.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "CLI-741815AV"
+      },
+      "name": "Dimitrios K. Reid"
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "301.85",
+      "priceCurrency": "SGD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "301.85",
+        "priceCurrency": "SGD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Service",
+      "name": "TV Mounting Service",
+      "sku": "IIY-26-70"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "SGD 301.85"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "SGD 61.22"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Service Confirmation"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Scheduled Service"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Alim Z. McMillan"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "POS-6"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-03-14",
+      "orderNumber": "[ERROR:FATAL] PO3O4477TD",
+      "orderStatus": "https://schema.org/OrderProcessing",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "363.07",
+        "priceCurrency": "SGD"
+      }
+    }
+  ]
+}

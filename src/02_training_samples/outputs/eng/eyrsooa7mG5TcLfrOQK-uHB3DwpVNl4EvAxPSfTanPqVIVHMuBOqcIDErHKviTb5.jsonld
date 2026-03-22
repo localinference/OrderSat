@@ -1,0 +1,171 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Manchester",
+        "addressRegion": "England",
+        "postalCode": "HD2 3AG",
+        "streetAddress": "544, Corporation Street, Flr 15"
+      },
+      "email": "orders@pos.example",
+      "name": "Adebayo Emerald Bar",
+      "taxID": "GB716334220",
+      "telephone": "+44 1214 558224",
+      "url": "https://adebayo-emerald-bar.shipping"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Birmingham",
+        "addressRegion": "England",
+        "postalCode": "SO24 2GE",
+        "streetAddress": "605, Alum Rock Road"
+      },
+      "email": "orders@care.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "YCC-7947-8693"
+      },
+      "name": "Sanjay K. West"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Western Messenger Global"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Birmingham",
+        "addressRegion": "England",
+        "postalCode": "SO24 2GE",
+        "streetAddress": "605, Alum Rock Road"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "56.78",
+      "priceCurrency": "GBP",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "56.78",
+        "priceCurrency": "GBP",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "TV Stand",
+      "sku": "CBT-9157-CK"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "GBP 56.78"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "GBP 2.06"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Dispatch Summary"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Delivery"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Aleksandar Schmidt"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "6"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Discount Code",
+          "value": "Insider-Joy-37"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Discount Amount",
+          "value": "GBP 45.42"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "SHIP8197223753"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2026-01-18"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2026-01-16",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "ORD41735375",
+      "orderStatus": "https://schema.org/OrderInTransit",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "13.42",
+        "priceCurrency": "GBP"
+      }
+    }
+  ]
+}

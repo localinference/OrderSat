@@ -1,0 +1,194 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "India",
+        "addressLocality": "Mumbai",
+        "addressRegion": "Maharashtra",
+        "postalCode": "784619",
+        "streetAddress": "914, JN Road"
+      },
+      "email": "billing@example.global",
+      "name": "Yoshida and Wakefield Town",
+      "taxID": "47HQKCL3575P5Z0",
+      "telephone": "+91 08167 46385",
+      "url": "https://yoshida-and-wakefield-town-store.pet"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "India",
+        "addressLocality": "Bengaluru",
+        "addressRegion": "Karnataka",
+        "postalCode": "812877",
+        "streetAddress": "426, Race Course Road"
+      },
+      "email": "billing@alerts.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "CUST-562979"
+      },
+      "name": "Vitali Cheung"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Rush Freight"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "India",
+        "addressLocality": "Bengaluru",
+        "addressRegion": "Karnataka",
+        "postalCode": "812877",
+        "streetAddress": "426, Race Course Road"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "25.04",
+      "priceCurrency": "INR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "12.52",
+        "priceCurrency": "INR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Service",
+      "name": "Accessory Bundle",
+      "sku": "MIT-63-05"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "852.54",
+      "priceCurrency": "INR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "426.27",
+        "priceCurrency": "INR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Destination Package",
+      "sku": "75611533"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "INR 877.58"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "INR 173.85"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Shipment Notice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Online"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Ismail E. Boone"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "6"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "CWB21528159958"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2025-12-23"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-12-20",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "[ERROR:FATAL] S,-2OB182",
+      "orderStatus": "https://schema.org/OrderProblem",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "1051.43",
+        "priceCurrency": "INR"
+      }
+    }
+  ]
+}

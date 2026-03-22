@@ -1,0 +1,260 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Perth",
+        "addressRegion": "Western Australia",
+        "postalCode": "3352",
+        "streetAddress": "147, Albany Highway"
+      },
+      "email": "billing@login.example.com",
+      "name": "Tech Goods & Co",
+      "taxID": "78 582 483 723",
+      "telephone": "+61 5 4156 3943",
+      "url": "https://tech-goods-co-store.network"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Melbourne",
+        "addressRegion": "Victoria",
+        "postalCode": "6868",
+        "streetAddress": "349, La Trobe Street"
+      },
+      "email": "billing@example.support",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "MEM-72657810"
+      },
+      "name": "Emeka M. Severin"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Parcel Messenger Network"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Melbourne",
+        "addressRegion": "Victoria",
+        "postalCode": "6868",
+        "streetAddress": "349, La Trobe Street"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 5
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "1145.95",
+      "priceCurrency": "AUD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "229.19",
+        "priceCurrency": "AUD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Steam Mop",
+      "sku": "81305865"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "402.21",
+      "priceCurrency": "AUD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "402.21",
+        "priceCurrency": "AUD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Desktop Fan",
+      "sku": "PRD-SJS-795"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 4
+      },
+      "itemOffered": {
+        "@id": "#item-3"
+      },
+      "price": "493.2",
+      "priceCurrency": "AUD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "123.3",
+        "priceCurrency": "AUD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-3",
+      "@type": "Product",
+      "name": "Blazer",
+      "sku": "CPT-1916-WV"
+    },
+    {
+      "@id": "#offer-4",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-4"
+      },
+      "price": "286.28",
+      "priceCurrency": "AUD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "143.14",
+        "priceCurrency": "AUD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-4",
+      "@type": "Service",
+      "name": "Support Plan",
+      "sku": "SKU-807321"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        },
+        {
+          "@id": "#offer-4"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "AUD 2327.64"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "AUD 259.3"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Subscription Renewal"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Delivery"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Nikolina S. Rowland"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "POS-77"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "SHIP1425752654"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2024-06-29"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2024-06-24",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "MC9936TA5202",
+      "orderStatus": "https://schema.org/OrderProcessing",
+      "paymentMethod": "https://schema.org/PaymentMethod",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "2586.94",
+        "priceCurrency": "AUD"
+      }
+    }
+  ]
+}

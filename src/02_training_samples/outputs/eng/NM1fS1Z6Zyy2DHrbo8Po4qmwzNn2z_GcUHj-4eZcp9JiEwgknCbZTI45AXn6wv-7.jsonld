@@ -1,0 +1,161 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Edinburgh",
+        "addressRegion": "Scotland",
+        "postalCode": "GU01 5TV",
+        "streetAddress": "1, Nicolson Street"
+      },
+      "email": "support@hello.example.com",
+      "name": "[ERROR:UNCERTAIN] Chiang and Houston Kitchcnware",
+      "taxID": "GB805945238",
+      "telephone": "+44 1854 372984",
+      "url": "https://chiang-and-houston-kitchenware-store.info"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Manchester",
+        "addressRegion": "England",
+        "postalCode": "GW45 8GC",
+        "streetAddress": "999, Cross Street, Lower Level 17"
+      },
+      "email": "chiang-and-houston-kitchenware.team@exampleservice.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "BUYER67537"
+      },
+      "name": "Kamila Acheampong"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Omega Logistics Express"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Manchester",
+        "addressRegion": "England",
+        "postalCode": "GW45 8GC",
+        "streetAddress": "999, Cross Street, Lower Level 17"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "318.84",
+      "priceCurrency": "GBP",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "318.84",
+        "priceCurrency": "GBP",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Apartment Stay",
+      "sku": "PRD-ZUQ-276"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "GBP 318.84"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "GBP 6.31"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Pickup Notice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Online"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Heinrich T. Colón"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "LJNE-2"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "XP-0189-0494-6193-89"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2024-09-26"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2024-09-22",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "PO-898111-SX",
+      "orderStatus": "https://schema.org/OrderInTransit",
+      "paymentMethod": "https://schema.org/ByBankTransferInAdvance",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "325.15",
+        "priceCurrency": "GBP"
+      }
+    }
+  ]
+}

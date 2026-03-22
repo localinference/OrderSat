@@ -1,0 +1,171 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Birmingham",
+        "addressRegion": "England",
+        "postalCode": "YU86 5ZZ",
+        "streetAddress": "248, Soho Road"
+      },
+      "email": "support@members.example.com",
+      "name": "Choice Jacobs Concierge",
+      "taxID": "GB290011127",
+      "telephone": "+44 1907 774528",
+      "url": "https://shop.choice-jacobs-concierge.broker"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Edinburgh",
+        "addressRegion": "Scotland",
+        "postalCode": "KJ66 9WD",
+        "streetAddress": "186, Nicolson Street"
+      },
+      "email": "raheem.bautista@dashboard.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "USR43477438"
+      },
+      "name": "Raheem L. Bautista"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Edge Trucking"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Edinburgh",
+        "addressRegion": "Scotland",
+        "postalCode": "KJ66 9WD",
+        "streetAddress": "186, Nicolson Street"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 3
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "152.1",
+      "priceCurrency": "GBP",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "50.7",
+        "priceCurrency": "GBP",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Mini Projector",
+      "sku": "PRD-RNM-711"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "GBP 152.1"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "GBP 5.35"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Subscription Renewal"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Pickup"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Siddharth Klein"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "POS-61"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Discount Code",
+          "value": "Boost57off"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Discount Amount",
+          "value": "GBP 106.47"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "TRK-2710-2511-6913"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2025-09-12"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-09-10",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "[ERROR:FATAL] INV-637OB6O5",
+      "orderStatus": "https://schema.org/OrderProcessing",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "50.98",
+        "priceCurrency": "GBP"
+      }
+    }
+  ]
+}

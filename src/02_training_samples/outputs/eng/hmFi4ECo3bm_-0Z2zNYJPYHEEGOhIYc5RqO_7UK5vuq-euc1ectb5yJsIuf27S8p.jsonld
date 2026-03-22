@@ -1,0 +1,161 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Manchester",
+        "addressRegion": "England",
+        "postalCode": "MI99 1BM",
+        "streetAddress": "127, Cross Street, Apt 15"
+      },
+      "email": "barr-cedar-energy62@example.cloud",
+      "name": "Barr Cedar Energy",
+      "taxID": "GB820272294",
+      "telephone": "+44 20 5978 3345",
+      "url": "https://barr-cedar-energy.gallery"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Birmingham",
+        "addressRegion": "England",
+        "postalCode": "ZX31 1WB",
+        "streetAddress": "192, Snow Hill"
+      },
+      "email": "barr-cedar-energy.team@member.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "MEM-08292986"
+      },
+      "name": "Zhanna Z. Coleman"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "National Forwarding"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Birmingham",
+        "addressRegion": "England",
+        "postalCode": "ZX31 1WB",
+        "streetAddress": "192, Snow Hill"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 4
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "556.44",
+      "priceCurrency": "GBP",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "139.11",
+        "priceCurrency": "GBP",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Shelf Care",
+      "sku": "26456234"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "GBP 556.44"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "GBP 125.59"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Shipment Notice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Online"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Cátia H. McMillan"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "REG-152"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "XP-7030-4057-7900-96"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2024-02-17"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2024-02-17",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "NX4538PW3708",
+      "orderStatus": "https://schema.org/OrderProblem",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "682.03",
+        "priceCurrency": "GBP"
+      }
+    }
+  ]
+}

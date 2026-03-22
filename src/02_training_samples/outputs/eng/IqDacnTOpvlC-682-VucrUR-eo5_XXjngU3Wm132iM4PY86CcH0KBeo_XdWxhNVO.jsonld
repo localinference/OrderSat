@@ -1,0 +1,161 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Ireland",
+        "addressLocality": "Cork",
+        "addressRegion": "Munster",
+        "postalCode": "O83 P241",
+        "streetAddress": "[ERROR:UNCERTAIN] 554, Western Road, Stlp 19"
+      },
+      "email": "riverside.maintenance@partner.example",
+      "name": "Riverside McFarland Maintenance",
+      "taxID": "7357682B",
+      "telephone": "+353 1 485 5740",
+      "url": "https://riverside-mcfarland-maintenance.contact"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Ireland",
+        "addressLocality": "Cork",
+        "addressRegion": "Munster",
+        "postalCode": "D74 L444",
+        "streetAddress": "204, MacCurtain Street, Rm. 8"
+      },
+      "email": "javier.costa23@returns.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "MEM-57702833"
+      },
+      "name": "Javier E. Costa"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Golden Trucking Network"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "Ireland",
+        "addressLocality": "Cork",
+        "addressRegion": "Munster",
+        "postalCode": "D74 L444",
+        "streetAddress": "204, MacCurtain Street, Rm. 8"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "133.38",
+      "priceCurrency": "EUR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "133.38",
+        "priceCurrency": "EUR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Back to School Bundle",
+      "sku": "76862546"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "EUR 133.38"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "EUR 26.97"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Dispatch Summary"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Online"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "João R. Wong"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "REG-59"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "SHIP7074965639"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2024-12-10"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2024-12-05",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "WEB-00105120",
+      "orderStatus": "https://schema.org/OrderInTransit",
+      "paymentMethod": "https://schema.org/PaymentMethod",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "160.35",
+        "priceCurrency": "EUR"
+      }
+    }
+  ]
+}

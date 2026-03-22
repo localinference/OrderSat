@@ -1,0 +1,194 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Wellington",
+        "addressRegion": "Wellington",
+        "postalCode": "9524",
+        "streetAddress": "[ERROR:UNCERTAIN] 997, The Terr0ce, Dept. 24"
+      },
+      "email": "support@register.example.com",
+      "name": "Doumbia Architects",
+      "taxID": "619-338-546",
+      "telephone": "+64 9 650 2385",
+      "url": "https://doumbia-architects-store.digital"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Auckland",
+        "addressRegion": "Auckland",
+        "postalCode": "3250",
+        "streetAddress": "272, Parnell Road"
+      },
+      "email": "doumbia-architects.store@reply.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "MCC-2152-1937"
+      },
+      "name": "Ata D. Grewal"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Empire Mail"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Auckland",
+        "addressRegion": "Auckland",
+        "postalCode": "3250",
+        "streetAddress": "272, Parnell Road"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 6
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "1383.12",
+      "priceCurrency": "NZD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "230.52",
+        "priceCurrency": "NZD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Watering Can",
+      "sku": "RY-GJ-5527"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 6
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "1078.68",
+      "priceCurrency": "NZD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "179.78",
+        "priceCurrency": "NZD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Shelf Bracket",
+      "sku": "CZT-8395-UT"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "NZD 2461.8"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "NZD 542.33"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Pickup Notice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Online"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Akash Chikodzi"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "06"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "XP-7356-1861-4881-44"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2024-04-19"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2024-04-18",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "PO-383840-AX",
+      "orderStatus": "https://schema.org/OrderInTransit",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "3004.13",
+        "priceCurrency": "NZD"
+      }
+    }
+  ]
+}

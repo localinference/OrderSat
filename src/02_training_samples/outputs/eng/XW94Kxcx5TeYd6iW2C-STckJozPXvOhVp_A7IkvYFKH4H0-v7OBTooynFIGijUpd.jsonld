@@ -1,0 +1,161 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Birmingham",
+        "addressRegion": "England",
+        "postalCode": "WQ87 4UZ",
+        "streetAddress": "135, Dudley Road"
+      },
+      "email": "[ERROR:FATAL] sabbagh-global-store.teamaweb.example.IoO",
+      "name": "Sabbagh Global Store",
+      "taxID": "GB913885816",
+      "telephone": "+44 20 6970 4631",
+      "url": "https://orders.sabbagh-global-store.makeup"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Birmingham",
+        "addressRegion": "England",
+        "postalCode": "DU8 2FE",
+        "streetAddress": "123, Broad Street"
+      },
+      "email": "jari.kaseke@example.sale",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "YCC-5023-2966"
+      },
+      "name": "Jari Kaseke"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Sky Delivery Logistics Systems"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Birmingham",
+        "addressRegion": "England",
+        "postalCode": "DU8 2FE",
+        "streetAddress": "123, Broad Street"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "126.78",
+      "priceCurrency": "GBP",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "63.39",
+        "priceCurrency": "GBP",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Wellness Bundle",
+      "sku": "SKU-964387"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "GBP 126.78"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "GBP 19.96"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Dispatch Summary"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Delivery"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Eetu Buckley"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "1"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "1ZS728T5SU215LDC28"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2024-11-29"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2024-11-27",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "SO-741906",
+      "orderStatus": "https://schema.org/OrderInTransit",
+      "paymentMethod": "https://schema.org/PaymentMethod",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "146.74",
+        "priceCurrency": "GBP"
+      }
+    }
+  ]
+}

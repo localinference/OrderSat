@@ -1,0 +1,128 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Canada",
+        "addressLocality": "Toronto",
+        "addressRegion": "Ontario",
+        "postalCode": "M9Q 1P8",
+        "streetAddress": "881, Dundas Street"
+      },
+      "email": "twin82@fulfillment.example.com",
+      "name": "Twin Organics Studio",
+      "taxID": "741924695RT7122",
+      "telephone": "+1 858-331-3164",
+      "url": "https://shop.twin-organics-studio.space"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Canada",
+        "addressLocality": "Vancouver",
+        "addressRegion": "British Columbia",
+        "postalCode": "O6K 2I3",
+        "streetAddress": "698, Kingsway"
+      },
+      "email": "support@team.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "CLI-747928EP"
+      },
+      "name": "Juhani X. Pendergast"
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "1027.96",
+      "priceCurrency": "CAD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "513.98",
+        "priceCurrency": "CAD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Service",
+      "name": "Premium Economy Upgrade",
+      "sku": "SKU-333172"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "CAD 1027.96"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "CAD 58.8"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Service Confirmation"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "In Store"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Abdallah O. Rose"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "REG-50"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-08-21",
+      "orderNumber": "INV-57163930",
+      "orderStatus": "https://schema.org/OrderProcessing",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "1086.76",
+        "priceCurrency": "CAD"
+      }
+    }
+  ]
+}

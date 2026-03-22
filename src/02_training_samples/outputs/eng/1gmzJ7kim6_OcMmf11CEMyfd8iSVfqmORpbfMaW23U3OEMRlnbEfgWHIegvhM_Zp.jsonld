@@ -1,0 +1,260 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Ireland",
+        "addressLocality": "Cork",
+        "addressRegion": "Munster",
+        "postalCode": "J02 R662",
+        "streetAddress": "335, Grand Parade, Unit 9"
+      },
+      "email": "orders@supply.example.com",
+      "name": "Cervantes and Frimpong Hospitality",
+      "taxID": "4327003G",
+      "telephone": "+353 1 997 0360",
+      "url": "https://billing.cervantes-and-frimpong-hospitality.city"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "London",
+        "addressRegion": "England",
+        "postalCode": "ZW81 1TW",
+        "streetAddress": "347, Baker Street"
+      },
+      "email": "cervantes-and-frimpong-hospitality@hello.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "MEM-55421513"
+      },
+      "name": "Aleksandar D. Bonilla"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Transit Mobility Network"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "London",
+        "addressRegion": "England",
+        "postalCode": "ZW81 1TW",
+        "streetAddress": "347, Baker Street"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 3
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "288.6",
+      "priceCurrency": "EUR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "96.2",
+        "priceCurrency": "EUR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Card Reader",
+      "sku": "GI-IJ-4204"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 3
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "1005.57",
+      "priceCurrency": "EUR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "335.19",
+        "priceCurrency": "EUR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Desktop Speakers",
+      "sku": "PRD-CCG-714"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 3
+      },
+      "itemOffered": {
+        "@id": "#item-3"
+      },
+      "price": "296.55",
+      "priceCurrency": "EUR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "98.85",
+        "priceCurrency": "EUR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-3",
+      "@type": "Product",
+      "name": "Family Value Pack",
+      "sku": "SKU-526889"
+    },
+    {
+      "@id": "#offer-4",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 4
+      },
+      "itemOffered": {
+        "@id": "#item-4"
+      },
+      "price": "458.48",
+      "priceCurrency": "EUR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "114.62",
+        "priceCurrency": "EUR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-4",
+      "@type": "Product",
+      "name": "Heavy Duty Tray for Toaster",
+      "sku": "CIT-8736-WH"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        },
+        {
+          "@id": "#offer-4"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "EUR 2049.2"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "EUR 459.23"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Dispatch Summary"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Delivery"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Salome Ly"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "POS-3"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "[ERROR:FATAL] SHIP187O93a50a"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2026-01-19"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2026-01-16",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "WEB-39083935",
+      "orderStatus": "https://schema.org/OrderInTransit",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "2508.43",
+        "priceCurrency": "EUR"
+      }
+    }
+  ]
+}

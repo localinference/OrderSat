@@ -1,0 +1,194 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Canada",
+        "addressLocality": "Vancouver",
+        "addressRegion": "British Columbia",
+        "postalCode": "T2A 6E8",
+        "streetAddress": "826, Pender Street, Room 5"
+      },
+      "email": "spruce-capital-lp.team@examplepay.com",
+      "name": "Spruce Capital LP",
+      "taxID": "122476909RT3428",
+      "telephone": "+1 538-481-2207",
+      "url": "https://billing.spruce-capital-lp.silver"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Canada",
+        "addressLocality": "Vancouver",
+        "addressRegion": "British Columbia",
+        "postalCode": "R3C 8B0",
+        "streetAddress": "245, Alberni Street"
+      },
+      "email": "toru.escobar@partners.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "USR78391669"
+      },
+      "name": "Toru M. Escobar"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Trusted Shipments Express"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "Canada",
+        "addressLocality": "Vancouver",
+        "addressRegion": "British Columbia",
+        "postalCode": "R3C 8B0",
+        "streetAddress": "245, Alberni Street"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 3
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "238.86",
+      "priceCurrency": "CAD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "79.62",
+        "priceCurrency": "CAD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Recovery Bundle",
+      "sku": "SKU-060254"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "148.79",
+      "priceCurrency": "CAD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "148.79",
+        "priceCurrency": "CAD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Cutting Board",
+      "sku": "85483353"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "CAD 387.65"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "CAD 88.81"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Shipment Notice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Online"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Dávid Bass"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "REG-54"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "DWB54364230981"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2024-04-18"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2024-04-16",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "RCP-910038",
+      "orderStatus": "https://schema.org/OrderDelivered",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "476.46",
+        "priceCurrency": "CAD"
+      }
+    }
+  ]
+}

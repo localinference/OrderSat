@@ -1,0 +1,161 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Singapore",
+        "addressLocality": "Singapore",
+        "addressRegion": "Central",
+        "postalCode": "535379",
+        "streetAddress": "735, Shenton Way"
+      },
+      "email": "banner.global@supply.example",
+      "name": "Banner Engineers Global",
+      "taxID": "21433673L",
+      "telephone": "+65 7928 6379",
+      "url": "https://checkout.banner-engineers-global.trade"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Melbourne",
+        "addressRegion": "Victoria",
+        "postalCode": "2805",
+        "streetAddress": "8, Victoria Parade"
+      },
+      "email": "bence.gustafsson@cashier.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "FCC-9535-4527"
+      },
+      "name": "Bence O. Gustafsson"
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "140.6",
+      "priceCurrency": "SGD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "70.3",
+        "priceCurrency": "SGD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Service",
+      "name": "Multi-Day Pass",
+      "sku": "MHL-93-97"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "945.88",
+      "priceCurrency": "SGD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "472.94",
+        "priceCurrency": "SGD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Service",
+      "name": "Child Seat Rental",
+      "sku": "PRD-NMC-993"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "SGD 1086.48"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "SGD 290.63"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Service Confirmation"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Scheduled Service"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Sameer P. Abraham"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "POS-18"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-12-11",
+      "orderNumber": "ZV-1851-8877",
+      "orderStatus": "https://schema.org/OrderProcessing",
+      "paymentMethod": "https://schema.org/PaymentMethod",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "1377.11",
+        "priceCurrency": "SGD"
+      }
+    }
+  ]
+}

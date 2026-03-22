@@ -1,0 +1,227 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Ireland",
+        "addressLocality": "Dublin",
+        "addressRegion": "Leinster",
+        "postalCode": "Z70 W282",
+        "streetAddress": "843, Dame Street"
+      },
+      "email": "urban-eatery-co@cashier.example",
+      "name": "Urban Eatery & Co",
+      "taxID": "4546943L",
+      "telephone": "+353 1 819 1635",
+      "url": "https://urban-eatery-co-store.agency"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Ireland",
+        "addressLocality": "Dublin",
+        "addressRegion": "Leinster",
+        "postalCode": "M69 Z770",
+        "streetAddress": "449, North Circular Road"
+      },
+      "email": "urban-eatery-co.team@hello.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "USR01852196"
+      },
+      "name": "Abdoulaye E. Kristensen"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "True Couriers"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "Ireland",
+        "addressLocality": "Dublin",
+        "addressRegion": "Leinster",
+        "postalCode": "M69 Z770",
+        "streetAddress": "449, North Circular Road"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "240.76",
+      "priceCurrency": "EUR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "240.76",
+        "priceCurrency": "EUR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Blackout Curtains",
+      "sku": "NBQ-46-31"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 4
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "298.76",
+      "priceCurrency": "EUR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "74.69",
+        "priceCurrency": "EUR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Dress Shirt",
+      "sku": "SKU-129461"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-3"
+      },
+      "price": "29.17",
+      "priceCurrency": "EUR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "29.17",
+        "priceCurrency": "EUR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-3",
+      "@type": "Product",
+      "name": "Trash Can",
+      "sku": "PRD-ZIV-766"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "EUR 568.69"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "EUR 103.67"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Payment Receipt"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Takeaway"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Vitali E. Radhakrishnan"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "LONE-5"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "PKG-ABL-55387389"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2026-01-23"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2026-01-19",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "[ERROR:FATAL] PO459530PB",
+      "orderStatus": "https://schema.org/OrderProcessing",
+      "paymentMethod": "https://schema.org/PaymentMethod",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "672.36",
+        "priceCurrency": "EUR"
+      }
+    }
+  ]
+}

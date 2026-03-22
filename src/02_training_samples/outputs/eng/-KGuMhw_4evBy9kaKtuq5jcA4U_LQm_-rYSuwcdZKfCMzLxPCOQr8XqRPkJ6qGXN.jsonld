@@ -1,0 +1,194 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Singapore",
+        "addressLocality": "Singapore",
+        "addressRegion": "Central",
+        "postalCode": "186438",
+        "streetAddress": "144, Bukit Timah Road"
+      },
+      "email": "watson-supply-lab-group@orders.example.com",
+      "name": "Watson Supply Lab Group",
+      "taxID": "67101483E",
+      "telephone": "+65 9997 1247",
+      "url": "https://watson-supply-lab-group-direct.partners"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Singapore",
+        "addressLocality": "Singapore",
+        "addressRegion": "Central",
+        "postalCode": "479217",
+        "streetAddress": "935, Orchard Road"
+      },
+      "email": "support@reply.example.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "USR17840328"
+      },
+      "name": "Zanele Manning"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Inter Linehaul"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "Singapore",
+        "addressLocality": "Singapore",
+        "addressRegion": "Central",
+        "postalCode": "479217",
+        "streetAddress": "935, Orchard Road"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "589.86",
+      "priceCurrency": "SGD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "294.93",
+        "priceCurrency": "SGD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Beauty Bundle",
+      "sku": "EY-YN-8758"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "126.36",
+      "priceCurrency": "SGD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "126.36",
+        "priceCurrency": "SGD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Dress Socks Pack",
+      "sku": "SKU-633920"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "SGD 716.22"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "SGD 137.01"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Pickup Notice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Curbside"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Luca A. Russell"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "LDNE-6"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "[ERROR:FATAL] PKG-FNU-625O,06B"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2025-03-20"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-03-17",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "IC3329FW5887",
+      "orderStatus": "https://schema.org/OrderProcessing",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "853.23",
+        "priceCurrency": "SGD"
+      }
+    }
+  ]
+}

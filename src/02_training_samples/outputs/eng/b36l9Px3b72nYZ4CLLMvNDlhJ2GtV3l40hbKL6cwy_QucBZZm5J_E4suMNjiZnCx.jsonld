@@ -1,0 +1,227 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Perth",
+        "addressRegion": "Western Australia",
+        "postalCode": "5566",
+        "streetAddress": "659, Mill Point Road"
+      },
+      "email": "arakaki98@vendor.example.com",
+      "name": "Arakaki Records",
+      "taxID": "76 932 499 692",
+      "telephone": "+61 7 9202 9308",
+      "url": "https://arakaki-records-online.marketing"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Sydney",
+        "addressRegion": "New South Wales",
+        "postalCode": "7933",
+        "streetAddress": "233, York Street, Stop 21"
+      },
+      "email": "arakaki-records56@notify.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "MEM-75112500"
+      },
+      "name": "Nuria Hein"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Land Shuttle Network Services"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Sydney",
+        "addressRegion": "New South Wales",
+        "postalCode": "7933",
+        "streetAddress": "233, York Street, Stop 21"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "662.92",
+      "priceCurrency": "AUD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "331.46",
+        "priceCurrency": "AUD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Service",
+      "name": "Museum Pass",
+      "sku": "CCT-1023-VT"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "49.94",
+      "priceCurrency": "AUD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "24.97",
+        "priceCurrency": "AUD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Doormat",
+      "sku": "VL-UC-3271"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 5
+      },
+      "itemOffered": {
+        "@id": "#item-3"
+      },
+      "price": "492.9",
+      "priceCurrency": "AUD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "98.58",
+        "priceCurrency": "AUD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-3",
+      "@type": "Product",
+      "name": "Disinfecting Wipes",
+      "sku": "JYU-4704"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "AUD 1205.76"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "AUD 149.15"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Pickup Notice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Online"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Kaisa Sarr"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "7"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "SHIP9879916847"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2026-02-14"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2026-02-12",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "INV-15145757",
+      "orderStatus": "https://schema.org/OrderProblem",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "1354.91",
+        "priceCurrency": "AUD"
+      }
+    }
+  ]
+}

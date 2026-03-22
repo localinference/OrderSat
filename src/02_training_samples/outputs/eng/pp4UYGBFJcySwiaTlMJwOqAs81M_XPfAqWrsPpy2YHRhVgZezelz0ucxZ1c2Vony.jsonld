@@ -1,0 +1,171 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Sydney",
+        "addressRegion": "New South Wales",
+        "postalCode": "0049",
+        "streetAddress": "[ERROR:UNCERTAIN] 575,lParramatta Road, Floor 22"
+      },
+      "email": "lone.shipping@example.dev",
+      "name": "Lone Enterprises Shipping",
+      "taxID": "37 799 496 083",
+      "telephone": "+61 7 1844 6122",
+      "url": "https://lone-enterprises-shipping.biz"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Wellington",
+        "addressRegion": "Wellington",
+        "postalCode": "3804",
+        "streetAddress": "732, Jervois Quay"
+      },
+      "email": "lone-enterprises-shipping.store@cashier.example.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "CLI-507031RO"
+      },
+      "name": "Rui Caruso"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Road Shuttle Global"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "New Zealand",
+        "addressLocality": "Wellington",
+        "addressRegion": "Wellington",
+        "postalCode": "3804",
+        "streetAddress": "732, Jervois Quay"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "14.04",
+      "priceCurrency": "AUD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "14.04",
+        "priceCurrency": "AUD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Shoe Rack",
+      "sku": "56902014"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "AUD 14.04"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "AUD 0.75"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Pickup Notice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Online"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Paweł H. Peters"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "21"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Discount Code",
+          "value": "Studentdelivered86"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Discount Amount",
+          "value": "AUD 7.16"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "TRK-6199-4588-4559"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2026-11-26"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2026-11-21",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "[ERROR:FATAL] SO-42aBI3",
+      "orderStatus": "https://schema.org/OrderInTransit",
+      "paymentMethod": "https://schema.org/PaymentMethod",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "7.63",
+        "priceCurrency": "AUD"
+      }
+    }
+  ]
+}

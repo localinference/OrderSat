@@ -1,0 +1,128 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "Edinburgh",
+        "addressRegion": "Scotland",
+        "postalCode": "GA02 4VS",
+        "streetAddress": "884, Princes Street"
+      },
+      "email": "support@tracking.example.com",
+      "name": "Akhtar and Lopes Direct",
+      "taxID": "GB560235768",
+      "telephone": "+44 20 8747 6480",
+      "url": "https://billing.akhtar-and-lopes-direct.studio"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "United Kingdom",
+        "addressLocality": "London",
+        "addressRegion": "England",
+        "postalCode": "DV4 5TR",
+        "streetAddress": "884, Oxford Street"
+      },
+      "email": "akhtar-and-lopes-direct.store@suppliers.example.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "CUST-953864"
+      },
+      "name": "[ERROR:UNCERTAIN] Ncsrin A. Costa"
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 6
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "144.12",
+      "priceCurrency": "GBP",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "24.02",
+        "priceCurrency": "GBP",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Coffee Traveler",
+      "sku": "PRD-TGI-941"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "GBP 144.12"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "GBP 5.52"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Tax Invoice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Dine In"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Artem K. Farah"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "2"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-03-07",
+      "orderNumber": "RCP-260516",
+      "orderStatus": "https://schema.org/OrderPickupAvailable",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "149.64",
+        "priceCurrency": "GBP"
+      }
+    }
+  ]
+}

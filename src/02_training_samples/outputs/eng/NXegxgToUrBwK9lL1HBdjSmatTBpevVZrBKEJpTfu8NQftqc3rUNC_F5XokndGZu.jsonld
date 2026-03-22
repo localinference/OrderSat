@@ -1,0 +1,161 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Canada",
+        "addressLocality": "Toronto",
+        "addressRegion": "Ontario",
+        "postalCode": "Q4M 9A8",
+        "streetAddress": "475, Eglinton Avenue, Suite 36"
+      },
+      "email": "robust-growers-cafe.store@example.biz",
+      "name": "Robust Growers Cafe",
+      "taxID": "277413535RT1367",
+      "telephone": "+1 660-372-7998",
+      "url": "https://robust-growers-cafe-direct.sale"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Canada",
+        "addressLocality": "Montreal",
+        "addressRegion": "Quebec",
+        "postalCode": "M3T 1B8",
+        "streetAddress": "855, Saint Hubert Street"
+      },
+      "email": "rahul29@hello.example.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "MEM-63588233"
+      },
+      "name": "Rahul Hong"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Value Freight Express"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "Canada",
+        "addressLocality": "Montreal",
+        "addressRegion": "Quebec",
+        "postalCode": "M3T 1B8",
+        "streetAddress": "855, Saint Hubert Street"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 6
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "610.5",
+      "priceCurrency": "CAD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "101.75",
+        "priceCurrency": "CAD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Glass Cleaner",
+      "sku": "PRD-APE-607"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "CAD 610.5"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "CAD 42.12"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Dispatch Summary"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Online"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Kaia Choi"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "66"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "PKG-EEU-06499036"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2025-11-06"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-11-05",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "RCP-481537",
+      "orderStatus": "https://schema.org/OrderProblem",
+      "paymentMethod": "https://schema.org/PaymentMethod",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "652.62",
+        "priceCurrency": "CAD"
+      }
+    }
+  ]
+}

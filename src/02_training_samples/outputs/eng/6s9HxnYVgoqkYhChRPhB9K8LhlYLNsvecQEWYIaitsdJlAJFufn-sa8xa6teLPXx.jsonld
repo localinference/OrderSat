@@ -1,0 +1,227 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "India",
+        "addressLocality": "Bengaluru",
+        "addressRegion": "Karnataka",
+        "postalCode": "243107",
+        "streetAddress": "567, Bannerghatta Road"
+      },
+      "email": "downtown.direct@portal.example",
+      "name": "Downtown Tools Direct",
+      "taxID": "78TODCN1798B7Z9",
+      "telephone": "+91 73647 64291",
+      "url": "https://downtown-tools-direct-direct.pink"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "India",
+        "addressLocality": "Bengaluru",
+        "addressRegion": "Karnataka",
+        "postalCode": "348034",
+        "streetAddress": "987, Richmond Road"
+      },
+      "email": "downtown-tools-direct9@example.team",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "MEM-08025345"
+      },
+      "name": "[ERROR:UNCERTAIN] Fllippa J. Baldwin"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Pro Logistics Global"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "India",
+        "addressLocality": "Bengaluru",
+        "addressRegion": "Karnataka",
+        "postalCode": "348034",
+        "streetAddress": "987, Richmond Road"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "82.47",
+      "priceCurrency": "INR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "82.47",
+        "priceCurrency": "INR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Toner Cartridge",
+      "sku": "PRD-YGJ-298"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 6
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "1265.34",
+      "priceCurrency": "INR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "210.89",
+        "priceCurrency": "INR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Cutlery Tray",
+      "sku": "38964749"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-3"
+      },
+      "price": "725.74",
+      "priceCurrency": "INR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "362.87",
+        "priceCurrency": "INR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-3",
+      "@type": "Product",
+      "name": "Replacement Stylus",
+      "sku": "CET-1648-IF"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "INR 2073.55"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "INR 290.3"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Dispatch Summary"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Delivery"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Paavo Choi"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "436"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "1Z832A34BC1MRLMQRC"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2025-07-05"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-07-01",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "SO-236442",
+      "orderStatus": "https://schema.org/OrderInTransit",
+      "paymentMethod": "https://schema.org/Cash",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "2363.85",
+        "priceCurrency": "INR"
+      }
+    }
+  ]
+}

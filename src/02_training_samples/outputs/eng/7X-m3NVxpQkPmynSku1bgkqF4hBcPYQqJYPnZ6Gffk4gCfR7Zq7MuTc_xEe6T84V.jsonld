@@ -1,0 +1,161 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Brisbane",
+        "addressRegion": "Queensland",
+        "postalCode": "6182",
+        "streetAddress": "765, Brunswick Street"
+      },
+      "email": "naeem-retail-mobility.team@login.example.com",
+      "name": "Naeem Retail Mobility",
+      "taxID": "08 473 746 503",
+      "telephone": "+61 6 6625 3635",
+      "url": "https://shop.naeem-retail-mobility.storage"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Brisbane",
+        "addressRegion": "Queensland",
+        "postalCode": "7350",
+        "streetAddress": "546, Logan Road"
+      },
+      "email": "orders@app.example.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "MEM-16969101"
+      },
+      "name": "Simona Eckert"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Edge Deliveries"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "Australia",
+        "addressLocality": "Brisbane",
+        "addressRegion": "Queensland",
+        "postalCode": "7350",
+        "streetAddress": "546, Logan Road"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "300.7",
+      "priceCurrency": "AUD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "150.35",
+        "priceCurrency": "AUD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Loyalty Bundle",
+      "sku": "34615537"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "AUD 300.7"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "AUD 20.99"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Pickup Notice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Delivery"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Filippa Öztürk"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "LMNE-4"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "1Z2KYKI40AJ8YD2X8B"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2026-07-20"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2026-07-20",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "SO-739666",
+      "orderStatus": "https://schema.org/OrderInTransit",
+      "paymentMethod": "https://schema.org/ByBankTransferInAdvance",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "321.69",
+        "priceCurrency": "AUD"
+      }
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Canada",
+        "addressLocality": "Calgary",
+        "addressRegion": "Alberta",
+        "postalCode": "E7U 5I6",
+        "streetAddress": "750, Kensington Road"
+      },
+      "email": "orders@paynow.example.com",
+      "name": "Chief Footwear",
+      "taxID": "845854441RT4763",
+      "telephone": "+1 956-790-5676",
+      "url": "https://billing.chief-footwear.car"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "Canada",
+        "addressLocality": "Calgary",
+        "addressRegion": "Alberta",
+        "postalCode": "A0U 0T9",
+        "streetAddress": "440, International Avenue"
+      },
+      "email": "chief-footwear@api.example.com",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "USR79302373"
+      },
+      "name": "Camille Manning"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "State Service Network"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "Canada",
+        "addressLocality": "Calgary",
+        "addressRegion": "Alberta",
+        "postalCode": "A0U 0T9",
+        "streetAddress": "440, International Avenue"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 4
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "413.52",
+      "priceCurrency": "CAD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "103.38",
+        "priceCurrency": "CAD",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Product",
+      "name": "Garden Hose",
+      "sku": "KXK-03-78"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "CAD 413.52"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "CAD 10.84"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Dispatch Summary"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Delivery"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Ondřej McIntyre"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "605"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Discount Code",
+          "value": "ready19x"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Discount Amount",
+          "value": "CAD 359.76"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "[ERROR:FATAL] Xa5948-4I82-3257-43"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2024-02-12"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2024-02-08",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "RCP-385175",
+      "orderStatus": "https://schema.org/OrderInTransit",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentDue",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "64.6",
+        "priceCurrency": "CAD"
+      }
+    }
+  ]
+}

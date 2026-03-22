@@ -1,0 +1,227 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "#seller",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "India",
+        "addressLocality": "New Delhi",
+        "addressRegion": "Delhi",
+        "postalCode": "375865",
+        "streetAddress": "670, MG Road"
+      },
+      "email": "orders@invoice.example",
+      "name": "Pearl Trade & Co",
+      "taxID": "84UMRXA1322C5Z8",
+      "telephone": "+91 78443 45755",
+      "url": "https://pearl-trade-co-store.service"
+    },
+    {
+      "@id": "#customer",
+      "@type": "Person",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "India",
+        "addressLocality": "Bengaluru",
+        "addressRegion": "Karnataka",
+        "postalCode": "780984",
+        "streetAddress": "281, HAL Airport Road"
+      },
+      "email": "orders@reply.example",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Customer ID",
+        "value": "USR65429111"
+      },
+      "name": "[ERROR:UNCERTAIN] IwancFranco"
+    },
+    {
+      "@id": "#shipper",
+      "@type": "Organization",
+      "name": "Speed Lines Network"
+    },
+    {
+      "@id": "#delivery",
+      "@type": "ParcelDelivery",
+      "deliveryAddress": {
+        "@type": "PostalAddress",
+        "addressCountry": "India",
+        "addressLocality": "Bengaluru",
+        "addressRegion": "Karnataka",
+        "postalCode": "780984",
+        "streetAddress": "281, HAL Airport Road"
+      },
+      "provider": {
+        "@id": "#shipper"
+      }
+    },
+    {
+      "@id": "#offer-1",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-1"
+      },
+      "price": "511.03",
+      "priceCurrency": "INR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "511.03",
+        "priceCurrency": "INR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-1",
+      "@type": "Service",
+      "name": "Shuttle Stay (Ticket)",
+      "sku": "PQ-TG-0174"
+    },
+    {
+      "@id": "#offer-2",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 1
+      },
+      "itemOffered": {
+        "@id": "#item-2"
+      },
+      "price": "17",
+      "priceCurrency": "INR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "17",
+        "priceCurrency": "INR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-2",
+      "@type": "Product",
+      "name": "Wellness Bundle",
+      "sku": "SKU-774914"
+    },
+    {
+      "@id": "#offer-3",
+      "@type": "Offer",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "unitText": "item",
+        "value": 2
+      },
+      "itemOffered": {
+        "@id": "#item-3"
+      },
+      "price": "178",
+      "priceCurrency": "INR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "89",
+        "priceCurrency": "INR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "unitText": "item",
+          "value": 1
+        }
+      }
+    },
+    {
+      "@id": "#item-3",
+      "@type": "Product",
+      "name": "Cabin Upgrade",
+      "sku": "RCN-93-17"
+    },
+    {
+      "@id": "#order",
+      "@type": "Order",
+      "acceptedOffer": [
+        {
+          "@id": "#offer-1"
+        },
+        {
+          "@id": "#offer-2"
+        },
+        {
+          "@id": "#offer-3"
+        }
+      ],
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Subtotal",
+          "value": "INR 706.03"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tax Amount",
+          "value": "INR 8.19"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Receipt Type",
+          "value": "Shipment Notice"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Service Mode",
+          "value": "Delivery"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Cashier Name",
+          "value": "Leandro Zimmerman"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Register Number",
+          "value": "49"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Tracking Number",
+          "value": "PKG-EUG-43319236"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Shipped Date",
+          "value": "2025-11-14"
+        }
+      ],
+      "customer": {
+        "@id": "#customer"
+      },
+      "orderDate": "2025-11-11",
+      "orderDelivery": {
+        "@id": "#delivery"
+      },
+      "orderNumber": "TXN-8582451040",
+      "orderStatus": "https://schema.org/OrderInTransit",
+      "paymentMethod": "https://schema.org/CreditCard",
+      "paymentStatus": "https://schema.org/PaymentComplete",
+      "seller": {
+        "@id": "#seller"
+      },
+      "totalPaymentDue": {
+        "@type": "PriceSpecification",
+        "price": "714.22",
+        "priceCurrency": "INR"
+      }
+    }
+  ]
+}
