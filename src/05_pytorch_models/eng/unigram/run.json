@@ -10,7 +10,7 @@
   },
   "checkpoint_policy": {
     "requested_mode": "auto",
-    "applied_mode": "fresh",
+    "applied_mode": "warm_start",
     "checkpoint_path": "src\\05_pytorch_models\\eng\\unigram\\best.pt"
   },
   "model_signature": {
@@ -20,13 +20,13 @@
     "bos_id": 1,
     "eos_id": 2,
     "label_pad_id": -100,
-    "d_model": 128,
+    "d_model": 256,
     "attention_heads": 4,
-    "encoder_layers": 2,
-    "decoder_layers": 2,
-    "ff_dimension": 512,
-    "max_source_positions": 752,
-    "max_target_positions": 1203
+    "encoder_layers": 4,
+    "decoder_layers": 4,
+    "ff_dimension": 1024,
+    "max_source_positions": 846,
+    "max_target_positions": 1178
   },
   "run_paths": {
     "language": "eng",
@@ -40,28 +40,28 @@
   "dataset_stats": {
     "language": "eng",
     "format": "unigram",
-    "corpus_path": "C:\\Users\\jorts\\OrderSaT\\src\\03_tokenizers\\eng\\corpus.jsonl",
-    "model_path": "C:\\Users\\jorts\\OrderSaT\\src\\03_tokenizers\\eng\\unigram\\tokenizer.model",
-    "sample_count": 1207,
-    "train_count": 1073,
-    "validation_count": 134,
-    "validation_ratio": 0.11101905550952776,
-    "validation_range": "small",
+    "corpus_path": "C:\\Users\\lehti\\OrderSaT\\src\\03_tokenizers\\eng\\corpus.jsonl",
+    "model_path": "C:\\Users\\lehti\\OrderSaT\\src\\03_tokenizers\\eng\\unigram\\tokenizer.model",
+    "sample_count": 11257,
+    "train_count": 10646,
+    "validation_count": 611,
+    "validation_ratio": 0.05427733854490539,
+    "validation_range": "medium",
     "input_lengths": {
-      "count": 1207,
-      "min": 30,
-      "max": 752,
-      "avg": 223.77713338856668,
-      "p50": 215,
-      "p95": 339
+      "count": 11257,
+      "min": 42,
+      "max": 846,
+      "avg": 234.21266767344764,
+      "p50": 225,
+      "p95": 364
     },
     "label_lengths": {
-      "count": 1207,
-      "min": 112,
-      "max": 1202,
-      "avg": 764.3678541839271,
-      "p50": 760,
-      "p95": 1136
+      "count": 11257,
+      "min": 106,
+      "max": 1177,
+      "avg": 764.7849338189571,
+      "p50": 744,
+      "p95": 1097
     }
   },
   "device_capabilities": {
@@ -82,15 +82,15 @@
     "recommended_num_workers": 7
   },
   "training_config": {
-    "data_scale": 0.572334506283855,
+    "data_scale": 1.015772884651687,
     "device_scale": 0.9879639610018806,
-    "capacity_scale": 0.572334506283855,
-    "d_model": 128,
+    "capacity_scale": 0.9879639610018806,
+    "d_model": 256,
     "attention_heads": 4,
-    "encoder_layers": 2,
-    "decoder_layers": 2,
-    "ff_dimension": 512,
-    "dropout": 0.17472299660786836,
+    "encoder_layers": 4,
+    "decoder_layers": 4,
+    "ff_dimension": 1024,
+    "dropout": 0.10121826700904292,
     "average_sequence_tokens": 992,
     "target_effective_batch_size": 16,
     "estimated_examples_per_batch": 1,
@@ -102,56 +102,56 @@
     "num_workers": 4,
     "pin_memory": false,
     "persistent_workers": true,
-    "learning_rate": 0.00026436565329699573,
-    "weight_decay": 0.00030528125543633183,
-    "epochs": 92,
-    "early_stopping_patience": 14,
-    "early_stopping_min_delta": 5.72334506283855e-05,
-    "validation_exact_match_frequency": 1,
+    "learning_rate": 0.00019844112841155582,
+    "weight_decay": 0.0001,
+    "epochs": 29,
+    "early_stopping_patience": 8,
+    "early_stopping_min_delta": 0.0001015772884651687,
+    "validation_exact_match_frequency": 2,
     "run_train_exact_match_at_end": true
   },
   "sequence_lengths": {
-    "max_input_length": 752,
-    "max_label_length": 1202,
-    "max_source_positions": 752,
-    "max_target_positions": 1203
+    "max_input_length": 846,
+    "max_label_length": 1177,
+    "max_source_positions": 846,
+    "max_target_positions": 1178
   },
-  "parameter_count": 3281408,
+  "parameter_count": 12093696,
   "runtime_state": {
-    "latest_epoch_completed": 92,
-    "best_validation_loss": 0.9828667628910809,
-    "epochs_without_improvement": 1,
+    "latest_epoch_completed": 29,
+    "best_validation_loss": 0.6557453356156258,
+    "epochs_without_improvement": 0,
     "latest_metrics": {
-      "epoch": 92,
-      "train_loss": 0.9235119442539215,
-      "validation_loss": 0.9907817954717789,
+      "epoch": 29,
+      "train_loss": 0.5971205713226277,
+      "validation_loss": 0.6557453356156258,
       "validation_exact_match": 0.0,
-      "train_duration_seconds": 453.19299369864166,
-      "validation_duration_seconds": 15.923734599724412,
-      "exact_match_duration_seconds": 27.938542699441314,
+      "train_duration_seconds": 11801.607990799996,
+      "validation_duration_seconds": 156.46075099997688,
+      "exact_match_duration_seconds": 376.6973666000413,
       "validation_exact_match_ran": true,
-      "checkpoint_mode": "fresh",
-      "optimizer_steps": 67,
-      "train_token_count": 821119,
-      "validation_token_count": 102680
+      "checkpoint_mode": "warm_start",
+      "optimizer_steps": 666,
+      "train_token_count": 8149242,
+      "validation_token_count": 471199
     },
     "best_metrics": {
-      "epoch": 91,
-      "train_loss": 0.9270495359524756,
-      "validation_loss": 0.9828667628910809,
+      "epoch": 29,
+      "train_loss": 0.5971205713226277,
+      "validation_loss": 0.6557453356156258,
       "validation_exact_match": 0.0,
-      "train_duration_seconds": 452.8829487003386,
-      "validation_duration_seconds": 16.468882398679852,
-      "exact_match_duration_seconds": 29.024952499195933,
+      "train_duration_seconds": 11801.607990799996,
+      "validation_duration_seconds": 156.46075099997688,
+      "exact_match_duration_seconds": 376.6973666000413,
       "validation_exact_match_ran": true,
-      "checkpoint_mode": "fresh",
-      "optimizer_steps": 67,
-      "train_token_count": 821119,
-      "validation_token_count": 102680
+      "checkpoint_mode": "warm_start",
+      "optimizer_steps": 666,
+      "train_token_count": 8149242,
+      "validation_token_count": 471199
     }
   },
   "final_audit": {
     "train_exact_match": 0.0,
-    "train_exact_match_duration_seconds": 227.27983759902418
+    "train_exact_match_duration_seconds": 6485.290509200015
   }
 }
