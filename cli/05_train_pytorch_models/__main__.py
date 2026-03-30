@@ -11,6 +11,8 @@ from torch.utils.data import DataLoader
 from Seq2SeqCollator.constructor import Seq2SeqCollator
 from Seq2SeqTransformer.constructor import Seq2SeqTransformer
 from TokenizedJsonlDataset.constructor import TokenizedJsonlDataset
+from audit.compute import compute_decode_audit
+from audit.write import write_decode_audit_artifacts
 from args.parse import parse_args
 from artifacts.save import save_artifacts
 from batching.sampler import TokenBudgetBatchSampler
@@ -47,6 +49,7 @@ DATASETS_ROOT = pathlib.Path("src/04_training_datasets")
 PYTORCH_MODELS_ROOT = pathlib.Path("src/05_pytorch_models")
 
 TOKENIZER_VOCAB_FILE = "tokenizer.vocab"
+TOKENIZER_MODEL_FILE = "tokenizer.model"
 TRAINING_DATA_FILE = "train.jsonl"
 VALIDATION_DATA_FILE = "validation.jsonl"
 STATS_FILE = "stats.json"
@@ -57,6 +60,7 @@ BOS_ID = 1
 EOS_ID = 2
 LABEL_PAD_ID = -100
 GRAD_CLIP = 1.0
+TRAIN_GREEDY_AUDIT_SAMPLE_SIZE = 64
 
 
 @dataclass(frozen=True)
@@ -64,6 +68,7 @@ class RunPaths:
     language: str
     format: str
     vocab_path: pathlib.Path
+    tokenizer_model_path: pathlib.Path
     training_dataset_path: pathlib.Path
     validation_dataset_path: pathlib.Path
     dataset_stats_path: pathlib.Path
@@ -74,6 +79,7 @@ class RunPaths:
             "language": self.language,
             "format": self.format,
             "vocab_path": str(self.vocab_path),
+            "tokenizer_model_path": str(self.tokenizer_model_path),
             "training_dataset_path": str(self.training_dataset_path),
             "validation_dataset_path": str(self.validation_dataset_path),
             "dataset_stats_path": str(self.dataset_stats_path),
@@ -86,11 +92,47 @@ def build_run_paths(language: str, format_name: str) -> RunPaths:
         language=language,
         format=format_name,
         vocab_path=TOKENIZERS_ROOT / language / format_name / TOKENIZER_VOCAB_FILE,
+        tokenizer_model_path=TOKENIZERS_ROOT
+        / language
+        / format_name
+        / TOKENIZER_MODEL_FILE,
         training_dataset_path=DATASETS_ROOT / language / format_name / TRAINING_DATA_FILE,
         validation_dataset_path=DATASETS_ROOT / language / format_name / VALIDATION_DATA_FILE,
         dataset_stats_path=DATASETS_ROOT / language / format_name / STATS_FILE,
         save_dir=PYTORCH_MODELS_ROOT / language / format_name,
     )
+
+
+def select_evenly_spaced_indices(total_count: int, sample_size: int) -> list[int]:
+    if total_count <= 0 or sample_size <= 0:
+        return []
+    if total_count <= sample_size:
+        return list(range(total_count))
+    if sample_size == 1:
+        return [0]
+
+    max_index = total_count - 1
+    indices = {
+        round((position / (sample_size - 1)) * max_index)
+        for position in range(sample_size)
+    }
+    return sorted(indices)
+
+
+def iter_collated_batches_for_indices(
+    *,
+    dataset: TokenizedJsonlDataset,
+    indices: list[int],
+    collate_fn,
+    batch_size: int,
+):
+    if batch_size <= 0:
+        raise SystemExit("Audit batch size must be positive.")
+    for start in range(0, len(indices), batch_size):
+        batch_indices = indices[start : start + batch_size]
+        items = [dataset[index] for index in batch_indices]
+        if items:
+            yield collate_fn(items)
 
 
 def build_loader(
@@ -611,6 +653,8 @@ def train_format(
             break
 
     final_train_exact_match_result = None
+    validation_decode_audit = None
+    train_decode_audit = None
     if (
         training_config.run_train_exact_match_at_end
         and checkpoint_path.exists()
@@ -642,6 +686,49 @@ def train_format(
                 ),
             )
 
+        validation_decode_audit = compute_decode_audit(
+            model,
+            validation_loader,
+            split_name="validation_final_greedy_audit",
+            device=device,
+            bos_id=BOS_ID,
+            eos_id=EOS_ID,
+            max_generation_length=sequence_lengths.max_target_positions,
+            tokenizer_model_path=run_paths.tokenizer_model_path,
+            batch_count_hint=len(validation_loader),
+        )
+
+        train_audit_indices = select_evenly_spaced_indices(
+            len(training_dataset),
+            TRAIN_GREEDY_AUDIT_SAMPLE_SIZE,
+        )
+        train_decode_audit = compute_decode_audit(
+            model,
+            iter_collated_batches_for_indices(
+                dataset=training_dataset,
+                indices=train_audit_indices,
+                collate_fn=collator,
+                batch_size=max(1, training_config.max_batch_size),
+            ),
+            split_name="train_sample_greedy_audit",
+            device=device,
+            bos_id=BOS_ID,
+            eos_id=EOS_ID,
+            max_generation_length=sequence_lengths.max_target_positions,
+            tokenizer_model_path=run_paths.tokenizer_model_path,
+            batch_count_hint=(
+                (len(train_audit_indices) + max(1, training_config.max_batch_size) - 1)
+                // max(1, training_config.max_batch_size)
+            ),
+        )
+
+        if validation_decode_audit is not None and train_decode_audit is not None:
+            write_decode_audit_artifacts(
+                save_dir=run_paths.save_dir,
+                validation_audit=validation_decode_audit,
+                train_audit=train_decode_audit,
+            )
+
     final_run_metadata = {
         **run_metadata,
         "runtime_state": {
@@ -660,6 +747,16 @@ def train_format(
             "train_exact_match_duration_seconds": (
                 final_train_exact_match_result.duration_seconds
                 if final_train_exact_match_result is not None
+                else None
+            ),
+            "validation_greedy_audit": (
+                validation_decode_audit.to_summary_dict()
+                if validation_decode_audit is not None
+                else None
+            ),
+            "train_sample_greedy_audit": (
+                train_decode_audit.to_summary_dict()
+                if train_decode_audit is not None
                 else None
             ),
         },

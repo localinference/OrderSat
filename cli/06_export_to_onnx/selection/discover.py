@@ -10,6 +10,7 @@ RUN_NAME = "run.json"
 TOKENIZER_MODEL_NAME = "tokenizer.model"
 STATS_NAME = "stats.json"
 VALIDATION_DATASET_NAME = "validation.jsonl"
+AUDIT_METRICS_NAME = "audit_metrics.json"
 
 
 @dataclass(frozen=True)
@@ -22,6 +23,7 @@ class CandidatePaths:
     tokenizer_model_path: pathlib.Path
     stats_path: pathlib.Path
     validation_dataset_path: pathlib.Path
+    audit_metrics_path: pathlib.Path | None
 
 
 def discover_export_candidates(
@@ -51,6 +53,7 @@ def discover_export_candidates(
         validation_dataset_path = (
             datasets_root / language / format_name / VALIDATION_DATASET_NAME
         )
+        audit_metrics_path = entry / AUDIT_METRICS_NAME
 
         required_paths = (
             checkpoint_path,
@@ -73,6 +76,9 @@ def discover_export_candidates(
                 tokenizer_model_path=tokenizer_model_path,
                 stats_path=stats_path,
                 validation_dataset_path=validation_dataset_path,
+                audit_metrics_path=(
+                    audit_metrics_path if audit_metrics_path.is_file() else None
+                ),
             )
         )
 

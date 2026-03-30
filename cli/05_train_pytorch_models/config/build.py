@@ -161,11 +161,11 @@ def build_training_config(
     capacity_scale = min(data_scale, device_scale)
 
     d_model = _clamp_int(
-        _round_to_multiple(256 * capacity_scale, 64),
-        128,
-        512,
+        _round_to_multiple(512 * capacity_scale, 128),
+        256,
+        1024,
     )
-    attention_heads = 4 if d_model <= 256 else 8
+    attention_heads = 8 if d_model <= 512 else 16
     encoder_layers = _clamp_int(round(4 * capacity_scale), 2, 6)
     decoder_layers = _clamp_int(round(4 * capacity_scale), 2, 6)
     ff_dimension = d_model * 4

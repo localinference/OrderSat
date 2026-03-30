@@ -25,6 +25,11 @@ class CandidateEvaluation:
     validation_token_count: int
     validation_output_char_count: int
     validation_bits_per_output_char: float
+    validation_greedy_exact_match_rate: float | None
+    validation_valid_json_rate: float | None
+    validation_valid_structure_rate: float | None
+    validation_field_macro_match_rate: float | None
+    validation_structure_validation_available: bool
     parameter_count: int
     runtime_proxy: float
     label_p95: int
@@ -65,6 +70,10 @@ def select_best_candidate(candidates: list[CandidatePaths]) -> SelectionResult:
         key=lambda candidate: (
             -candidate.validation_exact_match_wilson_lb,
             -candidate.validation_exact_match,
+            *_sort_rate_desc(candidate.validation_valid_structure_rate),
+            *_sort_rate_desc(candidate.validation_field_macro_match_rate),
+            *_sort_rate_desc(candidate.validation_valid_json_rate),
+            *_sort_rate_desc(candidate.validation_greedy_exact_match_rate),
             candidate.validation_bits_per_output_char,
             candidate.runtime_proxy,
             candidate.parameter_count,
@@ -91,6 +100,11 @@ def _evaluate_candidate(candidate: CandidatePaths) -> CandidateEvaluation:
     run_payload = _read_json(candidate.run_path)
     stats_payload = _read_json(candidate.stats_path)
     validation_dataset_info = _read_validation_dataset(candidate.validation_dataset_path)
+    audit_metrics_payload = (
+        _read_json(candidate.audit_metrics_path)
+        if candidate.audit_metrics_path is not None
+        else None
+    )
     run_paths = _require_dict(run_payload, "run_paths", candidate.run_path)
 
     _require_string(run_paths, "language", candidate.run_path, candidate.language)
@@ -143,6 +157,10 @@ def _evaluate_candidate(candidate: CandidatePaths) -> CandidateEvaluation:
         / validation_dataset_info["output_char_count"]
         / math.log(2.0)
     )
+    validation_audit = _read_validation_audit_summary(
+        audit_metrics_payload,
+        candidate,
+    )
 
     return CandidateEvaluation(
         language=candidate.language,
@@ -163,6 +181,13 @@ def _evaluate_candidate(candidate: CandidatePaths) -> CandidateEvaluation:
         validation_token_count=validation_token_count,
         validation_output_char_count=validation_dataset_info["output_char_count"],
         validation_bits_per_output_char=validation_bits_per_output_char,
+        validation_greedy_exact_match_rate=validation_audit["greedy_exact_match_rate"],
+        validation_valid_json_rate=validation_audit["valid_json_rate"],
+        validation_valid_structure_rate=validation_audit["valid_structure_rate"],
+        validation_field_macro_match_rate=validation_audit["field_macro_match_rate"],
+        validation_structure_validation_available=validation_audit[
+            "structure_validation_available"
+        ],
         parameter_count=parameter_count,
         runtime_proxy=runtime_proxy,
         label_p95=int(_require_number(label_lengths, "p95", candidate.run_path)),
@@ -287,6 +312,42 @@ def _build_reason(
             f"{selected.validation_exact_match:.6f} > "
             f"{runner_up.validation_exact_match:.6f}"
         )
+    if _strictly_greater(
+        selected.validation_valid_structure_rate,
+        runner_up.validation_valid_structure_rate,
+    ):
+        return (
+            "higher validation structure-valid rate: "
+            f"{_format_rate(selected.validation_valid_structure_rate)} > "
+            f"{_format_rate(runner_up.validation_valid_structure_rate)}"
+        )
+    if _strictly_greater(
+        selected.validation_field_macro_match_rate,
+        runner_up.validation_field_macro_match_rate,
+    ):
+        return (
+            "higher validation field macro match rate: "
+            f"{_format_rate(selected.validation_field_macro_match_rate)} > "
+            f"{_format_rate(runner_up.validation_field_macro_match_rate)}"
+        )
+    if _strictly_greater(
+        selected.validation_valid_json_rate,
+        runner_up.validation_valid_json_rate,
+    ):
+        return (
+            "higher validation JSON-valid rate: "
+            f"{_format_rate(selected.validation_valid_json_rate)} > "
+            f"{_format_rate(runner_up.validation_valid_json_rate)}"
+        )
+    if _strictly_greater(
+        selected.validation_greedy_exact_match_rate,
+        runner_up.validation_greedy_exact_match_rate,
+    ):
+        return (
+            "higher validation greedy exact match: "
+            f"{_format_rate(selected.validation_greedy_exact_match_rate)} > "
+            f"{_format_rate(runner_up.validation_greedy_exact_match_rate)}"
+        )
     if (
         selected.validation_bits_per_output_char
         < runner_up.validation_bits_per_output_char
@@ -366,3 +427,86 @@ def _require_string(
             f"Unexpected value for '{key}' in {path}: expected '{expected}', got '{value}'"
         )
     return value
+
+
+def _read_validation_audit_summary(
+    payload: dict | None,
+    candidate: CandidatePaths,
+) -> dict[str, object]:
+    if payload is None:
+        return {
+            "greedy_exact_match_rate": None,
+            "valid_json_rate": None,
+            "valid_structure_rate": None,
+            "field_macro_match_rate": None,
+            "structure_validation_available": False,
+        }
+
+    validation = payload.get("validation")
+    if not isinstance(validation, dict):
+        raise SystemExit(
+            f"Missing validation audit summary in {candidate.audit_metrics_path}"
+        )
+
+    return {
+        "greedy_exact_match_rate": _optional_rate(
+            validation,
+            "greedy_exact_match_rate",
+            candidate.audit_metrics_path,
+        ),
+        "valid_json_rate": _optional_rate(
+            validation,
+            "valid_json_rate",
+            candidate.audit_metrics_path,
+        ),
+        "valid_structure_rate": _optional_rate(
+            validation,
+            "valid_structure_rate",
+            candidate.audit_metrics_path,
+        ),
+        "field_macro_match_rate": _optional_rate(
+            validation,
+            "field_macro_match_rate",
+            candidate.audit_metrics_path,
+        ),
+        "structure_validation_available": _optional_bool(
+            validation,
+            "structure_validation_available",
+        ),
+    }
+
+
+def _optional_rate(payload: dict, key: str, path) -> float | None:
+    value = payload.get(key)
+    if value is None:
+        return None
+    if not isinstance(value, (int, float)):
+        raise SystemExit(f"Missing numeric '{key}' in {path}")
+    return float(value)
+
+
+def _optional_bool(payload: dict, key: str) -> bool:
+    value = payload.get(key)
+    if isinstance(value, bool):
+        return value
+    return False
+
+
+def _sort_rate_desc(value: float | None) -> tuple[bool, float]:
+    if value is None:
+        return (True, 0.0)
+    return (False, -value)
+
+
+def _strictly_greater(left: float | None, right: float | None) -> bool:
+    if left is None:
+        return False
+    if right is None:
+        return True
+    return left > right
+
+
+def _format_rate(value: float | None) -> str:
+    if value is None:
+        return "<unavailable>"
+    return f"{value:.6f}"

@@ -50,6 +50,9 @@ class Seq2SeqCollator:
 
         return {
             "sample_ids": [item["sample_id"] for item in items],
+            "source_lines": [item.get("source_line") for item in items],
+            "input_texts": [item.get("input_text") for item in items],
+            "output_texts": [item.get("output_text") for item in items],
             "input_ids": input_ids,
             "attention_mask": attention_mask,
             "decoder_input_ids": decoder_input_ids,
