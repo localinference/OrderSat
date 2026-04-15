@@ -20,8 +20,8 @@ def parse_args() -> argparse.Namespace:
         "-V",
         "--max-vocab-size",
         type=int,
-        default=8192,
-        help="SentencePiece max vocab size ceiling (default: 8192)",
+        default=16_384,
+        help="SentencePiece max vocab size ceiling (default: 16_384)",
     )
     parser.add_argument(
         "-C",

@@ -12,7 +12,19 @@ import {
   tokenizerENG,
 } from '../dist/index.js'
 
-const sample = `order id: 10869 shipping details: ship name: seven seas imports ship address: 90 wadhurst rd. ship city: london ship region: british isles ship postal code: ox15 4nb ship country: uk customer details: customer id: seves customer name: seven seas imports employee details: employee name: steven buchanan shipper details: shipper id: 1 shipper name: speedy express order details: order date: 2018-02-04 shipped date: 2018-02-09 products: product: chai quantity: 40 unit price: 18.0 total: 720.0 product: queso cabrales quantity: 10 unit price: 21.0 total: 210.0 product: tunnbrod quantity: 50 unit price: 9.0 total: 450.0 product: scottish longbreads quantity: 20 unit price: 12.5 total: 250.0 total price: total price: 1630.0`
+const sample = `<orderDocument>
+<seller name="Wild Pub Global" phone="+64 4 889 6829" email="wild85@sales.example.com">
+<address>36, Constable Street, Wellington, Wellington, 1311, New Zealand</address>
+</seller>
+<order id="ORD89918193" placedAt="06/05/2025 12:22" payment="Debit Card" status="Delivered"> <customer>Svetlana Z. Strickland</customer>
+<items><item><name>Media Player</name><quantity>4</quantity><unitPrice>309.01 NZD</unitPrice><linePrice>1236.04 NZD</linePrice></item><item><name>Laundry Hamper</name><quantity>2</quantity><unitPrice>NZD 160.7</unitPrice><linePrice>NZ$321.4</linePrice></item><item><name>Rail Pass</name><quantity>2</quantity><unitPrice>NZD 257,19</unitPrice><linePrice>NZ$514.38</linePrice></item><item><name>Digital Camera</name><quantity>1</quantity><unitPrice>NZD 416.17</unitPrice><linePrice>NZD 416,17</linePrice></item></items>
+<totals subtotal="NZ$2487.99" tax="NZ$1.17" total="NZ$5O.93" />
+<delivery provider="Turbo Freight Global" tracking="1Z242F9KTR9D2AW0J0" shippedDate="2025-06-07">
+<address>164, 5tratford Road, Birmingham, England, MF4 1LB, United Kingdom</address>
+</delivery>
+</order>
+</orderDocument>
+`
 
 function toInt32Tensor(values, dims) {
   return new ort.Tensor('int32', Int32Array.from(values), dims)
