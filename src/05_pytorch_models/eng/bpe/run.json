@@ -2,7 +2,7 @@
   "static_config": {
     "seed": 7,
     "log_frequency": 1,
-    "pad_id": 8192,
+    "pad_id": 16384,
     "bos_id": 1,
     "eos_id": 2,
     "label_pad_id": -100,
@@ -10,13 +10,13 @@
   },
   "checkpoint_policy": {
     "requested_mode": "auto",
-    "applied_mode": "warm_start",
+    "applied_mode": "fresh",
     "checkpoint_path": "src\\05_pytorch_models\\eng\\bpe\\best.pt"
   },
   "model_signature": {
     "language": "eng",
-    "vocab_size": 8192,
-    "pad_id": 8192,
+    "vocab_size": 16384,
+    "pad_id": 16384,
     "bos_id": 1,
     "eos_id": 2,
     "label_pad_id": -100,
@@ -25,8 +25,8 @@
     "encoder_layers": 4,
     "decoder_layers": 4,
     "ff_dimension": 2048,
-    "max_source_positions": 776,
-    "max_target_positions": 970
+    "max_source_positions": 749,
+    "max_target_positions": 938
   },
   "run_paths": {
     "language": "eng",
@@ -50,19 +50,19 @@
     "validation_range": "medium",
     "input_lengths": {
       "count": 11257,
-      "min": 36,
-      "max": 776,
-      "avg": 223.06671404459448,
-      "p50": 214,
-      "p95": 347
+      "min": 35,
+      "max": 749,
+      "avg": 209.5766189926268,
+      "p50": 200,
+      "p95": 328
     },
     "label_lengths": {
       "count": 11257,
       "min": 85,
-      "max": 969,
-      "avg": 632.1793550679578,
-      "p50": 614,
-      "p95": 897
+      "max": 937,
+      "avg": 611.7076485742205,
+      "p50": 595,
+      "p95": 871
     }
   },
   "device_capabilities": {
@@ -92,12 +92,12 @@
     "decoder_layers": 4,
     "ff_dimension": 2048,
     "dropout": 0.10121826700904292,
-    "average_sequence_tokens": 864,
+    "average_sequence_tokens": 832,
     "target_effective_batch_size": 16,
     "estimated_examples_per_batch": 1,
     "max_batch_size": 4,
-    "target_tokens_per_batch": 896,
-    "target_tokens_per_optimizer_step": 13824,
+    "target_tokens_per_batch": 832,
+    "target_tokens_per_optimizer_step": 13312,
     "accumulation_steps": 16,
     "achieved_effective_batch_size": 16,
     "num_workers": 4,
@@ -112,43 +112,43 @@
     "run_train_exact_match_at_end": true
   },
   "sequence_lengths": {
-    "max_input_length": 776,
-    "max_label_length": 969,
-    "max_source_positions": 776,
-    "max_target_positions": 970
+    "max_input_length": 749,
+    "max_label_length": 937,
+    "max_source_positions": 749,
+    "max_target_positions": 938
   },
-  "parameter_count": 38716928,
+  "parameter_count": 47083520,
   "runtime_state": {
-    "latest_epoch_completed": 14,
-    "best_validation_loss": 0.760300102539485,
-    "epochs_without_improvement": 8,
+    "latest_epoch_completed": 28,
+    "best_validation_loss": 0.8252022269936616,
+    "epochs_without_improvement": 7,
     "latest_metrics": {
-      "epoch": 14,
-      "train_loss": 0.5019319759560639,
-      "validation_loss": 0.8276235149623098,
+      "epoch": 28,
+      "train_loss": 0.470754257476046,
+      "validation_loss": 0.9455394766984093,
       "validation_exact_match": 0.0,
-      "train_duration_seconds": 31778.006695899996,
-      "validation_duration_seconds": 364.9117752999882,
-      "exact_match_duration_seconds": 917.2714643000509,
+      "train_duration_seconds": 33946.49615120003,
+      "validation_duration_seconds": 398.8571130000055,
+      "exact_match_duration_seconds": 984.2507922999794,
       "validation_exact_match_ran": true,
-      "checkpoint_mode": "warm_start",
+      "checkpoint_mode": "fresh",
       "optimizer_steps": 666,
-      "train_token_count": 6738128,
-      "validation_token_count": 389572
+      "train_token_count": 6520257,
+      "validation_token_count": 376993
     },
     "best_metrics": {
-      "epoch": 1,
-      "train_loss": 0.6532228096950319,
-      "validation_loss": 0.7526768756890927,
+      "epoch": 14,
+      "train_loss": 0.7103793422147839,
+      "validation_loss": 0.8271130633810543,
       "validation_exact_match": 0.0,
-      "train_duration_seconds": 32154.2491798,
-      "validation_duration_seconds": 400.25947489999817,
-      "exact_match_duration_seconds": 902.851255900001,
+      "train_duration_seconds": 34222.78172789997,
+      "validation_duration_seconds": 399.85941500007175,
+      "exact_match_duration_seconds": 970.7130876999581,
       "validation_exact_match_ran": true,
-      "checkpoint_mode": "warm_start",
+      "checkpoint_mode": "fresh",
       "optimizer_steps": 666,
-      "train_token_count": 6738128,
-      "validation_token_count": 389572
+      "train_token_count": 6520257,
+      "validation_token_count": 376993
     }
   }
 }
